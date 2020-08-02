@@ -3,14 +3,14 @@
 R package to convert a raw text version of an individual name into a structured format and attempts to disambiguate proper name ordering (first, middle, and last name), parses prefixes and suffixes, and attempts to assign gender based upon first name.
 
 
-### Installation
+## Installation
 
 ```r
 devtools::install_github( "Nonprofit-Open-Data-Collective/peopleparser" )
 library( peopleparser )
 ```
 
-### Use
+## Use
 
 The program takes raw text individual names as the input and returns a data table with the name parsed into the component parts: 
 
@@ -73,3 +73,62 @@ end_time <- Sys.time()
 end_time - start_time
 # Time difference of 8.7648 secs
 ```
+
+## Examples
+
+To parse a name:
+
+```r
+# returns a single pipe (`|`) delimted string, e.g. "salutation|first|middle|last|suffix|gender|confidence".
+x <- 'livingston III,  Mr. MICHAEL JOHN9'
+parse.name(x)
+# or, for multiple names in a `data.table` with similar attributes
+parse.names(x)
+```
+
+To 'prepare' a name:
+```r
+x <- 'livingston III,  Mr. MICHAEL JOHN9'
+prep.name(x)  
+```
+
+To get the census data:
+```r
+x <- 'livingston III,  Mr. MICHAEL JOHN9'
+x <- prep.name(x)
+x <- strsplit(x,' ')[[1]]
+get.census.data(x)
+```
+
+To determine surname (last name) ordinal:
+```r
+x <- 'livingston III,  Mr. MICHAEL JOHN9'
+x <- prep.name(x)
+x <- strsplit(x,' ')[[1]]
+cd <- get.census.data(x)
+print(x)
+determine.surname(cd)
+```
+
+To determine gender:
+```r
+x <- 'livingston III,  Mr. MICHAEL JOHN9'
+x <- prep.name(x)
+x <- strsplit(x,' ')[[1]]
+cd <- get.census.data(x)
+determine.gender(cd)
+```
+
+## Contributors
+
+The original package by Michael Flanigan was called **Name-Parser**.
+
+available: https://github.com/mjfii/Name-Parser
+email: mick.flanigan@gmail.com
+twitter: @mjfii
+
+It was adapted by Jesse Lecy. 
+
+## Versioning
+
+Initial release 2020-08-01
