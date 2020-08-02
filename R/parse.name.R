@@ -10,8 +10,8 @@
 #' x <- 'LIVINGSTON III MICHAEL JOHN'
 #' parse.name(x)
 parse.name <- function(x,
-                       prefixes = c('MR','DR','MISS','MS','MRS'),
-                       suffixes = c('JR','II','III','IV','SR')) {
+                       prefixes = prefixes,
+                       suffixes = suffixes ) {
   # make a copy
   input.name <- x[1]
 

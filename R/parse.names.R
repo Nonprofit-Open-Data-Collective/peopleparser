@@ -15,16 +15,22 @@ parse.names <- function(x, ...) {
     # if class (x) is non-string then throw error
 
     # else use x
-
+    
+  data("census.names")
+  
   no_cores <- parallel::detectCores() - 1
   cl <- parallel::makeCluster(no_cores)
-
+  parallel::clusterExport( cl=cl, 'census.names' )
 
   input_names <- data.frame(name = x)
 
-  input_names$parsed_name <- parallel::parLapply(cl, input_names$name, parse.name)
+  input_names$parsed_name <- parallel::parLapply(cl, input_names$name, 
+        parse.name, ...)
 
-  input_names <- data.frame(input_names$name, do.call('rbind', strsplit(as.character(input_names$parsed_name), '|',fixed=TRUE)), stringsAsFactors = FALSE)
+  input_names <- data.frame(input_names$name, 
+    do.call( 'rbind', 
+    strsplit( as.character(input_names$parsed_name), '|', fixed=TRUE) ), 
+    stringsAsFactors = FALSE )
 
   colnames(input_names) <- c('name','salutation','first_name','middle_name', 'last_name','suffix', 'gender', 'gender_confidence')
 
