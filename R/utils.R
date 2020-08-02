@@ -2,14 +2,21 @@
 #' @export
 magrittr::`%>%`
 
-#' @export
+
 prx <- c("MR", "DR", "MISS", "MS", "MRS", 
-              "MD", "SENATOR", "COMMISSIONER",
-              "DELEGATE", "PhD", "CFA", "CPA",
-              "FACS", "SH1", "EN1", "LCRD" )
+          "MD", "SENATOR", "COMMISSIONER",
+          "DELEGATE", "PhD", "CFA", "CPA",
+          "REV","FACS", "SH1", "EN1", "LCRD" )
+
+
+sfx <- c("JR","II", "III", "IV", "SR")
+
 
 #' @export
-sfx <- c("JR","II", "III", "IV", "SR")
+"prx"
+
+#' @export
+"sfx"
 
 
 names.1000 <- 
