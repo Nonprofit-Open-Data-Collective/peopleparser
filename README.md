@@ -31,7 +31,7 @@ Gender coding is similarly done probabilistically using the first name from the 
 
 x <- 'livingston III,  Mr. MICHAEL JOHN9'
 parse.name(x)
-# [1] "MR|III,|MICHAEL  JOHN|LIVINGSTON||M|99.6"
+# [1] "MR|MICHAEL|JOHN|LIVINGSTON|III|M|99.6"
  
 x <- "THOMAS H VON KAMECKE"
 parse.name(x)
