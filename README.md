@@ -123,13 +123,12 @@ determine.gender(cd)
 
 ## Contributors
 
+This package was adapted by Jesse Lecy. 
+
 The original package by Michael Flanigan was called **Name-Parser**.
 
-available: https://github.com/mjfii/Name-Parser
-email: mick.flanigan@gmail.com
-twitter: @mjfii
+available at: https://github.com/mjfii/Name-Parser  
 
-It was adapted by Jesse Lecy. 
 
 ## Versioning
 
