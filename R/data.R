@@ -11,3 +11,17 @@
 #' }
 #' @source \url{https://www.census.gov/en.html}
 "census.names"
+
+#' Common prefixes used in names
+#'
+#' A vector of common prefixes
+#'
+#' @format A character vector with several prefixes 
+"prx"
+
+#' Common suffixes used in names
+#'
+#' A vector of common suffixes
+#'
+#' @format A character vector with several suffixes 
+"sfx"

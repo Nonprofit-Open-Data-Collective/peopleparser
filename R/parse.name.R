@@ -9,9 +9,7 @@
 #' @examples
 #' x <- 'LIVINGSTON III MICHAEL JOHN'
 #' parse.name(x)
-parse.name <- function(x,
-                       prefixes = prefixes,
-                       suffixes = suffixes ) {
+parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   # make a copy
   input.name <- x[1]
 

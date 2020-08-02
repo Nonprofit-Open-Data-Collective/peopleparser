@@ -4,7 +4,7 @@
 \alias{parse.name}
 \title{Parse single name}
 \usage{
-parse.name(x, prefixes = prefixes, suffixes = suffixes)
+parse.name(x, prefixes = prx, suffixes = sfx)
 }
 \arguments{
 \item{x}{Provide the character vector to parse.}
