@@ -1,6 +1,6 @@
 # peopleparser
 
-R package to convert a raw text version of an individual name into a structured format and disambiguate first, last and titles.
+R package to convert a raw text version of an individual name into a structured format and attempts to disambiguate proper name ordering (first, middle, and last name), parses prefixes and suffixes, and attempts to assign gender based upon first name.
 
 
 ### Installation
