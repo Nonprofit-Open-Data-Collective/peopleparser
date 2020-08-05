@@ -4,9 +4,13 @@ magrittr::`%>%`
 
 
 prx <- c("MR", "DR", "MISS", "MS", "MRS", 
-          "MD", "SENATOR", "COMMISSIONER",
-          "DELEGATE", "PhD", "CFA", "CPA",
-          "REV","FACS", "SH1", "EN1", "LCRD" )
+         "MD", "RN", "SENATOR", "COMMISSIONER",
+         "DELEGATE", "PHD", "MBA", "CFA", "CPA",
+         "FACS", "SH1", "EN1", "LCRD", "FSPA",
+          "REV", "REVEREND", "PASTOR", "FR", "FATHER",
+          "DOCTOR", "DDS", "DMD",
+          "MPH", "JD", "ESQ", "RPH", "THD",
+          "EX-OFFICIO", "PAST", "ST" )
 
 
 sfx <- c("JR","II", "III", "IV", "SR")
