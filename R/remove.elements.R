@@ -18,7 +18,7 @@ remove.elements <- function(x, remove.this) {
     x <- x[! x %in% remove.this]
   }
 
-  rv <- list(names = x, removed_names = removed)
+  rv <- list(names = x, removed_names = paste0( removed, collapse="_" ) )
   
   return(rv)
 }
