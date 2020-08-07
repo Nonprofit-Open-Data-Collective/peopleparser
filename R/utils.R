@@ -7,10 +7,11 @@ prx <- c("MR", "DR", "MISS", "MS", "MRS",
          "MD", "RN", "SENATOR", "COMMISSIONER",
          "DELEGATE", "PHD", "MBA", "CFA", "CPA",
          "FACS", "SH1", "EN1", "LCRD", "FSPA",
-          "REV", "REVEREND", "PASTOR", "FR", "FATHER",
-          "DOCTOR", "DDS", "DMD",
-          "MPH", "JD", "ESQ", "RPH", "THD",
-          "EX-OFFICIO", "PAST", "ST", "CSSF" )
+         "REV", "REVEREND", "PASTOR", "FR", "FATHER",
+         "DOCTOR", "DDS", "DMD",
+         "MPH", "JD", "ESQ", "RPH", "THD",
+         "EX-OFFICIO", "PAST", "ST", "CSSF",
+         "COL", "COLONEL")
 
 
 sfx <- c( "JR","JUNIOR","SR","SENIOR","II", "III", "IV" )
