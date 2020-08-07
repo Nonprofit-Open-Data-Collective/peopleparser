@@ -13,7 +13,7 @@ prx <- c("MR", "DR", "MISS", "MS", "MRS",
           "EX-OFFICIO", "PAST", "ST", "CSSF" )
 
 
-sfx <- c("JR","II", "III", "IV", "SR")
+sfx <- c( "JR","JUNIOR","SR","SENIOR","II", "III", "IV" )
 
 
 #' @export
