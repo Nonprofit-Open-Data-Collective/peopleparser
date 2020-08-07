@@ -30,6 +30,13 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   suffix <- removal$removed_names
   x <- removal$names
   suffix.name <- suffix[1]
+  
+  # remove interim or former titles
+  temp.flags <- c("-RESIGNED","RESIGNED","INTERIM","FORMER","TEMPORARY")
+  removal <- remove.elements( x, temp.flags )
+  temp.status <- removal$removed_names 
+  x <- removal$names 
+  status <- temp.status[1]
 
   # re-org/order name based on simple ruling
   l <- nchar(x)  # length of each element
@@ -110,7 +117,7 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
 
   # build return value
   rv <- paste( c(salutation.name, first.name, middle.name, last.name, 
-                 suffix.name, gender[1], gender[2]), collapse = '|')
+                 suffix.name, status, gender[1], gender[2]), collapse = '|')
 
   return(rv)
 
