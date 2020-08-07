@@ -10,7 +10,7 @@ prx <- c("MR", "DR", "MISS", "MS", "MRS",
           "REV", "REVEREND", "PASTOR", "FR", "FATHER",
           "DOCTOR", "DDS", "DMD",
           "MPH", "JD", "ESQ", "RPH", "THD",
-          "EX-OFFICIO", "PAST", "ST" )
+          "EX-OFFICIO", "PAST", "ST", "CSSF" )
 
 
 sfx <- c("JR","II", "III", "IV", "SR")
