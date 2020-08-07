@@ -32,7 +32,8 @@ parse.names <- function(x, ...) {
     strsplit( as.character(input_names$parsed_name), '|', fixed=TRUE) ), 
     stringsAsFactors = FALSE )
 
-  colnames(input_names) <- c('name','salutation','first_name','middle_name', 'last_name','suffix', 'gender', 'gender_confidence')
+  colnames(input_names) <- c('name','salutation','first_name','middle_name', 'last_name',
+                             'suffix', 'status', 'gender', 'gender_confidence')
 
   parallel::stopCluster(cl)
 
