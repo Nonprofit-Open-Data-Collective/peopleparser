@@ -15,7 +15,7 @@ prep.name <- function(x) {
   return.value <- toupper(gsub('.', ' ', return.value, fixed = TRUE))
 
   # remove punctuation except dashes (compound last names)
-  return.value <- gsub('[[:punct:]]', '', return.value)
+  return.value <- gsub( '(?!-)[[:punct:]]', '', x, perl=T )
   return.value <- gsub('[[:digit:]]', '', return.value)
 
   # remove dup'd spaces
