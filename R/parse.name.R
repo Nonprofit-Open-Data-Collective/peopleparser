@@ -32,7 +32,7 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   suffix.name <- suffix[1]
   
   # remove interim or former titles
-  temp.flags <- c("-RESIGNED","RESIGNED","INTERIM",
+  temp.flags <- c("-RESIGNED","RESIGNED","INTERIM"," EX OFFICIO",
                   "FORMER","TEMPORARY","THRU","THROUGH","PRESENT")
   removal <- remove.elements( x, temp.flags )
   temp.status <- removal$removed_names 
