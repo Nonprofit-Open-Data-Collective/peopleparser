@@ -15,7 +15,10 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
 
   # prepare name for parsing
   x <- prep.name(x)
-
+  
+  # remove common noise strings 
+  x <- gsub( "SEE SCHEDULE O", "", x )
+  
   # split words in to vector
   x <- strsplit( x,' ')[[1]]
 
@@ -32,7 +35,7 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   suffix.name <- suffix[1]
   
   # remove interim or former titles
-  temp.flags <- c("-RESIGNED","RESIGNED","INTERIM"," EX OFFICIO",
+  temp.flags <- c("-RESIGNED","RESIGNED","INTERIM"," OFFICIO",
                   "FORMER","TEMPORARY","THRU","THROUGH","PRESENT")
   removal <- remove.elements( x, temp.flags )
   temp.status <- removal$removed_names 
