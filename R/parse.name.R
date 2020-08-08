@@ -23,6 +23,8 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   
   # remove common noise strings 
   x <- gsub( "SEE SCHEDULE O", "", x )
+  x <- gsub( "SEE SCH J", "", x )
+  x <- gsub( " PG ", "", x )  # page
   x <- gsub( " RET ", " ", x )
   
   # split words in to vector
