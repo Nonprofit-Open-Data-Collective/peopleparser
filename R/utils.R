@@ -8,7 +8,7 @@ prx <- c("MR", "DR", "MISS", "MS", "MRS",
          "DELEGATE", "PHD", "MBA", "CFA", "CPA",
          "FACS", "SH1", "EN1", "LCRD", "FSPA",
          "REV", "REVEREND", "PASTOR", "FR", "FATHER",
-         "DOCTOR", "DDS", "DMD",
+         "DOCTOR", "DDS", "DMD", "OD",
          "MPH", "JD", "ESQ", "RPH", "THD",
          "EX-OFFICIO", "PAST", "ST", "CSSF",
          "COL", "COLONEL")
