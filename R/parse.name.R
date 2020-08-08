@@ -18,6 +18,8 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
 
   # clean-up
   x <- gsub( "PH D", "PHD", x )
+  x <- gsub( "EX OFFICIO", "EXOFFICIO", x )
+  
   
   # remove common noise strings 
   x <- gsub( "SEE SCHEDULE O", "", x )
