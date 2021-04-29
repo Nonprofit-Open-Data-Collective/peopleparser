@@ -20,6 +20,7 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   x <- gsub( "PH D", "PHD", x )
   x <- gsub( "EX OFFICIO", "EXOFFICIO", x )
   x <- gsub( "EX-OFFICIO", "EXOFFICIO", x )
+  x <- gsub( "VAN DER ", "VAN-DER-", x )
   
   # remove common noise strings 
   x <- gsub( "SEE SCHEDULE O", "", x )
@@ -61,7 +62,8 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   
   # remove interim or former titles
   temp.flags <- c("-RESIGNED","RESIGNED","INTERIM","EXOFFICIO",
-                  "FORMER","TEMPORARY","THRU","THROUGH","PRESENT")
+                  "FORMER","PAST","DECEASED",
+                  "TEMPORARY","THRU","THROUGH","PRESENT")
   removal <- remove.elements( x, temp.flags )
   temp.status <- removal$removed_names 
   x <- removal$names 
