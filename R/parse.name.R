@@ -29,8 +29,8 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   x <- gsub( " UNTIL .*$", "", x )
   x <- gsub( " TILL .*$", "", x )
   x <- gsub( "UNTIL .*$", "", x )
-  x <- gsub( " AS OF .*$", "", x )
-  x <- gsub( "AS OF .+$", "", x ) 
+  x <- gsub( " AS OF .*$", "ASOF", x )
+  x <- gsub( "AS OF .+$", "ASOF", x ) 
   x <- gsub( " THROUGH .*$", "", x )
   x <- gsub( " THRU .*$", "", x )
   x <- gsub( " TO .+$", "", x ) 
@@ -72,7 +72,7 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   
   # remove interim or former titles
   temp.flags <- c("-RESIGNED","RESIGNED","INTERIM","EXOFFICIO",
-                  "FORMER","PAST","DECEASED",
+                  "FORMER","PAST","DECEASED","RETIRED","ASOF",
                   "TEMPORARY","THRU","THROUGH","PRESENT")
   removal <- remove.elements( x, temp.flags )
   temp.status <- removal$removed_names 
