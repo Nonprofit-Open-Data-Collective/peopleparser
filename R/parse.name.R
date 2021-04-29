@@ -26,6 +26,7 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   x <- gsub( " EXECUTIVE .*$", "", x )
   x <- gsub( " EXECUTIV .*$", "", x )
   x <- gsub( " EXEC .*$", "", x )
+  x <- gsub( "-ED ", "", x ) 
   x <- gsub( " RET ", " ", x )
   x <- gsub( " DECEASED", "", x )
   x <- gsub( " FORMER .*$", " FORMER", x ) 
