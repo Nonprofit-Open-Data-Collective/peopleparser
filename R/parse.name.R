@@ -56,8 +56,8 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   x <- gsub( " -", "", x )
 
   # clean-up
-  x <- gsub( "PH D", "PHD", x )
-  x <- gsub( "PYS D", "PYSD", x )
+  x <- gsub( " PH D", " PHD", x )
+  x <- gsub( " PYS D", " PYSD", x )
   x <- gsub( "LT GEN", "LTGEN", x )
   x <- gsub( "EX OFFICIO", "EXOFFICIO", x )
   x <- gsub( "EX-OFFICIO", "EXOFFICIO", x )
