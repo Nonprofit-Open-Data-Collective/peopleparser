@@ -13,8 +13,9 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   # make a copy
   input.name <- x[1]
 
-  # capitalize
-  x <- toupper(x)
+  # remove periods and capitalize
+  x <- gsub( '.', ' ', x, fixed = TRUE )
+  x <- toupper( x )
 
   # remove common noise strings
   x <- gsub( "SEE SCHEDULE O", "", x )
