@@ -37,6 +37,7 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   x <- gsub( " AS OF .*$", "ASOF", x )
   x <- gsub( "AS OF .+$", "ASOF", x ) 
   x <- gsub( " THROUGH .*$", "", x )
+  x <- gsub( "THROUGH .+$", "", x )
   x <- gsub( " THRU .*$", "", x )
   x <- gsub( " TO .+$", "", x ) 
   x <- gsub( " STARTED .*$", "", x )
