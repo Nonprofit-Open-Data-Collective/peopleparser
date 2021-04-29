@@ -27,6 +27,7 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   x <- gsub( " FORMER", "", x )
   x <- gsub( " FROM .*$", "", x )
   x <- gsub( " UNTIL .*$", "", x )
+  x <- gsub( " TILL .*$", "", x )
   x <- gsub( "UNTIL .*$", "", x )
   x <- gsub( " AS OF .*$", "", x )
   x <- gsub( "AS OF .+$", "", x ) 
