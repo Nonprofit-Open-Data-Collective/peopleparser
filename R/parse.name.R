@@ -19,7 +19,8 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
 
   # remove common noise strings
   x <- gsub( "SEE SCHEDULE .*$", "", x )
-  x <- gsub( "SEE SCH .*$", "", x )
+  x <- gsub( "SEE SCH .*$", "", x ) 
+  x <- gsub( " SCH .*$", "", x )
   x <- gsub( " PG ", "", x )  # page
   x <- gsub( " PAST .*$", " PAST", x )
   x <- gsub( "-PAST .*$", " PAST", x )  
