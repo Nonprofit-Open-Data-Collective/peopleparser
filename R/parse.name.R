@@ -41,6 +41,8 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   x <- gsub( " BEG .+$", "", x )
   x <- gsub( " BEGINNING .+$", "", x )  
   x <- gsub( " ENDED .*$", "", x )
+  x <- gsub( " OUTGOING.*$", "", x ) 
+  x <- gsub( "-OUTGOING.*$", "", x )
   x <- gsub( " PART YEAR", "", x )
   x <- gsub( " NON-VOTING.*$", "", x )
   x <- gsub( " .{3} - .{3}$", "", x )  # JUN - DEC
