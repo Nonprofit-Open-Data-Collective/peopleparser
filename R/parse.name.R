@@ -26,8 +26,8 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   x <- gsub( " RET ", " ", x )
   x <- gsub( " PAST .*$", " PAST", x )
   x <- gsub( " DECEASED", "", x )
-  x <- gsub( " FORMER .*$", "", x ) 
-  x <- gsub( " FORMER", "", x )
+  x <- gsub( " FORMER .*$", " FORMER", x ) 
+  x <- gsub( " FORMER.*$", " FORMER", x )
   x <- gsub( " FROM .*$", "", x )
   x <- gsub( " UNTIL .*$", "", x )
   x <- gsub( " TILL .*$", "", x )
@@ -41,8 +41,8 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   x <- gsub( " BEG .+$", "", x )
   x <- gsub( " BEGINNING .+$", "", x )  
   x <- gsub( " ENDED .*$", "", x )
-  x <- gsub( " OUTGOING.*$", "", x ) 
-  x <- gsub( "-OUTGOING.*$", "", x )
+  x <- gsub( " OUTGOING.*$", " OUTGOING", x ) 
+  x <- gsub( "-OUTGOING.*$", " OUTGOING", x )
   x <- gsub( " PART YEAR", "", x )
   x <- gsub( " NON-VOTING.*$", "", x )
   x <- gsub( " .{3} - .{3}$", "", x )  # JUN - DEC
@@ -80,8 +80,8 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   
   # remove interim or former titles
   temp.flags <- c("-RESIGNED","RESIGNED","INTERIM","EXOFFICIO",
-                  "FORMER","PAST","DECEASED","RETIRED","ASOF",
-                  "TEMPORARY","THRU","THROUGH","PRESENT")
+                  "FORMER","PAST","DECEASED","RETIRED","OUTGOING",
+                  "ASOF","TEMPORARY","THRU","THROUGH","PRESENT")
   removal <- remove.elements( x, temp.flags )
   temp.status <- removal$removed_names 
   x <- removal$names 
