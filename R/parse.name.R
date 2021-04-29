@@ -18,14 +18,15 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   x <- toupper( x )
 
   # remove common noise strings
-  x <- gsub( "SEE SCHEDULE O", "", x )
-  x <- gsub( "SEE SCH J", "", x )
+  x <- gsub( "SEE SCHEDULE .*$", "", x )
+  x <- gsub( "SEE SCH .*$", "", x )
   x <- gsub( " PG ", "", x )  # page
+  x <- gsub( " PAST .*$", " PAST", x )
+  x <- gsub( "-PAST .*$", " PAST", x )  
   x <- gsub( " EXECUTIVE .*$", "", x )
   x <- gsub( " EXECUTIV .*$", "", x )
   x <- gsub( " EXEC .*$", "", x )
   x <- gsub( " RET ", " ", x )
-  x <- gsub( " PAST .*$", " PAST", x )
   x <- gsub( " DECEASED", "", x )
   x <- gsub( " FORMER .*$", " FORMER", x ) 
   x <- gsub( " FORMER.*$", " FORMER", x )
