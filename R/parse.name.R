@@ -20,6 +20,9 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   x <- gsub( "SEE SCHEDULE O", "", x )
   x <- gsub( "SEE SCH J", "", x )
   x <- gsub( " PG ", "", x )  # page
+  x <- gsub( " EXECUTIVE .*$", "", x )
+  x <- gsub( " EXECUTIV .*$", "", x )
+  x <- gsub( " EXEC .*$", "", x )
   x <- gsub( " RET ", " ", x )
   x <- gsub( " PAST .*$", " PAST", x )
   x <- gsub( " DECEASED", "", x )
