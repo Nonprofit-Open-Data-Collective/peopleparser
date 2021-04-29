@@ -19,13 +19,30 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   # clean-up
   x <- gsub( "PH D", "PHD", x )
   x <- gsub( "EX OFFICIO", "EXOFFICIO", x )
-  
+  x <- gsub( "EX-OFFICIO", "EXOFFICIO", x )
   
   # remove common noise strings 
   x <- gsub( "SEE SCHEDULE O", "", x )
   x <- gsub( "SEE SCH J", "", x )
   x <- gsub( " PG ", "", x )  # page
   x <- gsub( " RET ", " ", x )
+  x <- gsub( " PAST", "", x )
+  x <- gsub( " DECEASED", "", x )
+  x <- gsub( " FORMER", "", x )
+  x <- gsub( " FROM .*$", "", x )
+  x <- gsub( " UNTIL .*$", "", x )
+  x <- gsub( " AS OF .*$", "", x )
+  x <- gsub( "AS OF .+$", "", x ) 
+  x <- gsub( " THROUGH .*$", "", x )
+  x <- gsub( " THRU .*$", "", x )
+  x <- gsub( " TO .+$", "", x ) 
+  x <- gsub( " STARTED .*$", "", x )
+  x <- gsub( " BEG .+$", "", x )
+  x <- gsub( " BEGINNING .+$", "", x )  
+  x <- gsub( " ENDED .*$", "", x )
+  x <- gsub( " PART YEAR", "", x )
+  x <- gsub( "- ", "", x )
+  x <- gsub( " -", "", x )  
   
   # split words in to vector
   x <- strsplit( x,' ')[[1]]
@@ -43,7 +60,7 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   suffix.name <- suffix[1]
   
   # remove interim or former titles
-  temp.flags <- c("-RESIGNED","RESIGNED","INTERIM"," OFFICIO",
+  temp.flags <- c("-RESIGNED","RESIGNED","INTERIM","EXOFFICIO",
                   "FORMER","TEMPORARY","THRU","THROUGH","PRESENT")
   removal <- remove.elements( x, temp.flags )
   temp.status <- removal$removed_names 
