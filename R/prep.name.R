@@ -12,7 +12,8 @@ prep.name <- function(x) {
   return.value <- x[1]
 
   # replace periods with spaces and cast to upper case
-  return.value <- gsub( '.', ' ', return.value, fixed = TRUE )
+  return.value <- gsub( '.', ' ', return.value, fixed = TRUE ) 
+  return.value <- toupper( return.value )
 
   # remove punctuation except dashes (compound last names)
   return.value <- gsub( '(?!-)[[:punct:]]', '', return.value, perl=T )
