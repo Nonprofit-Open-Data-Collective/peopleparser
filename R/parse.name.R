@@ -13,26 +13,21 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   # make a copy
   input.name <- x[1]
 
-  # prepare name for parsing
-  x <- prep.name(x)
+  # capitalize
+  x <- toupper(x)
 
-  # clean-up
-  x <- gsub( "PH D", "PHD", x )
-  x <- gsub( "PYS D", "PYSD", x )
-  x <- gsub( "EX OFFICIO", "EXOFFICIO", x )
-  x <- gsub( "EX-OFFICIO", "EXOFFICIO", x )
-  x <- gsub( "VAN DER ", "VAN-DER-", x )
-  
-  # remove common noise strings 
+  # remove common noise strings
   x <- gsub( "SEE SCHEDULE O", "", x )
   x <- gsub( "SEE SCH J", "", x )
   x <- gsub( " PG ", "", x )  # page
   x <- gsub( " RET ", " ", x )
-  x <- gsub( " PAST", "", x )
+  x <- gsub( " PAST .*$", " PAST", x )
   x <- gsub( " DECEASED", "", x )
+  x <- gsub( " FORMER .*$", "", x ) 
   x <- gsub( " FORMER", "", x )
   x <- gsub( " FROM .*$", "", x )
   x <- gsub( " UNTIL .*$", "", x )
+  x <- gsub( "UNTIL .*$", "", x )
   x <- gsub( " AS OF .*$", "", x )
   x <- gsub( "AS OF .+$", "", x ) 
   x <- gsub( " THROUGH .*$", "", x )
@@ -44,8 +39,18 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   x <- gsub( " ENDED .*$", "", x )
   x <- gsub( " PART YEAR", "", x )
   x <- gsub( "- ", "", x )
-  x <- gsub( " -", "", x )  
+  x <- gsub( " -", "", x )
+
+  # clean-up
+  x <- gsub( "PH D", "PHD", x )
+  x <- gsub( "PYS D", "PYSD", x )
+  x <- gsub( "EX OFFICIO", "EXOFFICIO", x )
+  x <- gsub( "EX-OFFICIO", "EXOFFICIO", x )
+  x <- gsub( "VAN DER ", "VAN-DER-", x )
   
+  # prepare name for parsing
+  x <- prep.name(x)
+
   # split words in to vector
   x <- strsplit( x,' ')[[1]]
 
