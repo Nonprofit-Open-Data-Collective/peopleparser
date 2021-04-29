@@ -45,7 +45,7 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   x <- gsub( " NON-VOTING.*$", "", x )
   x <- gsub( " .{3} - .{3}$", "", x )  # JUN - DEC
   x <- gsub( " .{3}-.{3}$", "", x )    # JUN-DEC
-  x <- gsub( "- ", "", x )
+  x <- gsub( "- ", "", x ) 
   x <- gsub( " -", "", x )
 
   # clean-up
@@ -54,7 +54,9 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   x <- gsub( "LT GEN", "LTGEN", x )
   x <- gsub( "EX OFFICIO", "EXOFFICIO", x )
   x <- gsub( "EX-OFFICIO", "EXOFFICIO", x )
-  x <- gsub( "VAN DER ", "VAN-DER-", x )
+  x <- gsub( " VAN DER ", "VAN-DER-", x )
+  x <- gsub( " DE ", " DE-", x )  # DE LEEUW to DE-LEEUW
+  x <- gsub( "-DE ", "-DE-", x )  # BAILEY-DE LEEUW to BAILEY-DE-LEEUW
   
   # prepare name for parsing
   x <- prep.name(x)
