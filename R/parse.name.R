@@ -20,34 +20,47 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   # remove common noise strings
   x <- gsub( "SEE SCHEDULE .*$", "", x )
   x <- gsub( "SEE SCH .*$", "", x ) 
+  x <- gsub( "\\BSCH [A-Z]{1}.*$", "", x )
   x <- gsub( " SCH .*$", "", x )
   x <- gsub( " PG ", "", x )  # page
   x <- gsub( " PAST .*$", " PAST", x )
-  x <- gsub( "-PAST .*$", " PAST", x )  
+  x <- gsub( "-PAST .*$", " PAST", x ) 
+  x <- gsub( "PRESCEO", "", x )
   x <- gsub( " EXECUTIVE .*$", "", x )
   x <- gsub( " EXECUTIV .*$", "", x )
   x <- gsub( " EXEC .*$", "", x )
-  x <- gsub( "-ED ", " ", x ) 
+  x <- gsub( " DIRECTOR .*$", "", x )  # DIRECTOR OF ...
+  x <- gsub( "-ED .*$", "", x )  # ED AS OF ...
+  x <- gsub( " ED AS OF.*$", "", x ) 
+  x <- gsub( "\\BPHD$", " PHD", x )  # \B middle of a word
   x <- gsub( " RET ", " ", x )
   x <- gsub( " DECEASED", "", x )
   x <- gsub( " FORMER .*$", " FORMER", x ) 
   x <- gsub( " FORMER.*$", " FORMER", x )
+  x <- gsub( "-FORMER.*$", " FORMER", x )
   x <- gsub( " FROM .*$", "", x )
   x <- gsub( " UNTIL .*$", "", x )
+  x <- gsub( "-UNTIL x*$", "", x )
   x <- gsub( " TILL .*$", "", x )
   x <- gsub( "UNTIL .*$", "", x )
+  x <- gsub( " PARTIAL.*$", "", x )
   x <- gsub( " AS OF .*$", " ASOF", x )
   x <- gsub( "AS OF .+$", " ASOF", x ) 
+  x <- gsub( "EFFECTIVE.+$", "", x )
+  x <- gsub( " EFF .+$", "", x )
   x <- gsub( " THROUGH .*$", "", x )
   x <- gsub( "THROUGH .+$", "", x )
   x <- gsub( " THRU .*$", "", x )
   x <- gsub( " TO .+$", "", x ) 
+  x <- gusb( " LEFT .*$", "", x )
   x <- gsub( " STARTED .*$", "", x )
   x <- gsub( " BEG .+$", "", x )
   x <- gsub( " BEGINNING .+$", "", x )  
   x <- gsub( " ENDED .*$", "", x )
   x <- gsub( " OUTGOING.*$", " OUTGOING", x ) 
   x <- gsub( "-OUTGOING.*$", " OUTGOING", x )
+  x <- gsub( " RETIRED .*$", "", x ) 
+  x <- gsub( " TERMED.*$", "", x )
   x <- gsub( " PART YEAR", "", x )
   x <- gsub( " NON-VOTING.*$", "", x )
   x <- gsub( " .{3} - .{3}$", "", x )  # JUN - DEC
@@ -61,9 +74,11 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   x <- gsub( "LT GEN", "LTGEN", x )
   x <- gsub( "EX OFFICIO", "EXOFFICIO", x )
   x <- gsub( "EX-OFFICIO", "EXOFFICIO", x )
+  x <- gsub( "LO GRANDE", "LO-GRANDE", x )
   x <- gsub( " VAN DER ", "VAN-DER-", x )
   x <- gsub( " DE ", " DE-", x )  # DE LEEUW to DE-LEEUW
   x <- gsub( "-DE ", "-DE-", x )  # BAILEY-DE LEEUW to BAILEY-DE-LEEUW
+  x <- gsub( " DI ", " DI-", x )  # Julia Di Bussolo
   
   # prepare name for parsing
   x <- prep.name(x)
@@ -169,6 +184,12 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
 
   }
 
+  # if( nchar(middle.name) > 2 )
+  # {
+  #     # split words in to vector
+  #     mn <- strsplit( middle.name,' ')[[1]]
+  # }
+  
   # build return value
   rv <- paste( c(salutation.name, first.name, middle.name, last.name, 
                  suffix.name, status, gender[1], gender[2]), collapse = '|')
