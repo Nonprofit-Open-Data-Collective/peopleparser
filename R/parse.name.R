@@ -17,6 +17,7 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   x <- gsub( '.', ' ', x, fixed = TRUE )
   x <- toupper( x )
 
+  # convert to de_clutter() function: 
   # remove common noise strings
   x <- gsub( "SEE SCHEDULE .*$", "", x )
   x <- gsub( "SEE SCH .*$", "", x ) 
