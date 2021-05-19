@@ -27,16 +27,21 @@ determine.surname <- function( x )
     if (nrow(x) == 1) {
         return(c(1, 2))
     }
-    if (nrow(x) >= 3) {
-        x <- x[x$ordinal %in% c(1, nrow(x)), ]
-    }
+    # if (nrow(x) >= 3) {
+    #    x <- x[x$ordinal %in% c(1, nrow(x)), ]
+    # }
 
     x <- 
     x %>% 
     dplyr::mutate( tot = first_name_value + last_name_value + 1,
             p.first = first_name_value / tot,
             p.last = ( 1 + last_name_value ) / tot ) %>% 
-    dplyr::arrange( - p.last, - ordinal )  
+    dplyr::arrange( - p.last, - tot, - ordinal )  
+
+    #       name ordinal male_value female_value first_name_value last_name_value   tot p.first  p.last
+    # 1: VENTURA       2          0            0                0           39580 39581 0.00000 1.00000
+    # 2:    IZZY       1          0            0                0               0     1 0.00000 1.00000
+    # 3:    MEDA       3          0         1518             1518             985  2504 0.60623 0.39377
 
     most.likely <- ( x$ordinal )[1]
     return( most.likely )
