@@ -57,6 +57,7 @@ de_clutter <- function( x )
   x <- gsub( " THROUGH .*$", "", x )
   x <- gsub( "THROUGH .+$", "", x )
   x <- gsub( " THRU .*$", "", x )
+  x <- gsub( "THRU .*$", "", x )  # \B middle of a word
   x <- gsub( " TO .+$", "", x ) 
   x <- gsub( " LEFT .*$", "", x )
   x <- gsub( " STARTED .*$", "", x )
