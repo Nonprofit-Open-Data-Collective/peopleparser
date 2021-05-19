@@ -17,6 +17,67 @@ check_if_surname <- function( x )
 #' @export
 "check_if_surname"
 
+de_clutter <- function( x )
+{
+  # convert to de_clutter() function: 
+  # remove common noise strings
+  x <- gsub( "SEE SCHEDULE .*$", "", x )
+  x <- gsub( "SEE SCH .*$", "", x ) 
+  x <- gsub( "\\BSCH [A-Z]{1}.*$", "", x )
+  x <- gsub( " SCH .*$", "", x )
+  x <- gsub( " PG ", "", x )  # page
+  x <- gsub( " PAST .*$", " PAST", x )
+  x <- gsub( "-PAST .*$", " PAST", x ) 
+  x <- gsub( "PRESCEO", "", x )
+  x <- gsub( " EXECUTIVE .*$", "", x )
+  x <- gsub( " EXECUTIV .*$", "", x )
+  x <- gsub( " EXEC .*$", "", x )
+  x <- gsub( " DIRECTOR .*$", "", x )  # DIRECTOR OF ...
+  x <- gsub( "-ED .*$", "", x )  # ED AS OF ...
+  x <- gsub( " ED AS OF.*$", "", x ) 
+  x <- gsub( "\\BPHD$", " PHD", x )  # \B middle of a word
+  x <- gsub( " RET ", " ", x )
+  x <- gsub( " DECEASED", "", x )
+  x <- gsub( " FORMER .*$", " FORMER", x ) 
+  x <- gsub( " FORMER.*$", " FORMER", x )
+  x <- gsub( "-FORMER.*$", " FORMER", x )
+  x <- gsub( " FROM .*$", "", x )
+  x <- gsub( " UNTIL .*$", "", x )
+  x <- gsub( "-UNTIL x*$", "", x )
+  x <- gsub( " TILL .*$", "", x )
+  x <- gsub( "UNTIL .*$", "", x )
+  x <- gsub( " PARTIAL.*$", "", x )
+  x <- gsub( " AS OF .*$", " ASOF", x )
+  x <- gsub( "AS OF .+$", " ASOF", x ) 
+  x <- gsub( "EFFECTIVE.+$", "", x )
+  x <- gsub( " EFF .+$", "", x )
+  x <- gsub( " THROUGH .*$", "", x )
+  x <- gsub( "THROUGH .+$", "", x )
+  x <- gsub( " THRU .*$", "", x )
+  x <- gsub( " TO .+$", "", x ) 
+  x <- gsub( " LEFT .*$", "", x )
+  x <- gsub( " STARTED .*$", "", x )
+  x <- gsub( " BEG .+$", "", x )
+  x <- gsub( " BEGINNING .+$", "", x )  
+  x <- gsub( " ENDED .*$", "", x )
+  x <- gsub( " OUTGOING.*$", " OUTGOING", x ) 
+  x <- gsub( "-OUTGOING.*$", " OUTGOING", x )
+  x <- gsub( " RETIRED .*$", "", x ) 
+  x <- gsub( " TERMED.*$", "", x )
+  x <- gsub( " PART YEAR", "", x )
+  x <- gsub( " NON-VOTING.*$", "", x )
+  x <- gsub( " .{3} - .{3}$", "", x )  # JUN - DEC
+  x <- gsub( " .{3}-.{3}$", "", x )    # JUN-DEC
+  x <- gsub( "- ", "", x ) 
+  x <- gsub( " -", "", x )
+
+  return(x)
+}
+
+#' @export
+"de_clutter"
+
+
 prx <- c("MR", "DR", "MISS", "MS", "MRS", 
          "MD", "RN", "DOCTOR", "DDS", "DMD", "OD",
          "SENATOR", "COMMISSIONER", "DELEGATE", 
