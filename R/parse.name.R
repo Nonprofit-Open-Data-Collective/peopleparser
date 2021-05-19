@@ -211,6 +211,18 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
       
   }
 
+  # if first name is JD or Ed then recover from prefix category
+  if( salutation.name %in% c("JD","ED") & first.name == "" )
+  {
+     first.name <- salutation.name
+     salutation.name <- ""
+  }
+  
+  if( grepl( "^MAY-", last.name ) )
+  {
+     middle.name <- paste0( middle.name, "MAY", sep=" " )
+     last.name <- gsub( "^MAY-", "", last.name )
+  }
   
   # build return value
   rv <- paste( c(salutation.name, first.name, middle.name, last.name, 
