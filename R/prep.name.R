@@ -38,7 +38,7 @@ prep.name <- function(x) {
   
   # dash compound last names
   n <- strsplit( return.value, ' ' )[[1]]
-  zz <- c( 'LA','VON','VAN','DEL','DE' )
+  zz <- c( 'LA','VON','VAN','DEL','DE', 'MC' )
   zzz <- paste( n, '-', sep='' )
   b <- ( n %in% zz )
   n[b] <- zzz[b]
