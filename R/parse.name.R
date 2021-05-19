@@ -114,7 +114,7 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   i <- length(x) # number of elements in the vector
   s <- 1 %in% l  
 
-     if (i == 3 & s) {
+    if (i == 3 & s) {
         if (l[i] == 1) {
             x <- x[c(2:i, 1)]
             l <- nchar(x)
@@ -141,6 +141,22 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
         middle.name <- ""
         last.name <- ""
         gender <- c("U", "0.0")
+    } else if (i == 2 ) {
+        working.set <- get.census.data(x)
+        surname.position <- determine.surname(working.set)
+
+        last.name   <- x[ surname.position ]
+        first.name  <- x[ - surname.position ] 
+        middle.name <- ""
+
+        working.set <- working.set[ - surname.position , ]
+        gender <- determine.gender(working.set)
+        if (gender[1] == "U") 
+        {
+          if (suffix.name != "") 
+          { gender <- c("M", "50.0") }
+          gender[2] <- "50.0"
+        }
     } else {
         working.set <- get.census.data(x)
         surname.position <- determine.surname(working.set)
@@ -156,7 +172,8 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
           last.name <- x[ surname.position ]
           xx <- x[ - surname.position ]
           first.name <- xx[1]
-          middle.name <- paste( xx[ 2:length(xx) ], collapse=" " )
+          middle.name <- ifelse( length(xx) == 1, "",
+             paste( xx[ 2:length(xx) ], collapse=" " ) )
         }
           working.set <- working.set[ - surname.position , ]
           gender <- determine.gender(working.set)
