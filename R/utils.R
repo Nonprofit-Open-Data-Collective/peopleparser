@@ -29,6 +29,7 @@ de_clutter <- function( x )
   x <- gsub( " PG ", "", x )  # page
   x <- gsub( " PAST .*$", " PAST", x )
   x <- gsub( "-PAST .*$", " PAST", x ) 
+  x <- gsub( " PRESID.*$", "", x )
   x <- gsub( "PRESCEO", "", x )
   x <- gsub( " EXECUTIVE .*$", "", x )
   x <- gsub( " EXECUTIV .*$", "", x )
@@ -57,26 +58,33 @@ de_clutter <- function( x )
   x <- gsub( " THROUGH .*$", "", x )
   x <- gsub( "THROUGH .+$", "", x )
   x <- gsub( " THRU .*$", "", x )
-  x <- gsub( "THRU .*$", "", x )  # \B middle of a word
+  x <- gsub( "THRU .*$", "", x )  
   x <- gsub( " TO .+$", "", x ) 
   x <- gsub( " LEFT .*$", "", x )
+  x <- gsub( " START .*$", "", x )
   x <- gsub( " STARTED .*$", "", x )
   x <- gsub( " BEG .+$", "", x )
-  x <- gsub( " BEGINNING .+$", "", x )  
+  x <- gsub( " BEGINNING .+$", "", x ) 
   x <- gsub( " ENDED .*$", "", x )
+  x <- gsub( " END .+$", "", x )
   x <- gsub( " OUTGOING.*$", " OUTGOING", x ) 
   x <- gsub( "-OUTGOING.*$", " OUTGOING", x )
   x <- gsub( " RETIRED .*$", "", x ) 
   x <- gsub( " RET .*$", " ", x )
   x <- gsub( " RET$", "", x )
   x <- gsub( " TERMED.*$", "", x )
+  x <- gsub( " TERM END.*$", "", x )
   x <- gsub( " PART YEAR", "", x )
+  x <- gsub( " PART-YEAR", "", x )
   x <- gsub( " NON-VOTING.*$", "", x )
   x <- gsub( " .{3} - .{3}$", "", x )  # JUN - DEC
   x <- gsub( " .{3}-.{3}$", "", x )    # JUN-DEC
+  x <- gsub( "[0-9]+-[0-9]+", "", x )   # 1112-93012
   x <- gsub( "- ", "", x ) 
   x <- gsub( " -", "", x )
   x <- gsub( "-$", "", x )
+  x <- gsub( "\\BJR ", " JR ", x ) # \B middle of a word
+  x <- gsub( "\\BJR$", " JR", x )
 
   return(x)
 }
