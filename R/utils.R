@@ -3,6 +3,20 @@
 magrittr::`%>%`
 
 
+check_if_surname <- function( x )
+{
+   df <- get.census.data( x )
+   df$tot <- df$first_name_value + df$last_name_value
+   df$tot[ df$tot == 0 ] <- 1  # cant divide by zero
+   p.first <- df$first_name_value / df$tot 
+   p.surname <- df$last_name_value / df$tot
+   surname <- p.surname > 0.5
+   return( surname )
+}
+
+#' @export
+"check_if_surname"
+
 prx <- c("MR", "DR", "MISS", "MS", "MRS", 
          "MD", "RN", "DOCTOR", "DDS", "DMD", "OD",
          "SENATOR", "COMMISSIONER", "DELEGATE", 
