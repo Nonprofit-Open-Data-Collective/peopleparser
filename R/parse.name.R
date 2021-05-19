@@ -53,7 +53,7 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   x <- gsub( "THROUGH .+$", "", x )
   x <- gsub( " THRU .*$", "", x )
   x <- gsub( " TO .+$", "", x ) 
-  x <- gusb( " LEFT .*$", "", x )
+  x <- gsub( " LEFT .*$", "", x )
   x <- gsub( " STARTED .*$", "", x )
   x <- gsub( " BEG .+$", "", x )
   x <- gsub( " BEGINNING .+$", "", x )  
