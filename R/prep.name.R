@@ -24,17 +24,17 @@ prep.name <- function(x) {
 
   # clean-up compound words or abbreviations
   # with periods in the middle
-  x <- gsub( " PH D", " PHD", x )
-  x <- gsub( " PYS D", " PYSD", x )
-  x <- gsub( " ED D", " EDD", x ) 
-  x <- gsub( "LT GEN", "LTGEN", x )
-  x <- gsub( "EX OFFICIO", "EXOFFICIO", x )
-  x <- gsub( "EX-OFFICIO", "EXOFFICIO", x )
-  x <- gsub( "LO GRANDE", "LO-GRANDE", x )
-  x <- gsub( " VAN DER ", "VAN-DER-", x )
-  x <- gsub( " DE ", " DE-", x )  # DE LEEUW to DE-LEEUW
-  x <- gsub( "-DE ", "-DE-", x )  # BAILEY-DE LEEUW to BAILEY-DE-LEEUW
-  x <- gsub( " DI ", " DI-", x )  # Julia Di Bussolo  
+  return.value <- gsub( " PH D", " PHD", return.value )
+  return.value <- gsub( " PYS D", " PYSD", return.value )
+  return.value <- gsub( " ED D", " EDD", return.value ) 
+  return.value <- gsub( "LT GEN", "LTGEN", return.value )
+  return.value <- gsub( "EX OFFICIO", "EXOFFICIO", return.value )
+  return.value <- gsub( "EX-OFFICIO", "EXOFFICIO", return.value )
+  return.value <- gsub( "LO GRANDE", "LO-GRANDE", return.value )
+  return.value <- gsub( " VAN DER ", "VAN-DER-", return.value )
+  return.value <- gsub( " DE ", " DE-", return.value )  # DE LEEUW to DE-LEEUW
+  return.value <- gsub( "-DE ", "-DE-", return.value )  # BAILEY-DE LEEUW to BAILEY-DE-LEEUW
+  return.value <- gsub( " DI ", " DI-", return.value )  # Julia Di Bussolo  
   
   # dash compound last names
   n <- strsplit( return.value, ' ' )[[1]]
