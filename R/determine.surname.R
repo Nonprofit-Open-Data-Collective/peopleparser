@@ -31,6 +31,9 @@ determine.surname <- function( x )
     #    x <- x[x$ordinal %in% c(1, nrow(x)), ]
     # }
 
+    # ranks first cases with 100% last name occurence,
+    # second cases not found in the database at all,
+    # third order by relative occurence in last name position
     x <- 
     x %>% 
     dplyr::mutate( tot = first_name_value + last_name_value + 1,
