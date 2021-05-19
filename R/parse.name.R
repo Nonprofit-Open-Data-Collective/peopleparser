@@ -51,17 +51,25 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   l <- nchar(x)  # length of each element
   i <- length(x) # number of elements in the vector
   s <- 1 %in% l  
-
+  
     if (i == 3 & s) {
-        if (l[i] == 1) {
-            x <- x[c(2:i, 1)]
+        if ( l[i] == 1) {
+            x <- x[ c(2,3,1) ]
             l <- nchar(x)
         }
-        xx <- x[-3]
-        xx <- xx[nchar(xx) > 1]
+      
+        # flip first and last name if they are reversed
+        is.surname <- check_if_surname( x ) 
+        if ( l[i] == 2 & is.surname[1] & ! is.surname[3] ) {
+            x <- x[ c(3,2,1) ]
+            l <- nchar(x)
+        }
         first.name <- x[1]
         middle.name <- x[2]
         last.name <- x[3]
+      
+        xx <- x[-3]
+        xx <- xx[nchar(xx) > 1]
         if (length(xx) != 0) {
             working.set <- get.census.data(xx)
             gender <- determine.gender(working.set)
@@ -69,16 +77,6 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
         else {
             gender <- c("U", "0.0")
         }
-    } else if (i == 1) {
-        first.name <- ""
-        middle.name <- ""
-        last.name <- x[1]
-        gender <- c(ifelse(suffix.name != "", "M", "U"), "50.0")
-    } else if (i == 0) {
-        first.name <- ""
-        middle.name <- ""
-        last.name <- ""
-        gender <- c("U", "0.0")
     } else if (i == 2 ) {
         working.set <- get.census.data(x)
         surname.position <- determine.surname(working.set)
@@ -95,16 +93,30 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
           { gender <- c("M", "50.0") }
           gender[2] <- "50.0"
         }
+    } else if (i == 1) {
+        first.name <- ""
+        middle.name <- ""
+        last.name <- x[1]
+        gender <- c(ifelse(suffix.name != "", "M", "U"), "50.0")
+    } else if (i == 0) {
+        first.name <- ""
+        middle.name <- ""
+        last.name <- ""
+        gender <- c("U", "0.0")
+    # 3 or more cases
     } else {
+      
         working.set <- get.census.data(x)
         surname.position <- determine.surname(working.set)
         is.surname <- check_if_surname( x )
 
+        # case where two first names and written first name last 
         if( is.surname[1] & is.surname[2] & ! is.surname[3] )
         {
           last.name <- paste( x[1:2], collapse="-" )
           first.name <- x[3] 
-          middle.name <- paste( x[4:i], collapse=" " )
+          xx <- x[ -c(1:3) ]
+          middle.name <- paste( xx, collapse=" " )
         } else
         {
           last.name <- x[ surname.position ]
