@@ -35,6 +35,7 @@ prep.name <- function(x) {
   return.value <- gsub( " DE ", " DE-", return.value )  # DE LEEUW to DE-LEEUW
   return.value <- gsub( "-DE ", "-DE-", return.value )  # BAILEY-DE LEEUW to BAILEY-DE-LEEUW
   return.value <- gsub( " DI ", " DI-", return.value )  # Julia Di Bussolo  
+  return.value <- gsub( " MC .*$", " MC", return.value )
   
   # dash compound last names
   n <- strsplit( return.value, ' ' )[[1]]
