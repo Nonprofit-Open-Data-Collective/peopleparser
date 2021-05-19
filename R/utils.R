@@ -34,6 +34,7 @@ de_clutter <- function( x )
   x <- gsub( " EXECUTIV .*$", "", x )
   x <- gsub( " EXEC .*$", "", x )
   x <- gsub( " DIRECTOR .*$", "", x )  # DIRECTOR OF ...
+  x <- gsub( "EXECDIR.*$", "", x )
   x <- gsub( "-ED .*$", "", x )  # ED AS OF ...
   x <- gsub( " ED AS OF.*$", "", x ) 
   x <- gsub( "\\BPHD$", " PHD", x )  # \B middle of a word
@@ -71,6 +72,7 @@ de_clutter <- function( x )
   x <- gsub( " .{3}-.{3}$", "", x )    # JUN-DEC
   x <- gsub( "- ", "", x ) 
   x <- gsub( " -", "", x )
+  x <- gsub( "-$", "", x )
 
   return(x)
 }
