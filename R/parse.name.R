@@ -17,8 +17,11 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   x <- gsub( '.', ' ', x, fixed = TRUE )
   x <- toupper( x )
 
+  # remove nuisance phrases
+  x <- de_clutter( x )
+  
   # prepare name for parsing
-  x <- prep.name(x)
+  x <- prep.name( x )
 
   # split words in to vector
   x <- strsplit( x,' ')[[1]]
