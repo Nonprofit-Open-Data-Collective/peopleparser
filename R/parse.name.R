@@ -72,6 +72,7 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   # clean-up
   x <- gsub( " PH D", " PHD", x )
   x <- gsub( " PYS D", " PYSD", x )
+  x <- gsub( " ED D", " EDD", x ) 
   x <- gsub( "LT GEN", "LTGEN", x )
   x <- gsub( "EX OFFICIO", "EXOFFICIO", x )
   x <- gsub( "EX-OFFICIO", "EXOFFICIO", x )
@@ -113,83 +114,119 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   i <- length(x) # number of elements in the vector
   s <- 1 %in% l  
 
-  #
-  if (i == 3 & s) {
-
-    # and the last character is a single letter, flip names with far right initial
-    if (l[i] == 1) {
-      x <- x[c(2:i,1)]
-      l <- nchar(x)  # length of each element
-    }
-
-    # remove the last element, and any single character elements as they wont be in the census matrix
-    xx <- x[-3]
-    xx <- xx[nchar(xx) > 1]
-
-    #
-
-    # define names
-    first.name <- x[1]
-    middle.name <- x[2]
-    last.name <- x[3]
-
-    # define gender
-    if (length(xx) != 0) {
-      working.set <- get.census.data(xx)
-      gender <- determine.gender(working.set)
+     if (i == 3 & s) {
+        if (l[i] == 1) {
+            x <- x[c(2:i, 1)]
+            l <- nchar(x)
+        }
+        xx <- x[-3]
+        xx <- xx[nchar(xx) > 1]
+        first.name <- x[1]
+        middle.name <- x[2]
+        last.name <- x[3]
+        if (length(xx) != 0) {
+            working.set <- get.census.data(xx)
+            gender <- determine.gender(working.set)
+        }
+        else {
+            gender <- c("U", "0.0")
+        }
+    } else if (i == 1) {
+        first.name <- ""
+        middle.name <- ""
+        last.name <- x[1]
+        gender <- c(ifelse(suffix.name != "", "M", "U"), "50.0")
+    } else if (i == 0) {
+        first.name <- ""
+        middle.name <- ""
+        last.name <- ""
+        gender <- c("U", "0.0")
     } else {
-      gender <- c('U','0.0')
+        working.set <- get.census.data(x)
+        surname.position <- determine.surname(working.set)
+        is.surname <- check_if_surname( x )
+
+        if( is.surname[1] & is.surname[2] & ! is.surname[3] )
+        {
+          last.name <- paste( x[1:2], collapse="-" )
+          first.name <- x[3] 
+          middle.name <- paste( x[4:i], collapse=" " )
+        } else
+        {
+          last.name <- x[ surname.position ]
+          xx <- x[ - surname.position ]
+          first.name <- xx[1]
+          middle.name <- paste( xx[ 2:length(xx) ], collapse=" " )
+        }
+          working.set <- working.set[ - surname.position , ]
+          gender <- determine.gender(working.set)
+          if (gender[1] == "U") 
+          {
+            if (suffix.name != "") 
+            { gender <- c("M", "50.0") }
+            gender[2] <- "50.0"
+          }
     }
 
-  }
-  # if the name contains only a single word, use it as the last name
-  else if (i == 1) {
-    first.name <- ''
-    middle.name <- ''
-    last.name <- x[1]
-    gender <- c(ifelse(suffix.name != '', 'M', 'U'),'50.0')
-  }
-  # if there is an empty vector, return empty strings
-  else if (i == 0) {
-    first.name <- ''
-    middle.name <- ''
-    last.name <- ''
-    gender <- c('U','0.0')
-  }
-  #
-  else {
 
-    # load census data for all name parts
-    working.set <- get.census.data(x)
 
-    # get surname insight, and remove from name vector
-    surname.findings <- determine.surname(working.set)
-    xx <- x[-(surname.findings[1])]
 
-    # remove surname from name vector
-    working.set <- working.set[-(surname.findings[1]), ]
 
-    # define names and gender
-    i <- length(xx)
-    first.name <- xx[1]
-    middle.name <- trimws(ifelse(i >= 2, paste(xx[2:length(xx)], '', collapse = ' '), ''))
-    last.name <- x[surname.findings[1]]
-    gender <- determine.gender(working.set)
+  # CHECK IF MIDDLE NAMES SHOULD BY
+  # HYPHENATED PART OF LAST NAME 
+  if( nchar(middle.name) > 2 )
+  {
+      # split words in to vector
+      mn <- strsplit( middle.name,' ')[[1]]
 
-    if (gender[1] == 'U') {
-      if (suffix.name != '') {
-        gender <- c('M','50.0')
+
+      if( length(mn) == 1 )
+      {
+        if( check_if_surname( mn ) )
+        { 
+           last.name <- paste( c(middle.name,last.name), collapse="-" )
+           middle.name <- ""
+        }
+      } 
+
+      if( length(mn) > 1 )
+      {
+         # one initial plus longer names
+         if( nchar( mn[1] ) == 1 & nchar( mn[2] ) > 1 )
+         { 
+            last.name <- paste0( paste( mn[2:length(mn)], collapse = '-'), '-', last.name )
+            middle.name <- mn[1]
+         }
+
+
+         if( nchar( mn[1] ) > 1 )
+         {
+             is.surname <- check_if_surname( mn )
+             
+             if( sum(is.surname) > 0  )
+             {
+                start.here <- min(which( is.surname == TRUE  ))
+
+                if( start.here > 1 )
+                {
+                   middle.name <- paste( mn[1:(start.here-1)], collapse = ' ')
+                   last.name <- paste0( paste( mn[start.here:length(mn)], collapse = '-'), '-', last.name )
+                }
+
+                if( start.here == 1 )
+                {
+                   middle.name <- ""
+                   last.name <- paste0( paste( mn[1:length(mn)], collapse = '-'), '-', last.name )
+                }
+
+             }
+         }
+
       }
-      gender[2] <- '50.0'
-    }
 
+      
   }
 
-  # if( nchar(middle.name) > 2 )
-  # {
-  #     # split words in to vector
-  #     mn <- strsplit( middle.name,' ')[[1]]
-  # }
   
   # build return value
   rv <- paste( c(salutation.name, first.name, middle.name, last.name, 
