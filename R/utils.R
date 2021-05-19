@@ -6,10 +6,11 @@ magrittr::`%>%`
 check_if_surname <- function( x )
 {
    df <- get.census.data( x )
-   df$tot <- df$first_name_value + df$last_name_value
-   df$tot[ df$tot == 0 ] <- 1  # cant divide by zero
-   p.first <- df$first_name_value / df$tot 
-   p.surname <- df$last_name_value / df$tot
+   tot <- df$first_name_value + df$last_name_value
+   tot[ tot == 0 ] <- 1  # cant divide by zero
+   p.first <- df$first_name_value / tot 
+   p.surname <- df$last_name_value / tot
+   p.surname[ tot == 1 ] <- 1
    surname <- p.surname > 0.5
    return( surname )
 }
