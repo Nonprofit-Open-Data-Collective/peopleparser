@@ -22,6 +22,20 @@ prep.name <- function(x) {
   # remove dup'd spaces
   return.value <- trim.spaces( return.value )
 
+  # clean-up compound words or abbreviations
+  # with periods in the middle
+  x <- gsub( " PH D", " PHD", x )
+  x <- gsub( " PYS D", " PYSD", x )
+  x <- gsub( " ED D", " EDD", x ) 
+  x <- gsub( "LT GEN", "LTGEN", x )
+  x <- gsub( "EX OFFICIO", "EXOFFICIO", x )
+  x <- gsub( "EX-OFFICIO", "EXOFFICIO", x )
+  x <- gsub( "LO GRANDE", "LO-GRANDE", x )
+  x <- gsub( " VAN DER ", "VAN-DER-", x )
+  x <- gsub( " DE ", " DE-", x )  # DE LEEUW to DE-LEEUW
+  x <- gsub( "-DE ", "-DE-", x )  # BAILEY-DE LEEUW to BAILEY-DE-LEEUW
+  x <- gsub( " DI ", " DI-", x )  # Julia Di Bussolo  
+  
   # dash compound last names
   n <- strsplit( return.value, ' ' )[[1]]
   zz <- c( 'LA','VON','VAN','DEL','DE' )
