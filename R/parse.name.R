@@ -52,24 +52,30 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   i <- length(x) # number of elements in the vector
   s <- 1 %in% l  
   
-    if (i == 3 & s) {
-        if ( l[i] == 1) {
+    # case with three names and one initial
+    if ( i == 3 & sum(s) == 1 ) {
+      
+        is.surname <- check_if_surname( x ) 
+        # if initial is in middle and first+last names reversed, use initial as first name
+        if ( l[2] == 1 & is.surname[1] & ! is.surname[3] ) {
             x <- x[ c(2,3,1) ]
             l <- nchar(x)
         }
       
-        # flip first and last name if they are reversed
-        is.surname <- check_if_surname( x ) 
-        if ( l[i] == 2 & is.surname[1] & ! is.surname[3] ) {
-            x <- x[ c(3,2,1) ]
+        # if initial in last position, move last_name to end
+        if ( l[i] == 1 ) {
+            x <- x[ c(2,3,1) ]
             l <- nchar(x)
         }
-        first.name <- x[1]
-        middle.name <- x[2]
-        last.name <- x[3]
       
+        first.name  <- x[1]
+        middle.name <- x[2]
+        last.name   <- x[3]
+      
+        # remove last name and initial
         xx <- x[-3]
         xx <- xx[nchar(xx) > 1]
+      
         if (length(xx) != 0) {
             working.set <- get.census.data(xx)
             gender <- determine.gender(working.set)
@@ -77,6 +83,17 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
         else {
             gender <- c("U", "0.0")
         }
+    # 3 names, 2 are initials 
+    } else if ( i == 3 & sum(s) == 2 & sum( l > 1 ) > 0 ) {
+      
+        position.last <- which( l > 1 )
+        last.name   <- x[ position.last ]
+        xx <- x[ - position.last ]
+        first.name  <- xx[1]
+        middle.name <- xx[2]
+        # last name only, can't determine gender
+        gender <- c("U", "0.0")
+      
     } else if (i == 2 ) {
         working.set <- get.census.data(x)
         surname.position <- determine.surname(working.set)
@@ -103,7 +120,7 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
         middle.name <- ""
         last.name <- ""
         gender <- c("U", "0.0")
-    # 3 or more cases
+    # 3 full names or more than 3 cases
     } else {
       
         working.set <- get.census.data(x)
