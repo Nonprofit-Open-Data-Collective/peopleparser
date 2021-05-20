@@ -32,6 +32,7 @@ de_clutter <- function( x )
   x <- gsub( " PRESID.*$", "", x )
   x <- gsub( "PRESCEO", "", x )
   x <- gsub( " EXECUTIVE .*$", "", x )
+  x <- gsub( "EXECUTIVE.*$", "", x )
   x <- gsub( " EXECUTIV .*$", "", x )
   x <- gsub( " EXEC .*$", "", x )
   x <- gsub( " DIRECTOR .*$", "", x )  # DIRECTOR OF ...
