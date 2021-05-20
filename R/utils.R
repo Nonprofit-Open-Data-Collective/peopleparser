@@ -77,6 +77,7 @@ de_clutter <- function( x )
   x <- gsub( " PART YEAR", "", x )
   x <- gsub( " PART-YEAR", "", x )
   x <- gsub( " NON-VOTING.*$", "", x )
+  x <- gsub( "HOUSING INDUSTRY.*$", "", x )
   x <- gsub( " .{3} - .{3}$", "", x )  # JUN - DEC
   x <- gsub( " .{3}-.{3}$", "", x )    # JUN-DEC
   x <- gsub( "[0-9]+-[0-9]+", "", x )   # 1112-93012
