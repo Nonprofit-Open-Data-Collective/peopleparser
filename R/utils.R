@@ -24,6 +24,7 @@ de_clutter <- function( x )
   # remove common noise strings
   x <- gsub( "SEE SCHEDULE .*$", "", x )
   x <- gsub( "SEE SCH .*$", "", x ) 
+  x <- gsub( "SCHEDULE.*$", "", x )
   x <- gsub( "\\BSCH [A-Z]{1}.*$", "", x )
   x <- gsub( " SCH .*$", "", x )
   x <- gsub( " PG ", "", x )  # page
@@ -87,7 +88,9 @@ de_clutter <- function( x )
   x <- gsub( " AKA .*$", "", x ) 
   x <- gsub( "HOUSING INDUSTRY.*$", "", x )
   x <- gsub( " .{3} - .{3}$", "", x )  # JUN - DEC
+  x <- gsub( " .{3} - .{3} [0-9]{2,4}.*$", "", x )  # JUN - DEC YYYY
   x <- gsub( " .{3}-.{3}$", "", x )    # JUN-DEC
+  x <- gsub( " .{3}-.{3} [0-9]{2,4}.*$", "", x )    # JUN-DEC YYYY
   x <- gsub( " [A-Z]{3}-?[0-9]+.*$", "", x  ) # FEB-2017 or Jun17
   x <- gsub( "[0-9]+-[0-9]+", "", x )   # 1112-93012
   x <- gsub( "- ", "", x ) 
