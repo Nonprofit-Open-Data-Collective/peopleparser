@@ -80,6 +80,7 @@ de_clutter <- function( x )
   x <- gsub( "HOUSING INDUSTRY.*$", "", x )
   x <- gsub( " .{3} - .{3}$", "", x )  # JUN - DEC
   x <- gsub( " .{3}-.{3}$", "", x )    # JUN-DEC
+  x <- gsub( " [A-Z]{3}-?[0-9]+.*$", "", x  ) # FEB-2017 or Jun17
   x <- gsub( "[0-9]+-[0-9]+", "", x )   # 1112-93012
   x <- gsub( "- ", "", x ) 
   x <- gsub( " -", "", x )
