@@ -93,6 +93,32 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
         middle.name <- xx[2]
         # last name only, can't determine gender
         gender <- c("U", "0.0")
+
+    # 3 names no initials 
+    } else if ( i == 3 & sum(s) == 0  ) {
+      
+        is.surname <- check_if_surname( x )
+      
+        # first name last, two last names 
+        if( is.surname[1] == TRUE & is.surname[2] == TRUE & is.surname[3] == FALSE )
+        {
+          x <- x[ c(3,1,2) ]
+          l <- nchar(x)
+        }
+        
+        # first name middle,  last name first 
+        if( is.surname[1] == TRUE & is.surname[2] == FALSE )
+        {
+          x <- x[ c(2,3,1) ]
+          l <- nchar(x)
+        } 
+ 
+        first.name  <- x[1]
+        middle.name <- x[2]
+        last.name   <- x[3]   
+      
+        working.set <- get.census.data( x[-3] )
+        gender <- determine.gender(working.set)
       
     } else if (i == 2 ) {
         working.set <- get.census.data(x)
