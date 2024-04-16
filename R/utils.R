@@ -63,6 +63,7 @@ de_clutter <- function( x )
   x <- gsub( "THRU .*$", "", x )  
   x <- gsub( " TO .+$", "", x ) 
   x <- gsub( " LEFT .*$", "", x )
+  x <- gsub( " HIRED .*$", "", x )
   x <- gsub( " START .*$", "", x )
   x <- gsub( " STARTED .*$", "", x )
   x <- gsub( " BEG .+$", "", x )
@@ -97,6 +98,7 @@ de_clutter <- function( x )
   x <- gsub( "-$", "", x )
   x <- gsub( "\\BJR ", " JR ", x ) # \B middle of a word
   x <- gsub( "\\BJR$", " JR", x )
+  x <- gsub( " OF ", " ", x )
 
   return(x)
 }
@@ -107,14 +109,17 @@ de_clutter <- function( x )
 
 prx <- c("MR", "DR", "MISS", "MS", "MRS", 
          "MD", "RN", "DOCTOR", "DDS", "DMD", "OD",
-         "SENATOR", "COMMISSIONER", "DELEGATE", 
+         "SENATOR", "CONGRESSMAN","AMBASSADOR","GOVERNOR","MAYOR", 
+         "COMMISSIONER", "DELEGATE","SUPERINTENDENT", 
          "PHD", "MBA", "CFA", "CPA",
          "FACS", "SH1", "EN1", "LCRD", "FSPA",
+         "JUDGE","THE HONORABLE","HONORABLE","HON",
          "REV", "REVEREND", "PASTOR", "FR", "FATHER",
+         "SUPREME",
          "MPH", "JD", "ESQ", "RPH", "THD",
          "EX-OFFICIO", "OFFICIO", "PAST", "ST", "CSSF",
-         "COL", "COLONEL", 
-         "VP", "PRES" )
+         "COL", "COLONEL","LT COL", 
+         "VP", "PRES","OFFICER" )
 
 
 sfx <- c( "JR","JUNIOR","SR","SENIOR","II", "III", "IV" )
@@ -128,8 +133,8 @@ sfx <- c( "JR","JUNIOR","SR","SENIOR","II", "III", "IV" )
 
 
 names.1000 <- 
-c("KAREN TILLER", "AARON JOHNSON", "DR ADRIANA CONTRERAS", "LEE NESLER", 
-"JOHN ERIC SMITH", "CHRISTOPHER EATON", "LINDA FRENETTE", "CHARLES MATTINGLY", 
+c("JUDGE KAREN TILLER", "KAREN JUDGE", "KAREN TILLER, JUDGE", "AARON JOHNSON", "DR ADRIANA CONTRERAS", "LEE NESLER", 
+"JOHN ERIC SMITH", "Smith, JOHN ERIC", "JOHN ERIC SMITH JR", "CHRISTOPHER EATON", "LINDA FRENETTE", "CHARLES MATTINGLY", 
 "JACK CAMPBELL", "JANET E SCHULTE", "ALVA STRIPLIN", "RYAN MCCOY", 
 "Jon Stone", "SARAH HAMMOND", "WINIFRED WILSON", "Willow Thorpe", 
 "RACHEL BRUNING", "KARI L ROSBECK", "CARMELO CINQUEONCE", "JESSICA PADILLA-GONZALEZ", 
