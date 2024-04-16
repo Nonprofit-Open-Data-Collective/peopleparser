@@ -22,6 +22,7 @@ de_clutter <- function( x )
 {
   # convert to de_clutter() function: 
   # remove common noise strings
+  x <- gsub( " - [A-Z]{1,}.*$", "", x )  # ROBERT NAGLE - SMFA BOARD OF
   x <- gsub( "SEE SCHEDULE .*$", "", x )
   x <- gsub( "SEE SCH .*$", "", x ) 
   x <- gsub( "SCHEDULE.*$", "", x )
