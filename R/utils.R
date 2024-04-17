@@ -119,7 +119,8 @@ prx <- c("MR", "DR", "MISS", "MS", "MRS",
          "SUPREME",
          "MPH", "JD", "ESQ", "RPH", "THD",
          "EX-OFFICIO", "OFFICIO", "PAST", "ST", "CSSF",
-         "COL", "COLONEL","LT COL", 
+         "COL", "COLONEL","LT COL",
+         "USAF", "USA",
          "VP", "PRES","OFFICER" )
 
 
