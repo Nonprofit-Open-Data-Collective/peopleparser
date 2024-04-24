@@ -100,6 +100,7 @@ de_clutter <- function( x )
   x <- gsub( "\\BJR ", " JR ", x ) # \B middle of a word
   x <- gsub( "\\BJR$", " JR", x )
   x <- gsub( " OF ", " ", x )
+  x <- gsub( "^THE ", "", x )
 
   return(x)
 }
@@ -114,7 +115,7 @@ prx <- c("MR", "DR", "MISS", "MS", "MRS",
          "COMMISSIONER", "DELEGATE","SUPERINTENDENT", 
          "PHD", "MBA", "CFA", "CPA",
          "FACS", "SH1", "EN1", "LCRD", "FSPA",
-         "JUDGE","THE HONORABLE","HONORABLE","HON",
+         "JUDGE","THE HON", "THE HONORABLE","HONORABLE","HON",
          "REV", "REVEREND", "PASTOR", "FR", "FATHER",
          "SUPREME",
          "MPH", "JD", "ESQ", "RPH", "THD",
