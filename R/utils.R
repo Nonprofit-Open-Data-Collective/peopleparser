@@ -77,7 +77,7 @@ de_clutter <- function( x )
   x <- gsub( "LAST DAY.*$", "", x )
   x <- gsub( " RETIRED .*$", "", x ) 
   x <- gsub( " RET .*$", " ", x )
-  x <- gsub( " RET$", "", x )
+  x <- gsub( " RET$", "", x )  # JACK H JACOBS USA RET
   x <- gsub( "-RESIGNED.*$", "", x )
   x <- gsub( "RESIGNED.*$", "", x )
   x <- gsub( " TERMED.*$", "", x )
@@ -114,14 +114,15 @@ prx <- c("MR", "DR", "MISS", "MS", "MRS",
          "SENATOR", "CONGRESSMAN","AMBASSADOR","GOVERNOR","MAYOR", 
          "COMMISSIONER", "DELEGATE","SUPERINTENDENT", 
          "PHD", "MBA", "CFA", "CPA",
+         "PE", # professional engineer
          "FACS", "SH1", "EN1", "LCRD", "FSPA",
          "JUDGE","THE HON", "THE HONORABLE","HONORABLE","HON",
-         "REV", "REVEREND", "PASTOR", "FR", "FATHER",
+         "REV", "REVEREND", "PASTOR", "FR", "FATHER", "ZL",
          "SUPREME",
          "MPH", "JD", "ESQ", "RPH", "THD",
          "EX-OFFICIO", "OFFICIO", "PAST", "ST", "CSSF",
          "COL", "COLONEL","LT COL",
-         "USAF", "USA",
+         "USAF", "USA", "TXSG",
          "VP", "PRES","OFFICER" )
 
 
