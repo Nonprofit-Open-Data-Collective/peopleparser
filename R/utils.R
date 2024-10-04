@@ -24,10 +24,11 @@ de_clutter <- function( x )
   # remove common noise strings
   x <- gsub( " - [A-Z]{1,}.*$", "", x )  # ROBERT NAGLE - SMFA BOARD OF
   x <- gsub( "SEE SCHEDULE .*$", "", x )
-  x <- gsub( "SEE SCH .*$", "", x ) 
-  x <- gsub( "SCHEDULE.*$", "", x )
-  x <- gsub( "\\BSCH [A-Z]{1}.*$", "", x )
+  x <- gsub( "SEE SCH .*$", "", x )
+  x <- gsub( "\\bSCH [A-Z]{1}$", "", x ) # SCH A/B/C
+  x <- gsub( "\\bSCH [A-Z]{1} ", "", x ) # SCH A/B/C
   x <- gsub( " SCH .*$", "", x )
+  x <- gsub( "SCHEDULE.*$", "", x )
   x <- gsub( " PG ", "", x )  # page
   x <- gsub( " PAST .*$", " PAST", x )
   x <- gsub( "-PAST .*$", " PAST", x ) 
