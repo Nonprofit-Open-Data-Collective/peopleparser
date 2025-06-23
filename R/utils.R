@@ -2,7 +2,8 @@
 #' @export
 magrittr::`%>%`
 
-
+#' Check if the string is a recognized surname
+#' @export
 check_if_surname <- function( x )
 {
    df <- get.census.data( x )
@@ -15,9 +16,8 @@ check_if_surname <- function( x )
    return( surname )
 }
 
+#' Remove nuissance text from the name
 #' @export
-"check_if_surname"
-
 de_clutter <- function( x )
 {
   # convert to de_clutter() function: 
@@ -105,9 +105,6 @@ de_clutter <- function( x )
 
   return(x)
 }
-
-#' @export
-"de_clutter"
 
 
 prx <- c("MR", "DR", "MISS", "MS", "MRS", 
@@ -420,3 +417,8 @@ c("MICHAEL CRINNIN", "Janet Lotter", "JAMES NARDELLA", "JENNIFER BICKETT",
 "MARCO IBARRA", "Dennis Bradshaw", "FRANK WILLIS", "Jennifer L Sullivan", 
 "clifford harmon", "MR DAN CUTHRIELL", "ROBERT WILLIAMS")
 
+#' @export
+"names.1000"
+
+#' @export
+"names.100"
