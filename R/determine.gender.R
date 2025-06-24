@@ -3,13 +3,13 @@
 #' This function returns
 #' @param x Provide the character vector to parse.
 #' @keywords gener
-#' @export
 #' @examples
 #' x <- 'livingston III,  Mr. MICHAEL JOHN9'
 #' x <- prep.name(x)
 #' x <- strsplit(x,' ')[[1]]
 #' cd <- get.census.data(x)
 #' determine.gender(cd)
+#' @export
 determine.gender <- function(x) {
 
   male.count <- sum(x[ , 3])

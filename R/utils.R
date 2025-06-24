@@ -106,7 +106,8 @@ de_clutter <- function( x )
   return(x)
 }
 
-
+#' List of known prefix strings
+#' @export
 prx <- c("MR", "DR", "MISS", "MS", "MRS", 
          "MD", "RN", "DOCTOR", "DDS", "DMD", "OD",
          "SENATOR", "CONGRESSMAN","AMBASSADOR","GOVERNOR","MAYOR", 
@@ -123,17 +124,13 @@ prx <- c("MR", "DR", "MISS", "MS", "MRS",
          "USAF", "USA", "TXSG",
          "VP", "PRES","OFFICER" )
 
-
+#' List of known suffix strings
+#' @export
 sfx <- c( "JR","JUNIOR","SR","SENIOR","II", "III", "IV" )
 
 
+#' Sample of 1,000 names for testing purposes
 #' @export
-"prx"
-
-#' @export
-"sfx"
-
-
 names.1000 <- 
 c("JUDGE KAREN TILLER", "KAREN JUDGE", "KAREN TILLER, JUDGE", "AARON JOHNSON", "DR ADRIANA CONTRERAS", "LEE NESLER", 
 "JOHN ERIC SMITH", "Smith, JOHN ERIC", "JOHN ERIC SMITH JR", "CHRISTOPHER EATON", "LINDA FRENETTE", "CHARLES MATTINGLY", 
@@ -390,6 +387,9 @@ c("JUDGE KAREN TILLER", "KAREN JUDGE", "KAREN TILLER, JUDGE", "AARON JOHNSON", "
 "CHERYL ANDREWS", "VIRGIL JONES", "Carol Lord", "RHONDA RENFRO", 
 "FREDRICK REESE", "FREDERICK RUNDLET", "CECI CONNOLLY")
 
+
+#' Sample of 100 names for testing purposes
+#' @export
 names.100 <- 
 c("MICHAEL CRINNIN", "Janet Lotter", "JAMES NARDELLA", "JENNIFER BICKETT", 
 "TED LEWIS", "ELIZABETH VINCENT", "DEBORAH SCHMELL", "MARK WELLER", 
@@ -417,8 +417,3 @@ c("MICHAEL CRINNIN", "Janet Lotter", "JAMES NARDELLA", "JENNIFER BICKETT",
 "MARCO IBARRA", "Dennis Bradshaw", "FRANK WILLIS", "Jennifer L Sullivan", 
 "clifford harmon", "MR DAN CUTHRIELL", "ROBERT WILLIAMS")
 
-#' @export
-"names.1000"
-
-#' @export
-"names.100"
