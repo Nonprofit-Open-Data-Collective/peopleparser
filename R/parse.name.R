@@ -238,7 +238,7 @@ parse.name <- function( x, prefixes=prx, suffixes=sfx ) {
   }
 
   # if first name is JD or Ed then recover from prefix category
-  if( salutation.name %in% c("JD","ED") & first.name == "" )
+  if( salutation.name %in% c("JD","ED","JR") & first.name == "" )
   {
      first.name <- salutation.name
      salutation.name <- ""

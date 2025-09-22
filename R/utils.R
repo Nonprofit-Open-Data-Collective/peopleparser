@@ -22,6 +22,8 @@ de_clutter <- function( x )
 {
   # convert to de_clutter() function: 
   # remove common noise strings
+  
+  x <- gsub( "\\bSEE STMT\\b", "", x )
   x <- gsub( " - [A-Z]{1,}.*$", "", x )  # ROBERT NAGLE - SMFA BOARD OF
   x <- gsub( "SEE SCHEDULE .*$", "", x )
   x <- gsub( "SEE SCH .*$", "", x )
@@ -122,7 +124,8 @@ prx <- c("MR", "DR", "MISS", "MS", "MRS",
          "EX-OFFICIO", "OFFICIO", "PAST", "ST", "CSSF",
          "COL", "COLONEL","LT COL",
          "USAF", "USA", "TXSG",
-         "VP", "PRES","OFFICER" )
+         "VP", "PRES","OFFICER",
+         "AIA" )
 
 #' List of known suffix strings
 #' @export
