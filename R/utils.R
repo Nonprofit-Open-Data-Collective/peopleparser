@@ -23,6 +23,7 @@ de_clutter <- function( x )
   # convert to de_clutter() function: 
   # remove common noise strings
   
+  x <- gsub( "MR .* MRS", "", x )   # MR AND MRS PATRICK VETERS
   x <- gsub( "\\bSEE STMT\\b", "", x )
   x <- gsub( " - [A-Z]{1,}.*$", "", x )  # ROBERT NAGLE - SMFA BOARD OF
   x <- gsub( "SEE SCHEDULE .*$", "", x )
@@ -110,22 +111,30 @@ de_clutter <- function( x )
 
 #' List of known prefix strings
 #' @export
-prx <- c("MR", "DR", "MISS", "MS", "MRS", 
-         "MD", "RN", "DOCTOR", "DDS", "DMD", "OD",
-         "SENATOR", "CONGRESSMAN","AMBASSADOR","GOVERNOR","MAYOR", 
-         "COMMISSIONER", "DELEGATE","SUPERINTENDENT", 
-         "PHD", "MBA", "CFA", "CPA",
-         "PE", # professional engineer
-         "FACS", "SH1", "EN1", "LCRD", "FSPA",
-         "JUDGE","THE HON", "THE HONORABLE","HONORABLE","HON",
-         "REV", "REVEREND", "PASTOR", "FR", "FATHER", "ZL",
-         "SUPREME",
-         "MPH", "JD", "ESQ", "RPH", "THD",
-         "EX-OFFICIO", "OFFICIO", "PAST", "ST", "CSSF",
-         "COL", "COLONEL","LT COL",
-         "USAF", "USA", "TXSG",
-         "VP", "PRES","OFFICER",
-         "AIA" )
+prx <- 
+c("MR", "DR", "MISS", "MS", "MRS", "MD", "RN", "DOCTOR", "DDS", 
+"DMD", "OD", "SENATOR", "CONGRESSMAN", "AMBASSADOR", "GOVERNOR", 
+"MAYOR", "COMMISSIONER", "DELEGATE", "SUPERINTENDENT", "PHD", 
+"PROF", "MBA", "CFA", "CPA", "PE", "FACS", "SH1", "EN1", "LCRD", 
+"FSPA", "JUDGE", "THE HON", "THE HONORABLE", "HONORABLE", "HON", 
+"REV", "REVEREND", "PASTOR", "FR", "FATHER", "SISTER", 
+"ZL", "SUPREME", 
+"MPH", "JD", "ESQ", "RPH", "THD", "EX-OFFICIO", "OFFICIO", "PAST", 
+"ST", "CSSF", "COL", "COLONEL", "LT COL", 
+"MAJOR GENERAL", "MAJOR", "GENERAL", "USAF", "USA", "TXSG", 
+"VP", "PRES", "OFFICER", 
+"ALLIED MEMBER", "MEMBER", "DIRECTOR", 
+"AIA", "AP", "BG", "BS", "CO", "DO", 
+"EX", "FC", "HE", "LA", "LL", "LT", "MG", "PA", "RT", "TG", 
+"WM", "AAS", "ABR", "CEO", "CFO", "CFP", "CPT", "CRS", "CSC", 
+"CTP", "CW5", "DEF", "DEP", "DNP", "DVM", "EDD", "EFF", "GEN", 
+"GRI", "LTC", "LTG", "MAJ", "MED", "MHS", "MLN", "MSC", "MSM", 
+"MSN", "MSW", "RET", "SEC", "SGM", "SGT", "SIS", "THE", "USN", 
+"VMD", "ARNG", "BRIG GEN", "BRIG", "CAPT", "CHES", "CIMA", "CIPS", 
+"COMP", "DRPH", "EADE", "EARL", "MCPO", "MSGR", "NYNG", "RPLU", 
+"USAR", "VERY REV", "VERY REVEREND", "USCG", "USMC", "VERY", 
+"ZOLA", "FACMPE")
+
 
 #' List of known suffix strings
 #' @export

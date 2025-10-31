@@ -9,7 +9,7 @@
 #' @examples
 #' x <- c('MICHAEL','JOHN','LIVINGSTON','III')
 #' remove.elements(x, c('JR','II','III','IV'))
-remove.elements <- function(x, remove.this) {
+remove_elements <- function(x, elements) {
 
   removed <- x[x %in% remove.this]
   if (length(removed)==0) {

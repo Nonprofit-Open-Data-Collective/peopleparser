@@ -1,4 +1,4 @@
-#  parse_name.R
+#  parse_one_name.R
 #  +-- sanitize_input       # text cleaning
 #  +-- extract_component    # prefix/suffix/temp removal
 #  +-- assign_names         # core parsing logic
@@ -19,7 +19,7 @@ sanitize_input <- function( x ) {
   x <- gsub( '.', ' ', x, fixed = TRUE )
   x <- toupper( x )
   x <- de_clutter( x )
-  prep.name( x )
+  prep_name( x )
 }
 
 
@@ -159,22 +159,22 @@ resolve_middle_name <- function( middle, last ) {
 #'
 #' @examples
 #' parse.name("LIVINGSTON III MICHAEL JOHN")
-parse.name <- function( x, prefixes = prx, suffixes = sfx ) {
-  x <- sanitize_input( x[1] )
-  x <- strsplit( x, ' ' )[[1]]
+parse_name <- function( x, prefixes = prx, suffixes = sfx, sanitize=F ) {
+  if( sanitize ){x <- sanitize_input( x ) }
+  Lx <- strsplit( x, ' ' ) |> unlist()   # strsplit( x, ' ' )[[1]]
 
-  salutation.out <- extract_component( x, prefixes )
-  salutation.name <- salutation.out$name; x <- salutation.out$remainder
+  salutation.out <- extract_component( Lx, prefixes )
+  salutation.name <- salutation.out$name; Lx <- salutation.out$remainder
 
-  suffix.out <- extract_component( x, suffixes )
-  suffix.name <- suffix.out$name; x <- suffix.out$remainder
+  suffix.out <- extract_component( Lx, suffixes )
+  suffix.name <- suffix.out$name; Lx <- suffix.out$remainder
 
-  status.out <- extract_component( x, c("-RESIGNED", "RESIGNED", "INTERIM", "EXOFFICIO",
+  status.out <- extract_component( Lx, c("-RESIGNED", "RESIGNED", "INTERIM", "EXOFFICIO",
                                         "FORMER", "PAST", "DECEASED", "RETIRED", "OUTGOING",
                                         "ASOF", "TEMPORARY", "THRU", "THROUGH", "PRESENT") )
-  status <- status.out$name; x <- status.out$remainder
+  status <- status.out$name; Lx <- status.out$remainder
 
-  name.parts <- assign_names( x, suffix.name )
+  name.parts <- assign_names( Lx, suffix.name )
   first.name <- name.parts$first
   middle.name <- name.parts$middle
   last.name <- name.parts$last
@@ -198,6 +198,16 @@ parse.name <- function( x, prefixes = prx, suffixes = sfx ) {
     last.name <- gsub( "^MAY-", "", last.name )
   }
 
-  paste( c( salutation.name, first.name, middle.name, last.name,
-            suffix.name, status, gender[1], gender[2] ), collapse = "|" )
+c('name','salutation','first_name','middle_name', 'last_name',
+                             'suffix', 'status', 'gender', 'gender_confidence')
+                             
+  data.frame( 
+    salutation=salutation.name, 
+    first_name=first.name, 
+    middle_name=middle.name, 
+    last_name=last.name,
+    suffix=suffix.name, 
+    status=status, 
+    gender=gender[1], 
+    gender_confidence=gender[2] )
 }
