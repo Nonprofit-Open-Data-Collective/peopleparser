@@ -145,6 +145,126 @@ resolve_middle_name <- function( middle, last ) {
 }
 
 
+# --- Tokenizer repairs for glued tokens ------------------------------------
+# Addresses Defects 2 & 3 in data-raw/PARSE-FAIL-NOTES.md: a title or a stray
+# initial that lost its separating space and fused onto the next token. Every
+# split is gated on census evidence so real names are never broken apart.
+
+# Personal-title honorifics eligible to be un-glued from a following given name.
+.honorific_glue_prefixes <- c("MRS", "MISS", "MR", "MS", "DR")
+.initial_consonants <- strsplit("BCDFGHJKLMNPQRSTVWXZ", "")[[1]]
+# A remainder must clear these census counts to count as a real name. Given
+# names in the census run to the millions; the flagged surnames (e.g. WOOLFOLK,
+# ~3.3k) sit lower, so the surname bar is deliberately modest.
+.glue_given_min   <- 10000
+.glue_surname_min <- 2000
+
+# TRUE when a token is itself a known census name (given or surname); such a
+# token is a real name and must never be split.
+.is_census_name <- function( tok ) {
+  cd <- get_census_data( tok )
+  cd$first_name_value[1] > 0 || cd$last_name_value[1] > 0
+}
+
+#' Split a Title Glued to a Given Name
+#'
+#' Defect 2: `MRWILLIAM` -> `c("MR", "WILLIAM")`. Only splits when the leading
+#' run is a known personal title, the remainder is a strong census given name,
+#' and the whole token is not itself a known census name (guards `FREDDIE`,
+#' `FRANK`, `DREW`).
+#'
+#' @param tok A single uppercased name token.
+#' @return The token unchanged, or a length-2 vector `c(title, given)`.
+#' @keywords internal
+split_glued_honorific <- function( tok ) {
+  if ( nchar( tok ) < 4 || .is_census_name( tok ) ) return( tok )
+  for ( p in .honorific_glue_prefixes ) {
+    if ( startsWith( tok, p ) ) {
+      rem <- substring( tok, nchar( p ) + 1 )
+      if ( nchar( rem ) < 3 ) next
+      if ( get_census_data( rem )$first_name_value[1] >= .glue_given_min )
+        return( c( p, rem ) )
+    }
+  }
+  tok
+}
+
+#' Split a Stray Initial Glued to a Surname
+#'
+#' Defect 3: `CWOOLFOLK` -> `c("C", "WOOLFOLK")`. Only splits when the token is
+#' a single leading consonant followed by a run that is itself a valid census
+#' surname, and the whole token is not a known census name (guards `BLAKE`,
+#' `SHAW`, `WOOD`).
+#'
+#' @param tok A single uppercased name token.
+#' @return The token unchanged, or a length-2 vector `c(initial, surname)`.
+#' @keywords internal
+split_glued_initial <- function( tok ) {
+  if ( nchar( tok ) < 4 ) return( tok )
+  if ( !substring( tok, 1, 1 ) %in% .initial_consonants ) return( tok )
+  if ( .is_census_name( tok ) ) return( tok )
+  rem <- substring( tok, 2 )
+  if ( nchar( rem ) < 3 ) return( tok )
+  if ( get_census_data( rem )$last_name_value[1] >= .glue_surname_min )
+    return( c( substring( tok, 1, 1 ), rem ) )
+  tok
+}
+
+#' Repair Glued Tokens in a Name Vector
+#'
+#' Always applies [split_glued_honorific()] (Defect 2). The stray-initial split
+#' [split_glued_initial()] (Defect 3) is applied only when `split_initials` is
+#' `TRUE`, because it cannot be made safe from a single record: a foreign given
+#' name absent from the census (e.g. `KYUN`) is indistinguishable from a glued
+#' initial + surname (`C` + `WOOLFOLK`) on frequency alone, so it should run
+#' only where cross-year consensus (synthid) can vet the result.
+#'
+#' @param name_vec A character vector of name tokens.
+#' @param split_initials Logical; enable the Defect 3 stray-initial split.
+#'   Defaults to `FALSE`.
+#' @return A character vector, possibly longer than the input.
+#' @keywords internal
+deglue_tokens <- function( name_vec, split_initials = FALSE ) {
+  if ( length( name_vec ) == 0 ) return( name_vec )
+  unlist( lapply( name_vec, function( tok ) {
+    h <- split_glued_honorific( tok )
+    if ( length( h ) > 1 ) return( h )
+    if ( split_initials ) split_glued_initial( tok ) else tok
+  } ), use.names = FALSE )
+}
+
+# Ambiguous short credentials (Defect 1 follow-up): stripped only when they sit
+# in a TRAILING run of known titles/suffixes that also contains at least one
+# unambiguous credential -- so "MA LIN" (a real name) is never mistaken for a
+# credential, but "... RDMS RM" is.
+.ambiguous_suffix_credentials <- c("RM")
+
+#' Ambiguous Suffix Credentials Eligible to Strip
+#'
+#' Returns the ambiguous short credentials (e.g. `RM`) that appear inside the
+#' maximal trailing run of known prefix/suffix tokens, provided that run also
+#' contains at least one unambiguous credential. Callers add the result to the
+#' prefix-removal set for that name only.
+#'
+#' @param name_vec A character vector of name tokens.
+#' @param prefixes,suffixes The active prefix/suffix removal sets.
+#' @param ambiguous The ambiguous short-credential set.
+#' @return A character vector of tokens to strip (possibly empty).
+#' @keywords internal
+trailing_ambiguous_credentials <- function( name_vec, prefixes, suffixes,
+                                            ambiguous = .ambiguous_suffix_credentials ) {
+  n <- length( name_vec )
+  if ( n == 0 ) return( character( 0 ) )
+  known <- c( prefixes, suffixes, ambiguous )
+  k <- 0
+  while ( k < n && name_vec[ n - k ] %in% known ) k <- k + 1
+  if ( k == 0 ) return( character( 0 ) )
+  run <- name_vec[ ( n - k + 1 ):n ]
+  if ( !any( run %in% c( prefixes, suffixes ) ) ) return( character( 0 ) )
+  unique( run[ run %in% ambiguous ] )
+}
+
+
 #' Parse a Full Name into Components
 #'
 #' Parses a full name string into components such as salutation, first name, middle name, last name,
@@ -157,6 +277,11 @@ resolve_middle_name <- function( middle, last ) {
 #' @param sanitize Logical; if `TRUE`, run [sanitize_input()] on `x` first. Set
 #'   `FALSE` (the default) when the input has already been sanitized, as
 #'   [parse_names()] does for the whole vector.
+#' @param split_initials Logical; if `TRUE`, also split a stray initial fused
+#'   onto a surname (Defect 3, e.g. `CWOOLFOLK` -> `C WOOLFOLK`). Off by default
+#'   because it is unreliable on a single record and can break legitimate names
+#'   absent from the census; enable only where cross-year consensus can vet the
+#'   output. See [deglue_tokens()].
 #'
 #' @return A one-row `data.frame` with columns `salutation`, `first_name`,
 #'   `middle_name`, `last_name`, `suffix`, `status`, `gender`, and
@@ -166,10 +291,21 @@ resolve_middle_name <- function( middle, last ) {
 #' @examples
 #' parse_name("LIVINGSTON III MICHAEL JOHN")
 #' parse_name("livingston III,  Mr. MICHAEL JOHN9", sanitize = TRUE)
-parse_name <- function( x, prefixes = prx, suffixes = sfx, sanitize = FALSE ) {
+parse_name <- function( x, prefixes = prx, suffixes = sfx, sanitize = FALSE,
+                        split_initials = FALSE ) {
   if ( sanitize ) { x <- sanitize_input( x ) }
   Lx <- strsplit( x, ' ' ) |> unlist()   # strsplit( x, ' ' )[[1]]
+
+  # Repair tokens where a title fused onto the next token (Defect 2,
+  # PARSE-FAIL-NOTES.md), e.g. "MRWILLIAM" -> "MR" "WILLIAM"; optionally also
+  # split a stray initial glued to a surname (Defect 3).
+  Lx <- deglue_tokens( Lx, split_initials = split_initials )
   orig.tokens <- Lx                      # original order, for salutation recovery
+
+  # Ambiguous short credentials (e.g. RM) strip only from a trailing credential
+  # run (Defect 1 follow-up); fold the eligible ones into the prefix set here.
+  prefixes <- c( prefixes,
+                 trailing_ambiguous_credentials( Lx, prefixes, suffixes ) )
 
   salutation.out <- extract_component( Lx, prefixes )
   salutation.name <- salutation.out$name; Lx <- salutation.out$remainder

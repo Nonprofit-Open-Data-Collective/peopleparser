@@ -102,6 +102,9 @@ c("TAMMY HICKEL - ZOLA", "LILLIE BRYANT-HOBBS", "Rev M Fisher IV",
 # Defect 1 (PARSE-FAIL-NOTES.md): trailing health-care credential runs that
 # previously leaked into last_name.
 "Salvatore Martino EdD RTR FASRT CAE", "Karen Lee RDMS RVT",
-"Angela Brooks LCSW", "David Chen MHA CNMT", "Maria Torres CRA MSRS"
+"Angela Brooks LCSW", "David Chen MHA CNMT", "Maria Torres CRA MSRS",
+# Defect 2: honorific glued to the given name with no separating space.
+"MRWILLIAM SMITH", "MRJOHN DOE", "MRHENRY", "MRTOM JONES", "MRJASON REED",
+"MREDWARD KING"
 )
 

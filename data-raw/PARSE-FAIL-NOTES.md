@@ -25,11 +25,14 @@ drifted; worth reconciling.)
 ---
 
 ## Defect 1 — post-nominal credentials leak into `last_name`  ✳ highest priority
-<!-- STATUS 2026-08-14: FIXED (except RM). Added RTR, FASRT, RDMS, RVT, LCSW,
-     MHA, CNMT, CRA, MSRS to `prx` in R/utils.R and to known_titles() (plus CAE,
-     which was already stripping but undocumented). Regression tests in
-     tests/testthat/test-parse.R + fixtures in data-raw/hard_cases.R; full suite
-     green (73 passing). RM still OPEN -- needs the trailing-run guard below. -->
+<!-- STATUS 2026-08-14: FIXED. Added RTR, FASRT, RDMS, RVT, LCSW, MHA, CNMT,
+     CRA, MSRS to `prx` in R/utils.R and to known_titles() (plus CAE, which was
+     already stripping but undocumented). RM now handled: it strips only inside
+     a trailing run of known credentials that also contains >=1 unambiguous
+     credential (trailing_ambiguous_credentials() in R/parse_one_name.R), so
+     "... RDMS RM" strips but "MA LIN" and standalone "LEE RM" do not.
+     Regression tests in tests/testthat/test-parse.R + fixtures in
+     data-raw/hard_cases.R; full suite green. -->
 
 
 Credential runs after the surname are not stripped, so they end up glued into the
@@ -58,6 +61,11 @@ inside a *trailing run* of ≥1 already-known credential, not standalone — oth
 detector's default set for the same reason.
 
 ## Defect 2 — honorific glued to the given name with no space  (tokenizer)
+<!-- STATUS 2026-08-14: FIXED. split_glued_honorific() in R/parse_one_name.R
+     splits a leading personal title (MR/MRS/MISS/MS/DR) off a token when the
+     remainder is a strong census given name AND the whole token is not itself a
+     census name -- exactly the FREDDIE/FRANK/DREW guard. Runs always-on inside
+     deglue_tokens(); zero regressions across the 1,285-name corpus. -->
 
 `MR` *is* known, but with no separating space the token is never split:
 `MRWILLIAM` → first `WILLIAM`, `MRJOHN` → `JOHN`, `MRHENRY`, `MRTOM`, `MRJASON`,
@@ -72,6 +80,15 @@ census name **and** the full token to not itself be a known name. (synthid's
 detector uses exactly this guard; without it `FREDDIE`→`EDDIE` false-fired.)
 
 ## Defect 3 — single stray initial glued to the surname  (tokenizer, lower priority)
+<!-- STATUS 2026-08-14: IMPLEMENTED BUT OFF BY DEFAULT. split_glued_initial()
+     exists (R/parse_one_name.R) and is exposed via parse_name(split_initials=)
+     / parse_names(split_initials=), default FALSE. It CANNOT be made safe on a
+     single record: e.g. KYUN (Korean given name, absent from census) scores as
+     a surname (last=8933) HIGHER than the true target WOOLFOLK (last=3295), so
+     "SUNG KYUN WOO" mis-splits to K+YUN and "DENNY BREAMER" to B+REAMER. No
+     frequency threshold separates true from false. Enable only where synthid's
+     cross-year consensus can vet the output (the provenance this file already
+     relies on). The apostrophe case "O'WEEKS"->"WEEKS" is NOT handled. -->
 
 A middle initial that lost its space is read as part of the surname:
 `WILLIAM C WOOLFOLK` → `CWOOLFOLK`; also `CMARTIN`→`MARTIN`, `BMACKEY`→`MACKEY`,

@@ -151,6 +151,67 @@ test_that("newly added credentials appear in known_titles()", {
                     "CNMT", "CRA", "MSRS", "CAE") %in% kt$abbr))
 })
 
+# --- Regression: title glued to given name with no space (Defect 2) --------
+
+test_that("a title fused to a given name is split and stripped", {
+  w <- parse_name("MRWILLIAM SMITH", sanitize = TRUE)
+  expect_equal(w$salutation, "MR")
+  expect_equal(w$first_name, "WILLIAM")
+  expect_equal(w$last_name,  "SMITH")
+
+  d <- parse_name("DRJOHN ADAMS", sanitize = TRUE)
+  expect_equal(d$salutation, "DR")
+  expect_equal(d$first_name, "JOHN")
+
+  h <- parse_name("MRHENRY", sanitize = TRUE)
+  expect_equal(h$salutation, "MR")
+  expect_equal(h$last_name,  "HENRY")
+})
+
+test_that("names that merely start with a title fragment are not split", {
+  for (nm in list(c("FREDDIE", "MERCURY"),
+                  c("FRANK",   "SINATRA"),
+                  c("DREW",    "BARRYMORE"))) {
+    r <- parse_name(paste(nm[1], nm[2]), sanitize = TRUE)
+    expect_equal(r$first_name, nm[1], info = nm[1])
+    expect_equal(r$salutation, "",    info = nm[1])
+  }
+})
+
+# --- Regression: ambiguous short credential RM (Defect 1 follow-up) ---------
+
+test_that("RM strips only inside a corroborated trailing credential run", {
+  # RM alongside a known credential in the trailing run -> stripped
+  run <- parse_name("KAREN LEE RDMS RM", sanitize = TRUE)
+  expect_equal(run$last_name, "LEE")
+  expect_true(grepl("RM", run$salutation))
+
+  # standalone trailing RM (no other credential) -> left in place, not a title
+  solo <- parse_name("KAREN LEE RM", sanitize = TRUE)
+  expect_equal(solo$salutation, "")
+
+  # real name that happens to contain the token must be untouched
+  ma <- parse_name("MA LIN", sanitize = TRUE)
+  expect_equal(ma$first_name, "MA")
+  expect_equal(ma$last_name,  "LIN")
+})
+
+# --- Regression: stray initial glued to surname (Defect 3, opt-in) ----------
+
+test_that("stray-initial split is off by default and on via split_initials", {
+  off <- parse_name("WILLIAM CWOOLFOLK", sanitize = TRUE)
+  expect_equal(off$last_name, "CWOOLFOLK")
+
+  on <- parse_name("WILLIAM CWOOLFOLK", sanitize = TRUE, split_initials = TRUE)
+  expect_equal(on$first_name,  "WILLIAM")
+  expect_equal(on$middle_name, "C")
+  expect_equal(on$last_name,   "WOOLFOLK")
+
+  # a census-absent foreign given name must survive the default path
+  kyun <- parse_name("SUNG KYUN WOO MD", sanitize = TRUE)
+  expect_equal(kyun$last_name, "KYUN-WOO")
+})
+
 test_that("real titles still strip and are not restored as names", {
   mr <- parse_name("MR SMITH", sanitize = TRUE)
   expect_equal(mr$salutation, "MR")

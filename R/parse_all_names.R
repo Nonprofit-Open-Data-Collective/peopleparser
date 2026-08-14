@@ -8,6 +8,8 @@
 #' @param prefixes A character vector of salutations/prefixes to remove.
 #'   Defaults to [prx].
 #' @param suffixes A character vector of suffixes to remove. Defaults to [sfx].
+#' @param split_initials Logical; forwarded to [parse_name()] to enable the
+#'   opt-in Defect 3 stray-initial split. Defaults to `FALSE`.
 #' @param ... Reserved for future arguments; currently unused.
 #'
 #' @return A `data.frame` with one row per input name and columns `name` (the
@@ -19,7 +21,8 @@
 #' @examples
 #' x <- c("livingston III,  Mr. MICHAEL JOHN9", "THOMAS H VON KAMECKE")
 #' parse_names(x)
-parse_names <- function(x, prefixes = prx, suffixes = sfx, ...) {
+parse_names <- function(x, prefixes = prx, suffixes = sfx,
+                        split_initials = FALSE, ...) {
 
   input_names <- x
 
@@ -37,6 +40,7 @@ parse_names <- function(x, prefixes = prx, suffixes = sfx, ...) {
     parse_name,
     prefixes = prefixes,
     suffixes = suffixes,
+    split_initials = split_initials,
     .progress = FALSE
   )
 
