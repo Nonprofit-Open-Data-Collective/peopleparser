@@ -169,6 +169,7 @@ resolve_middle_name <- function( middle, last ) {
 parse_name <- function( x, prefixes = prx, suffixes = sfx, sanitize = FALSE ) {
   if ( sanitize ) { x <- sanitize_input( x ) }
   Lx <- strsplit( x, ' ' ) |> unlist()   # strsplit( x, ' ' )[[1]]
+  orig.tokens <- Lx                      # original order, for salutation recovery
 
   salutation.out <- extract_component( Lx, prefixes )
   salutation.name <- salutation.out$name; Lx <- salutation.out$remainder
@@ -194,10 +195,32 @@ parse_name <- function( x, prefixes = prx, suffixes = sfx, sanitize = FALSE ) {
     last.name <- mn_fixed[2]
   }
 
-  # recover salutation as first name if necessary
-  if ( salutation.name %in% c( "JD", "ED" ) && first.name == "" ) {
-    first.name <- salutation.name
+  # Recover a salutation that was really part of the name. Some tokens are BOTH
+  # a title/credential and a common census name (EARL, DEAN, ED, JD, PA, MAJOR,
+  # CAPT...). If stripping the salutation left no first name and the removed
+  # token is a known census name, restore it -- using its ORIGINAL position to
+  # decide its role: a LEADING token is the given name ("EARL FAHNESTOCK" ->
+  # first EARL), a TRAILING token is the surname and the remaining token is the
+  # given name ("TOM MAJOR" -> first TOM, last MAJOR). JD/ED are kept explicitly
+  # in case they fall below the census first-name threshold.
+  if ( first.name == "" && salutation.name != "" &&
+       ( salutation.name %in% c( "JD", "ED" ) ||
+         get_census_data( salutation.name )$first_name_value[1] > 0 ) ) {
+    sal.pos  <- match( salutation.name, orig.tokens )
+    last.pos <- match( last.name, orig.tokens )
+    if ( !is.na( sal.pos ) && !is.na( last.pos ) && sal.pos > last.pos ) {
+      # salutation trailed the name -> it is the surname; promote the remainder
+      first.name <- last.name
+      last.name  <- salutation.name
+    } else {
+      # salutation led the name (or position unknown) -> it is the given name
+      first.name <- salutation.name
+    }
     salutation.name <- ""
+    # gender was inferred from the surname-only remainder; recompute from the
+    # now-resolved first name.
+    g <- determine_gender( get_census_data( first.name ) )
+    if ( length( g ) == 2 ) gender <- g
   }
 
   if ( grepl( "^MAY-", last.name ) ) {

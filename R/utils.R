@@ -156,9 +156,13 @@ c("MR", "DR", "MISS", "MS", "MRS", "MD", "RN", "DOCTOR", "DDS",
 "GRI", "LTC", "LTG", "MAJ", "MED", "MHS", "MLN", "MSC", "MSM", 
 "MSN", "MSW", "RET", "SEC", "SGM", "SGT", "SIS", "THE", "USN", 
 "VMD", "ARNG", "BRIG GEN", "BRIG", "CAPT", "CHES", "CIMA", "CIPS", 
-"COMP", "DRPH", "EADE", "EARL", "MCPO", "MSGR", "NYNG", "RPLU", 
-"USAR", "VERY REV", "VERY REVEREND", "USCG", "USMC", "VERY", 
-"ZOLA", "FACMPE", "CE", "CAE")
+"COMP", "DRPH", "EADE", "MCPO", "MSGR", "NYNG", "RPLU",
+"USAR", "VERY REV", "VERY REVEREND", "USCG", "USMC", "VERY",
+"FACMPE", "CE", "CAE")
+# NOTE: "EARL" and "ZOLA" were removed -- they are given names, not credentials.
+# Their presence stripped the first name from records like "EARL FAHNESTOCK".
+# The recovery guard in parse_name() is the general backstop for any remaining
+# token that is both a title and a given name (e.g. JD, ED).
 
 
 #' Known Suffix Strings

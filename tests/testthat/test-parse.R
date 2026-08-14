@@ -86,3 +86,52 @@ test_that("parse_name parses 100 challenging names into 8-column rows", {
   expect_true(all(vapply(results, ncol, integer(1)) == 8))
   expect_true(all(vapply(results, nrow, integer(1)) == 1))
 })
+
+# --- Regression: title/given-name collisions (2026-08) ---------------------
+
+test_that("given-name honorifics are not stripped as titles (EARL, ZOLA)", {
+  earl <- parse_name("EARL FAHNESTOCK", sanitize = TRUE)
+  expect_equal(earl$first_name, "EARL")
+  expect_equal(earl$last_name,  "FAHNESTOCK")
+  expect_equal(earl$salutation, "")
+
+  zola <- parse_name("ZOLA BUDD", sanitize = TRUE)
+  expect_equal(zola$first_name, "ZOLA")
+  expect_equal(zola$last_name,  "BUDD")
+})
+
+test_that("EARL removed from prefix list resolves multi-token names", {
+  out <- parse_name("EARL DEAN SMITH", sanitize = TRUE)
+  expect_equal(out$first_name, "EARL")
+  expect_equal(out$last_name,  "SMITH")
+})
+
+test_that("a token that is both a title and a surname keeps order by position", {
+  # trailing MAJOR is the surname; the remaining token is the first name
+  tm <- parse_name("TOM MAJOR", sanitize = TRUE)
+  expect_equal(tm$first_name, "TOM")
+  expect_equal(tm$last_name,  "MAJOR")
+  expect_equal(tm$gender,     "M")
+
+  sm <- parse_name("SUE MAJOR", sanitize = TRUE)
+  expect_equal(sm$first_name, "SUE")
+  expect_equal(sm$last_name,  "MAJOR")
+  expect_equal(sm$gender,     "F")
+
+  # leading MAJOR is treated as the given name
+  ms <- parse_name("MAJOR SMITH", sanitize = TRUE)
+  expect_equal(ms$first_name, "MAJOR")
+  expect_equal(ms$last_name,  "SMITH")
+})
+
+test_that("real titles still strip and are not restored as names", {
+  mr <- parse_name("MR SMITH", sanitize = TRUE)
+  expect_equal(mr$salutation, "MR")
+  expect_equal(mr$first_name, "")
+  expect_equal(mr$last_name,  "SMITH")
+
+  dr <- parse_name("DR JANE GOODALL", sanitize = TRUE)
+  expect_equal(dr$salutation, "DR")
+  expect_equal(dr$first_name, "JANE")
+  expect_equal(dr$last_name,  "GOODALL")
+})
