@@ -98,6 +98,10 @@ c("TAMMY HICKEL - ZOLA", "LILLIE BRYANT-HOBBS", "Rev M Fisher IV",
 "SCOTT LABARGE EFF 510", "THERON H HOGLE", "DAVID VANDEUSEN THRU 510", 
 "DARRYL MERRIAM EFF 510", "WILLIAM SHELLY THRU 510", "NICHOLAS BASSO JR thru 1110", 
 "WAYNE HELLER", "JEANINE RUGGIERO EFF 1110", "In K Moon", "Jun C Kim", 
-"Moon Hee Kim", "Yeon Joo Park", "Su Kyong Ahn", "Young Jun Kim"
+"Moon Hee Kim", "Yeon Joo Park", "Su Kyong Ahn", "Young Jun Kim",
+# Defect 1 (PARSE-FAIL-NOTES.md): trailing health-care credential runs that
+# previously leaked into last_name.
+"Salvatore Martino EdD RTR FASRT CAE", "Karen Lee RDMS RVT",
+"Angela Brooks LCSW", "David Chen MHA CNMT", "Maria Torres CRA MSRS"
 )
 

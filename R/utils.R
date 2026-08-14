@@ -158,7 +158,14 @@ c("MR", "DR", "MISS", "MS", "MRS", "MD", "RN", "DOCTOR", "DDS",
 "VMD", "ARNG", "BRIG GEN", "BRIG", "CAPT", "CHES", "CIMA", "CIPS", 
 "COMP", "DRPH", "EADE", "MCPO", "MSGR", "NYNG", "RPLU",
 "USAR", "VERY REV", "VERY REVEREND", "USCG", "USMC", "VERY",
-"FACMPE", "CE", "CAE")
+"FACMPE", "CE", "CAE",
+# Health-care post-nominal credentials leaking into last_name (Defect 1,
+# data-raw/PARSE-FAIL-NOTES.md). Multi-letter, low collision risk with names.
+"RTR", "FASRT", "RDMS", "RVT", "LCSW", "MHA", "CNMT", "CRA", "MSRS")
+# NOTE: "RM" (Registered Tech., Mammography) is deliberately NOT added here.
+# As a 2-letter token it collides with initials/short names and must only be
+# stripped inside a trailing run of already-known credentials -- see Defect 1
+# in data-raw/PARSE-FAIL-NOTES.md. Left as a follow-up.
 # NOTE: "EARL" and "ZOLA" were removed -- they are given names, not credentials.
 # Their presence stripped the first name from records like "EARL FAHNESTOCK".
 # The recovery guard in parse_name() is the general backstop for any remaining

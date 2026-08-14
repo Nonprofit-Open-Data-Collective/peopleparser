@@ -81,6 +81,8 @@ known_titles <- function(){
     "AAS",         "Associate of Applied Science",                  "Academic Degree",
     "BS",          "Bachelor of Science",                           "Academic Degree",
     "BA",          "Bachelor of Arts",                              "Academic Degree",
+    "MHA",         "Master of Health Administration",               "Academic Degree",
+    "MSRS",        "Master of Science in Radiologic Sciences",      "Academic Degree",
 
     # --- Religious titles ---
     "REV",         "Reverend",                                      "Religious Title",
@@ -155,6 +157,14 @@ known_titles <- function(){
     "RPH",         "Registered Pharmacist",                          "Professional Credential",
     "PE",          "Professional Engineer",                          "Professional Credential",
     "FACS",        "Fellow of the American College of Surgeons",     "Professional Credential",
+    "CAE",         "Certified Association Executive",                "Professional Credential",
+    "RTR",         "Registered Technologist (Radiography)",          "Professional Credential",
+    "FASRT",       "Fellow, Am. Society of Radiologic Technologists","Professional Credential",
+    "RDMS",        "Registered Diagnostic Medical Sonographer",      "Professional Credential",
+    "RVT",         "Registered Vascular Technologist",               "Professional Credential",
+    "LCSW",        "Licensed Clinical Social Worker",                "Professional Credential",
+    "CNMT",        "Certified Nuclear Medicine Technologist",        "Professional Credential",
+    "CRA",         "Certified Radiology Administrator",              "Professional Credential",
 
     # --- Organizational roles ---
     "CEO",         "Chief Executive Officer",                       "Organizational Role",

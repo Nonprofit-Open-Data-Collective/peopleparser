@@ -124,6 +124,33 @@ test_that("a token that is both a title and a surname keeps order by position", 
   expect_equal(ms$last_name,  "SMITH")
 })
 
+# --- Regression: post-nominal credentials leaking into last_name -----------
+# Defect 1, data-raw/PARSE-FAIL-NOTES.md. Trailing health-care credential runs
+# used to glue into the surname, e.g. "MARTINO EDD RTR FASRT CAE" ->
+# last_name = "RTR-FASRT-MARTINO". They should now strip cleanly.
+
+test_that("trailing health-care credentials strip out of last_name", {
+  out <- parse_name("Salvatore Martino EdD RTR FASRT CAE", sanitize = TRUE)
+  expect_equal(out$first_name, "SALVATORE")
+  expect_equal(out$last_name,  "MARTINO")
+
+  # each newly added credential, individually, is stripped and not glued in
+  for (cred in c("RTR", "FASRT", "RDMS", "RVT", "LCSW",
+                 "MHA", "CNMT", "CRA", "MSRS")) {
+    res <- parse_name(paste("KAREN LEE", cred), sanitize = TRUE)
+    expect_equal(res$last_name, "LEE",
+                 info = paste("credential:", cred))
+    expect_false(grepl(cred, res$last_name, fixed = TRUE),
+                 info = paste("credential leaked:", cred))
+  }
+})
+
+test_that("newly added credentials appear in known_titles()", {
+  kt <- known_titles()
+  expect_true(all(c("RTR", "FASRT", "RDMS", "RVT", "LCSW", "MHA",
+                    "CNMT", "CRA", "MSRS", "CAE") %in% kt$abbr))
+})
+
 test_that("real titles still strip and are not restored as names", {
   mr <- parse_name("MR SMITH", sanitize = TRUE)
   expect_equal(mr$salutation, "MR")
