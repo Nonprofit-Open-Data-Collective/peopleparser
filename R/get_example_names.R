@@ -6,13 +6,13 @@
 #' @export
 #' @examples
 #' x <- get_example_names( n=10 )
-#' pn <- parse.names( x )
+#' pn <- parse_names( x )
 #' head( pn )
 #' 
 #' # micro-benchmark performance
 #' x <- get_example_names( n=1000 )
 #' start_time <- Sys.time()
-#' pn <- parse.names( x )
+#' pn <- parse_names( x )
 #' end_time <- Sys.time()
 #' end_time - start_time
 get_example_names <- function( n=10 )

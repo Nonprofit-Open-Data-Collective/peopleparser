@@ -1,11 +1,28 @@
-#' Trim spaces from names 
+#' Collapse and Trim Whitespace
+#'
+#' Removes leading and trailing whitespace and collapses runs of internal
+#' whitespace to a single space.
+#'
+#' @param x A character vector.
+#'
+#' @return A character vector with normalized whitespace.
 #' @export
+#' @examples
+#' trim_spaces("  JOHN   Q   PUBLIC  ")
 trim_spaces <- function(x) {
   return(gsub('(?<=[\\s])\\s*|^\\s+|\\s+$', '', x, perl=TRUE))
 }
 
-#' Remove punctuation
+#' Remove Punctuation
+#'
+#' Strips all punctuation characters from a string.
+#'
+#' @param x A character vector.
+#'
+#' @return A character vector with punctuation removed.
 #' @export
+#' @examples
+#' remove_punctuation("O'BRIEN, JR.")
 remove_punctuation <- function(x) {
    return(gsub('[[:punct:]]', '', x))
 }
@@ -69,18 +86,20 @@ fix_locative_surnames <- function(x,
 
 
 
-#' Prep Character Vector for Name Parsing
+#' Prep a Name for Parsing
 #'
-#' This function
-#' @param x Provide the character vector to prep.
+#' Normalizes raw name strings ahead of parsing: replaces periods with spaces,
+#' upper-cases, strips punctuation (keeping dashes) and digits, collapses
+#' whitespace, folds a set of period-separated abbreviations (e.g. `PH D` ->
+#' `PHD`), and dashes compound / locative surnames (see [fix_locative_surnames()]).
+#'
+#' @param x A character vector of raw names to prep.
+#'
+#' @return A character vector of cleaned, upper-cased names.
 #' @export
-#' @note If more then one element is passed in, only the first element will be preppred and returned.
 #' @examples
-#' x <- 'livingston III,   MICHAEL JOHN9'
-#' prep.name(x)
+#' prep_name("livingston III,   MICHAEL JOHN9")
 prep_name <- function(x) {
-
-  # x <- x[1]
 
   # replace periods with spaces and cast to upper case
   x <- gsub( '.', ' ', x, fixed = TRUE ) 
@@ -110,14 +129,6 @@ prep_name <- function(x) {
   
   # turn locative surnames (van=from, de=of, etc) into compounds
   x <- fix_locative_surnames( x )
-  
-  # dash compound last names
-  # n <- strsplit( x, ' ' )[[1]]
-  # zz <- c( 'LA','VON','VAN','DEL','DE', 'DER', 'MC' )
-  # zzz <- paste0( n, '-' )
-  # b <- ( n %in% zz )
-  # n[b] <- zzz[b]
-  # x <- gsub('- ', '-', paste( n, collapse = ' ') )
 
   return(x)
 }

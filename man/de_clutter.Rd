@@ -2,10 +2,21 @@
 % Please edit documentation in R/utils.R
 \name{de_clutter}
 \alias{de_clutter}
-\title{Remove nuissance text from the name}
+\title{Remove Nuisance Text From a Name}
 \usage{
 de_clutter(x)
 }
+\arguments{
+\item{x}{A character vector of raw, upper-cased name strings.}
+}
+\value{
+A character vector with the nuisance substrings removed.
+}
 \description{
-Remove nuissance text from the name
+Strips common noise strings from raw name records — trailing titles, tenure
+notes ("AS OF ...", "RESIGNED"), schedule references, date ranges, and similar
+clutter — before the name is parsed.
+}
+\examples{
+de_clutter("ROBERT NAGLE - SMFA BOARD OF")
 }

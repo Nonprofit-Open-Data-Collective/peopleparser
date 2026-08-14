@@ -3,14 +3,15 @@
 \docType{data}
 \name{prx}
 \alias{prx}
-\title{List of known prefix strings}
+\title{Known Prefix (Salutation / Title) Strings}
 \format{
-An object of class \code{character} of length 62.
+A character vector.
 }
 \usage{
 prx
 }
 \description{
-List of known prefix strings
+A character vector of upper-cased salutations, titles, degrees, ranks, and
+credentials that are stripped from the front of a name during parsing.
 }
 \keyword{datasets}

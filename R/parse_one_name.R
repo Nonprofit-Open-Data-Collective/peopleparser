@@ -34,7 +34,7 @@ sanitize_input <- function( x ) {
 #' @return A list with `name` (the removed item or "") and `remainder` (the updated vector).
 #' @export
 extract_component <- function( name_vec, elements ) {
-  removal <- remove.elements( name_vec, elements )
+  removal <- remove_elements( name_vec, elements )
   list( name = removal$removed_names[1], remainder = removal$names )
 }
 
@@ -56,7 +56,7 @@ assign_names <- function( x, suffix.name ) {
 
   get_gender <- function(xx, fallback = FALSE) {
     if ( length(xx) == 0 ) return( c("U", "0.0") )
-    g <- determine.gender( get.census.data( xx ) )
+    g <- determine_gender( get_census_data( xx ) )
     if ( g[1] == "U" && fallback ) {
       if ( suffix.name != "" ) g <- c("M", "50.0")
       g[2] <- "50.0"
@@ -83,11 +83,11 @@ assign_names <- function( x, suffix.name ) {
     gender <- get_gender( x[-3] )
 
   } else if ( i == 2 ) {
-    data <- get.census.data( x )
-    pos <- determine.surname( data )
+    data <- get_census_data( x )
+    pos <- determine_surname( data )
     last <- x[pos]; first <- x[-pos]; middle <- ""
-    gender <- determine.gender( data[-pos, ] )
-    if ( gender[1] == "U" && suffix.name != "" ) gender <- c("M", "50.0")
+    gender <- determine_gender( data[-pos, ] )
+    if ( gender[1] == "U" ) gender <- c( ifelse( suffix.name != "", "M", "U" ), "50.0" )
 
   } else if ( i == 1 ) {
     first <- ""; middle <- ""; last <- x[1]
@@ -97,8 +97,8 @@ assign_names <- function( x, suffix.name ) {
     first <- ""; middle <- ""; last <- ""; gender <- c("U", "0.0")
 
   } else {
-    data <- get.census.data( x )
-    pos <- determine.surname( data )
+    data <- get_census_data( x )
+    pos <- determine_surname( data )
     is.surname <- check_if_surname( x )
     if ( is.surname[1] && is.surname[2] && !is.surname[3] ) {
       last <- paste( x[1:2], collapse = "-" ); first <- x[3]; middle <- paste( x[-(1:3)], collapse = " " )
@@ -106,8 +106,8 @@ assign_names <- function( x, suffix.name ) {
       last <- x[pos]; rest <- x[-pos]; first <- rest[1]
       middle <- if ( length( rest ) > 1 ) paste( rest[-1], collapse = " " ) else ""
     }
-    gender <- determine.gender( data[-pos, ] )
-    if ( gender[1] == "U" && suffix.name != "" ) gender <- c("M", "50.0")
+    gender <- determine_gender( data[-pos, ] )
+    if ( gender[1] == "U" ) gender <- c( ifelse( suffix.name != "", "M", "U" ), "50.0" )
   }
 
   list( first = first, middle = middle, last = last, gender = gender )
@@ -152,15 +152,22 @@ resolve_middle_name <- function( middle, last ) {
 #'
 #' @param x A character string representing a person's name.
 #' @param prefixes A character vector of salutations/prefixes to remove.
-#' @param suffixes A character vector of suffixes to remove.
+#'   Defaults to [prx].
+#' @param suffixes A character vector of suffixes to remove. Defaults to [sfx].
+#' @param sanitize Logical; if `TRUE`, run [sanitize_input()] on `x` first. Set
+#'   `FALSE` (the default) when the input has already been sanitized, as
+#'   [parse_names()] does for the whole vector.
 #'
-#' @return A pipe-separated string: salutation | first name | middle name | last name | suffix | status | gender | confidence.
+#' @return A one-row `data.frame` with columns `salutation`, `first_name`,
+#'   `middle_name`, `last_name`, `suffix`, `status`, `gender`, and
+#'   `gender_confidence`.
 #' @export
 #'
 #' @examples
-#' parse.name("LIVINGSTON III MICHAEL JOHN")
-parse_name <- function( x, prefixes = prx, suffixes = sfx, sanitize=F ) {
-  if( sanitize ){x <- sanitize_input( x ) }
+#' parse_name("LIVINGSTON III MICHAEL JOHN")
+#' parse_name("livingston III,  Mr. MICHAEL JOHN9", sanitize = TRUE)
+parse_name <- function( x, prefixes = prx, suffixes = sfx, sanitize = FALSE ) {
+  if ( sanitize ) { x <- sanitize_input( x ) }
   Lx <- strsplit( x, ' ' ) |> unlist()   # strsplit( x, ' ' )[[1]]
 
   salutation.out <- extract_component( Lx, prefixes )
@@ -198,16 +205,14 @@ parse_name <- function( x, prefixes = prx, suffixes = sfx, sanitize=F ) {
     last.name <- gsub( "^MAY-", "", last.name )
   }
 
-c('name','salutation','first_name','middle_name', 'last_name',
-                             'suffix', 'status', 'gender', 'gender_confidence')
-                             
-  data.frame( 
-    salutation=salutation.name, 
-    first_name=first.name, 
-    middle_name=middle.name, 
-    last_name=last.name,
-    suffix=suffix.name, 
-    status=status, 
-    gender=gender[1], 
-    gender_confidence=gender[2] )
+  data.frame(
+    salutation        = salutation.name,
+    first_name        = first.name,
+    middle_name       = middle.name,
+    last_name         = last.name,
+    suffix            = suffix.name,
+    status            = status,
+    gender            = gender[1],
+    gender_confidence = gender[2]
+  )
 }

@@ -3,14 +3,15 @@
 \docType{data}
 \name{sfx}
 \alias{sfx}
-\title{List of known suffix strings}
+\title{Known Suffix Strings}
 \format{
-An object of class \code{character} of length 7.
+A character vector.
 }
 \usage{
 sfx
 }
 \description{
-List of known suffix strings
+A character vector of generational suffixes that are stripped from the end of
+a name during parsing.
 }
 \keyword{datasets}
