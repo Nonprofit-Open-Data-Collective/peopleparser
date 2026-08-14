@@ -13,9 +13,12 @@ First pass: 2026-08-14, 33,984-record 2010–2024 slice → 32 defective records
 
 ## Two lists this repo maintains
 
-Post-nominal / honorific stripping is driven by **`prx` (prefixes)** and **`sfx`
-(suffixes)** built in [`data-raw/gen-prefixes-and-suffixes.R`](gen-prefixes-and-suffixes.R)
-(saved to `prx.Rdata` / `sfx.Rdata`). [`R/known_titles.R`](../R/known_titles.R)
+Post-nominal / honorific stripping is driven by the **`prx` (prefixes)** and
+**`sfx` (suffixes)** character vectors defined inline in
+[`R/utils.R`](../R/utils.R). (A former `data-raw/gen-prefixes-and-suffixes.R`
+generator was broken and unused — its `.Rdata` outputs were never loaded — and
+was deleted 2026-08-14; edit `R/utils.R` directly.)
+[`R/known_titles.R`](../R/known_titles.R)
 `known_titles()` is the human-readable reference table (`abbr`/`label`/`type`).
 A token must be in **`prx`/`sfx`** to actually be stripped; add it to
 **`known_titles()`** too, to keep the reference complete. (Observed: `EdD`, `CAE`
