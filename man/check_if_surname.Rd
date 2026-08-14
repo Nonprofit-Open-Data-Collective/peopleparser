@@ -2,10 +2,21 @@
 % Please edit documentation in R/utils.R
 \name{check_if_surname}
 \alias{check_if_surname}
-\title{Check if the string is a recognized surname}
+\title{Check Whether Tokens Read as Surnames}
 \usage{
 check_if_surname(x)
 }
+\arguments{
+\item{x}{A character vector of name tokens.}
+}
+\value{
+A logical vector, one element per token, \code{TRUE} where the token is
+more likely a surname than a given name.
+}
 \description{
-Check if the string is a recognized surname
+For each token, compares its census first-name and last-name frequencies and
+flags it as a surname when it appears more often in the last-name position.
+}
+\examples{
+check_if_surname(c("MICHAEL", "LIVINGSTON"))
 }

@@ -1,0 +1,44 @@
+url: https://nonprofit-open-data-collective.github.io/peopleparser/
+
+template:
+  bootstrap: 5
+
+reference:
+- title: Parse names
+  desc: Top-level entry points for turning raw names into structured components.
+  contents:
+  - parse_name
+  - parse_names
+
+- title: Prepare & clean
+  desc: Sanitize and normalize raw name strings before parsing.
+  contents:
+  - sanitize_input
+  - prep_name
+  - de_clutter
+  - trim_spaces
+  - remove_punctuation
+  - fix_locative_surnames
+  - remove_elements
+  - extract_component
+
+- title: Census-based inference
+  desc: Resolve name ordering, surnames, and gender from census frequencies.
+  contents:
+  - get_census_data
+  - check_if_surname
+  - determine_gender
+  - determine_surname
+  - assign_names
+  - resolve_middle_name
+
+- title: Reference data
+  desc: Bundled datasets and lookup tables.
+  contents:
+  - census.names
+  - known_titles
+  - prx
+  - sfx
+  - names_100
+  - names_1000
+  - get_example_names

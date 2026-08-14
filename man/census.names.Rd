@@ -5,11 +5,14 @@
 \alias{census.names}
 \title{Frequency of name occurrence on US birth certificates.}
 \format{
-A data frame with 164850 rows and 5 variables:
+A \link[data.table:data.table]{data.table::data.table} with 164,850 rows and 5 variables, keyed on
+\code{name}:
 \describe{
-\item{name}{names listed on US birth certificates}
-\item{first_name_value}{count of times the name is listed on a birth certificate as a first name}
-\item{last_name_value}{count of times the name is listed on a birth certificate as a last name}
+\item{name}{name as listed on US birth certificates}
+\item{male_value}{count of times the name is listed for a male}
+\item{female_value}{count of times the name is listed for a female}
+\item{first_name_value}{count of times the name appears in the first-name position}
+\item{last_name_value}{count of times the name appears in the last-name position}
 }
 }
 \source{

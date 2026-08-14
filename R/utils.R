@@ -2,22 +2,42 @@
 #' @export
 magrittr::`%>%`
 
-#' Check if the string is a recognized surname
+#' Check Whether Tokens Read as Surnames
+#'
+#' For each token, compares its census first-name and last-name frequencies and
+#' flags it as a surname when it appears more often in the last-name position.
+#'
+#' @param x A character vector of name tokens.
+#'
+#' @return A logical vector, one element per token, `TRUE` where the token is
+#'   more likely a surname than a given name.
 #' @export
+#' @examples
+#' check_if_surname(c("MICHAEL", "LIVINGSTON"))
 check_if_surname <- function( x )
 {
-   df <- get.census.data( x )
+   df <- get_census_data( x )
    tot <- df$first_name_value + df$last_name_value
    tot[ tot == 0 ] <- 1  # cant divide by zero
-   p.first <- df$first_name_value / tot 
+   p.first <- df$first_name_value / tot
    p.surname <- df$last_name_value / tot
    p.surname[ tot == 1 ] <- 1
    surname <- p.surname > 0.5
    return( surname )
 }
 
-#' Remove nuissance text from the name
+#' Remove Nuisance Text From a Name
+#'
+#' Strips common noise strings from raw name records — trailing titles, tenure
+#' notes ("AS OF ...", "RESIGNED"), schedule references, date ranges, and similar
+#' clutter — before the name is parsed.
+#'
+#' @param x A character vector of raw, upper-cased name strings.
+#'
+#' @return A character vector with the nuisance substrings removed.
 #' @export
+#' @examples
+#' de_clutter("ROBERT NAGLE - SMFA BOARD OF")
 de_clutter <- function( x )
 {
   # convert to de_clutter() function: 
@@ -109,9 +129,14 @@ de_clutter <- function( x )
   return(x)
 }
 
-#' List of known prefix strings
+#' Known Prefix (Salutation / Title) Strings
+#'
+#' A character vector of upper-cased salutations, titles, degrees, ranks, and
+#' credentials that are stripped from the front of a name during parsing.
+#'
+#' @format A character vector.
 #' @export
-prx <- 
+prx <-
 c("MR", "DR", "MISS", "MS", "MRS", "MD", "RN", "DOCTOR", "DDS", 
 "DMD", "OD", "SENATOR", "CONGRESSMAN", "AMBASSADOR", "GOVERNOR", 
 "MAYOR", "COMMISSIONER", "DELEGATE", "SUPERINTENDENT", "PHD", 
@@ -133,17 +158,27 @@ c("MR", "DR", "MISS", "MS", "MRS", "MD", "RN", "DOCTOR", "DDS",
 "VMD", "ARNG", "BRIG GEN", "BRIG", "CAPT", "CHES", "CIMA", "CIPS", 
 "COMP", "DRPH", "EADE", "EARL", "MCPO", "MSGR", "NYNG", "RPLU", 
 "USAR", "VERY REV", "VERY REVEREND", "USCG", "USMC", "VERY", 
-"ZOLA", "FACMPE")
+"ZOLA", "FACMPE", "CE", "CAE")
 
 
-#' List of known suffix strings
+#' Known Suffix Strings
+#'
+#' A character vector of generational suffixes that are stripped from the end of
+#' a name during parsing.
+#'
+#' @format A character vector.
 #' @export
 sfx <- c( "JR","JUNIOR","SR","SENIOR","II", "III", "IV" )
 
 
-#' Sample of 1,000 names for testing purposes
+#' Sample of 1,000 Names for Testing
+#'
+#' A character vector of 1,000 raw name strings drawn from IRS 990 filings, used
+#' to exercise and benchmark the parser.
+#'
+#' @format A character vector of length 1000.
 #' @export
-names.1000 <- 
+names_1000 <-
 c("JUDGE KAREN TILLER", "KAREN JUDGE", "KAREN TILLER, JUDGE", "AARON JOHNSON", "DR ADRIANA CONTRERAS", "LEE NESLER", 
 "JOHN ERIC SMITH", "Smith, JOHN ERIC", "JOHN ERIC SMITH JR", "CHRISTOPHER EATON", "LINDA FRENETTE", "CHARLES MATTINGLY", 
 "JACK CAMPBELL", "JANET E SCHULTE", "ALVA STRIPLIN", "RYAN MCCOY", 
@@ -400,9 +435,14 @@ c("JUDGE KAREN TILLER", "KAREN JUDGE", "KAREN TILLER, JUDGE", "AARON JOHNSON", "
 "FREDRICK REESE", "FREDERICK RUNDLET", "CECI CONNOLLY")
 
 
-#' Sample of 100 names for testing purposes
+#' Sample of 100 Names for Testing
+#'
+#' A character vector of 100 raw name strings drawn from IRS 990 filings, used to
+#' exercise the parser on a smaller set.
+#'
+#' @format A character vector of length 100.
 #' @export
-names.100 <- 
+names_100 <-
 c("MICHAEL CRINNIN", "Janet Lotter", "JAMES NARDELLA", "JENNIFER BICKETT", 
 "TED LEWIS", "ELIZABETH VINCENT", "DEBORAH SCHMELL", "MARK WELLER", 
 "WILLIAM BIRNIE", "LILLIAN RANGEL", "RICHARD CHRISS", "KATE HUNTER", 

@@ -14,42 +14,46 @@ library( peopleparser )
 
 ## Use
 
-The program takes raw text individual names as the input and returns a data table with the name parsed into the component parts: 
+The program takes raw text individual names as the input and returns a data frame with the name parsed into the component parts: 
 
 * SALUTATION 
 * FIRST_NAME 
 * MIDDLE_NAME 
 * LAST_NAME 
 * SUFFIX 
+* STATUS
 * GENDER 
+* GENDER_CONFIDENCE
 
 The matching is done probabilistically based upon frequencies of the name appearing as a first name or last name on US birth certificates. 
 
 Gender coding is similarly done probabilistically using the first name from the parsed string and the same Census data table. 
 
+`parse_name()` parses a single name and returns a one-row data frame. Set `sanitize = TRUE` when the input still contains punctuation, titles, or other clutter:
+
 ```r
 
 x <- 'livingston III,  Mr. MICHAEL JOHN9'
-parse.name(x)
-# [1] "MR|MICHAEL|JOHN|LIVINGSTON|III|M|99.6"
- 
+parse_name( x, sanitize = TRUE )
+#   salutation first_name middle_name  last_name suffix status gender gender_confidence
+# 1         MR    MICHAEL        JOHN LIVINGSTON    III             M              99.6
+
 x <- "THOMAS H VON KAMECKE"
-parse.name(x)
-# [1] "|THOMAS|H|VON-KAMECKE||M|99.8"
- 
-x <- get_example_names( n=10 )
-parse.names(x)
-                    name salutation first_name middle_name  last_name suffix gender gender_confidence
-1          Karen H Green                 KAREN           H      GREEN             F               100
-2               ED MARKS                    ED                  MARKS             M               100
-3     MATTHEW BERSHADKER               MATTHEW             BERSHADKER             M              99.7
-4     LINDA L SCHOELKOPF                 LINDA           L SCHOELKOPF             F               100
-5            JAMES ROWAN                 JAMES                  ROWAN             M              99.7
-6              R Blincoe                     R                BLINCOE             U              50.0
-7       DENNIS PAGLIOTTI                DENNIS              PAGLIOTTI             M              99.5
-8  HAFER JR EDMUND L AIA                 HAFER   EDMUND  L        AIA     JR      M               100
-9          LESLIE CARNES                LESLIE                 CARNES             F              66.8
-10     ALEXANDER PFEFFER             ALEXANDER                PFEFFER             M              98.4
+parse_name( x, sanitize = TRUE )
+#   salutation first_name middle_name   last_name suffix status gender gender_confidence
+# 1               THOMAS           H VON-KAMECKE                    M              99.8
+
+x <- c("Karen H Green", "ED MARKS", "MATTHEW BERSHADKER", "R Blincoe",
+       "HAFER JR EDMUND L AIA", "Dr Leslie Smith", "THOMAS H VON KAMECKE")
+parse_names(x)
+                   name salutation first_name middle_name   last_name suffix status gender gender_confidence
+1         Karen H Green                 KAREN           H       GREEN                    F               100
+2              ED MARKS                    ED                   MARKS                    M               100
+3    MATTHEW BERSHADKER               MATTHEW              BERSHADKER                    M              99.7
+4             R Blincoe                     R                 BLINCOE                    U              50.0
+5 HAFER JR EDMUND L AIA        AIA     EDMUND           L       HAFER     JR             M               100
+6       Dr Leslie Smith         DR     LESLIE                   SMITH                    F              66.8
+7  THOMAS H VON KAMECKE                THOMAS           H VON-KAMECKE                    M              99.8
 
 
 # census data table used for name position assignment and gender 
@@ -63,13 +67,13 @@ head( census.names )
 6: AAGAARD          0            0                0             300
 ```
 
-The **parse.names()** function utilizes parallelization to speed up large jobs. 
+The **parse_names()** function utilizes parallelization to speed up large jobs. 
 
 ```r
 x <- get_example_names( n=1000 )
  
 start_time <- Sys.time()
-pn <- parse.names( x )
+pn <- parse_names( x )
 end_time <- Sys.time()
 
 end_time - start_time
@@ -81,44 +85,45 @@ end_time - start_time
 To parse a name:
 
 ```r
-# returns a single pipe (`|`) delimted string, e.g. "salutation|first|middle|last|suffix|gender|confidence".
+# returns a one-row data frame:
+# salutation | first_name | middle_name | last_name | suffix | status | gender | gender_confidence
 x <- 'livingston III,  Mr. MICHAEL JOHN9'
-parse.name(x)
-# or, for multiple names in a `data.table` with similar attributes
-parse.names(x)
+parse_name( x, sanitize = TRUE )
+# or, for a vector of names returned as a data frame
+parse_names(x)
 ```
 
 To 'prepare' a name:
 ```r
 x <- 'livingston III,  Mr. MICHAEL JOHN9'
-prep.name(x)  
+prep_name(x)  
 ```
 
 To get the census data:
 ```r
 x <- 'livingston III,  Mr. MICHAEL JOHN9'
-x <- prep.name(x)
+x <- prep_name(x)
 x <- strsplit(x,' ')[[1]]
-get.census.data(x)
+get_census_data(x)
 ```
 
 To determine surname (last name) ordinal:
 ```r
 x <- 'livingston III,  Mr. MICHAEL JOHN9'
-x <- prep.name(x)
+x <- prep_name(x)
 x <- strsplit(x,' ')[[1]]
-cd <- get.census.data(x)
+cd <- get_census_data(x)
 print(x)
-determine.surname(cd)
+determine_surname(cd)
 ```
 
 To determine gender:
 ```r
 x <- 'livingston III,  Mr. MICHAEL JOHN9'
-x <- prep.name(x)
+x <- prep_name(x)
 x <- strsplit(x,' ')[[1]]
-cd <- get.census.data(x)
-determine.gender(cd)
+cd <- get_census_data(x)
+determine_gender(cd)
 ```
 
 ## Contributors

@@ -1,12 +1,32 @@
 Package: peopleparser
-Title: What the Package Does (One Line, Title Case)
+Title: Parse Raw Person Names into Structured Components
 Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+Authors@R: c(
+    person("Jesse", "Lecy", , "jdlecy@gmail.com", role = c("aut", "cre")),
+    person("Michael", "Flanigan", role = "aut",
+           comment = "Original Name-Parser author"))
+Description: Converts raw text names into structured components (salutation,
+    first name, middle name, last name, suffix, and status) and infers gender
+    using U.S. Census name-frequency data. Proper name ordering is
+    disambiguated probabilistically based on how often each token appears in
+    the first-name versus last-name position.
+License: GPL-3
+URL: https://github.com/Nonprofit-Open-Data-Collective/peopleparser
+BugReports: https://github.com/Nonprofit-Open-Data-Collective/peopleparser/issues
+Depends:
+    R (>= 4.1.0)
+Imports:
+    data.table,
+    dplyr,
+    furrr,
+    future,
+    magrittr,
+    tibble
+Suggests:
+    knitr,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
 Encoding: UTF-8
+LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3

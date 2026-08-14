@@ -179,6 +179,6 @@ known_titles <- function(){
     "ZOLA",        "Zola (Name or Religious Order)",                "Other"
   )
   
-  cat( title_labels |> knitr::kable(), sep="\n")
-  
+  return( title_labels )
+
 }
