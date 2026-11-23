@@ -29,7 +29,7 @@ MISSPELLING_MAX_FREQ <- 1000
 
 get_variants_table <- function() {
   if (!exists("first_name_pairs")) {
-    utils::data("first_name_pairs", envir = environment())
+    utils::data("first_name_pairs", package = "peopleparser", envir = environment())
   }
   as.data.frame(first_name_pairs)
 }

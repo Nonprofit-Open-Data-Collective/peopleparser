@@ -26,7 +26,7 @@ get_census_data <- function(x) {
 
   # ensure the reference table is available (lazy-loaded via LazyData)
   if (!exists("census.names")) {
-    utils::data("census.names", envir = environment())
+    utils::data("census.names", package = "peopleparser", envir = environment())
   }
 
   # keyed binary-search join: census.names is keyed on `name`, so this avoids a
