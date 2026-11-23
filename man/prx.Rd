@@ -12,6 +12,8 @@ prx
 }
 \description{
 A character vector of upper-cased salutations, titles, degrees, ranks, and
-credentials that are stripped from the front of a name during parsing.
+credentials that \code{\link[=parse_name]{parse_name()}} removes wherever they occur in a name and
+reports in the \code{salutation} column. Some further titles are removed only by
+position; see \code{vignette("name-cleaning")}.
 }
 \keyword{datasets}

@@ -17,7 +17,10 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-guides" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Guides</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-guides"><li><a class="dropdown-item" href="../articles/canonical-first-names.html">Canonical first names, nicknames and gender</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-guides"><li><a class="dropdown-item" href="../articles/name-cleaning.html">Cleaning names</a></li>
+    <li><a class="dropdown-item" href="../articles/name-order.html">Name order and compound surnames</a></li>
+    <li><a class="dropdown-item" href="../articles/gender-scoring.html">Gender scoring and the census table</a></li>
+    <li><a class="dropdown-item" href="../articles/canonical-first-names.html">Canonical first names, nicknames and gender</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -44,6 +47,23 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="peopleparser-development-version">peopleparser (development version)<a class="anchor" aria-label="anchor" href="#peopleparser-development-version"></a></h2>
+<div class="section level3">
+<h3 id="name-order-and-gender-fixes-development-version">Name-order and gender fixes<a class="anchor" aria-label="anchor" href="#name-order-and-gender-fixes-development-version"></a></h3>
+<ul><li>
+<code><a href="../reference/prep_name.html">prep_name()</a></code> no longer glues <code>VAN DER</code> onto the word before it (<code>MARY VAN DER BERG</code> gave <code>MARYVAN-DER-BERG</code>).</li>
+<li>
+<code><a href="../reference/fix_locative_surnames.html">fix_locative_surnames()</a></code> joins particle chains fully: <code>DE LA ROSA</code> -&gt; <code>DE-LA-ROSA</code> (was last name <code>DE-LA</code> with <code>ROSA</code> as a middle name).</li>
+<li>Double surnames keep their written order when the parts are adjacent: <code>MARY ANN SMITH JONES</code> -&gt; <code>SMITH-JONES</code> (was <code>JONES-SMITH</code>), <code>JEAN A DU   PONT</code> -&gt; <code>DU-PONT</code>. <code><a href="../reference/resolve_middle_name.html">resolve_middle_name()</a></code> gains a <code>tokens</code> argument.</li>
+<li>Three-token names now count initials correctly, so two initials (<code>A J SMITH</code>, <code>SMITH A J</code>) take their own rule, and a three-token name with no census gender evidence gets <code>U</code>/<code>50.0</code> (or <code>M</code>/<code>50.0</code> with a suffix) instead of an <code>NA</code> confidence. On the 1,000 sample names, 7 parses change, all fixes.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-development-version">Documentation<a class="anchor" aria-label="anchor" href="#documentation-development-version"></a></h3>
+<ul><li>Three new guides: <code><a href="../articles/name-cleaning.html">vignette("name-cleaning")</a></code> (clutter, titles, credentials, suffixes, status), <code><a href="../articles/name-order.html">vignette("name-order")</a></code> (name-order rules and compound surnames) and <code><a href="../articles/gender-scoring.html">vignette("gender-scoring")</a></code> (the gender score and where <code>census.names</code> comes from).</li>
+<li>
+<code>census.names</code> is documented as what it is: a bundled, frozen table of 1990 Census first names and 2010 Census surnames, not birth-certificate counts. The README is corrected to match.</li>
+<li>
+<code>prx</code> and <code>sfx</code> are documented as removed wherever they occur, not only at the front or the end of a name.</li>
+</ul></div>
 <div class="section level3">
 <h3 id="suffix-gaps-on-form-part-vii-names-development-version">Suffix gaps on Form 990 Part VII names<a class="anchor" aria-label="anchor" href="#suffix-gaps-on-form-part-vii-names-development-version"></a></h3>
 <ul><li>About 90 credentials, religious-order post-nominals, Masonic offices and fused military tokens (<code>RSM</code>, <code>CSJ</code>, <code>PHARMD</code>, <code>FACHE</code>, <code>CFRE</code>, <code>USNRET</code>, …) and the hyphenated credentials (<code>PA-C</code>, <code>SHRM-SCP</code>, …) are now stripped, so they no longer end up in <code>last_name</code> (<code>REARDON-RSM</code>). Source: <code>data-raw/SUFFIX-GAPS-PART7.md</code>.</li>

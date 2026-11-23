@@ -28,11 +28,31 @@ data frame with the name parsed into the component parts:
 - GENDER
 - GENDER_CONFIDENCE
 
-The matching is done probabilistically based upon frequencies of the
-name appearing as a first name or last name on US birth certificates.
+The matching is done probabilistically based upon how often each token
+appears as a first name or a surname in U.S. Census Bureau name lists
+(the bundled `census.names` table: 1990 Census first names, 2010 Census
+surnames).
 
-Gender coding is similarly done probabilistically using the first name
+Gender coding is similarly done probabilistically using the given names
 from the parsed string and the same Census data table.
+
+With `add_nicknames = TRUE`,
+[`parse_name()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/parse_name.md)
+and
+[`parse_names()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/parse_names.md)
+also add each first name’s formal names, nicknames and one canonical
+first name.
+
+## Guides
+
+- [Cleaning names: clutter, titles, credentials and
+  suffixes](https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-cleaning.html)
+- [Name order and compound
+  surnames](https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-order.html)
+- [Gender scoring and the census name
+  table](https://nonprofit-open-data-collective.github.io/peopleparser/articles/gender-scoring.html)
+- [Canonical first names, nicknames and
+  gender](https://nonprofit-open-data-collective.github.io/peopleparser/articles/canonical-first-names.html)
 
 [`parse_name()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/parse_name.md)
 parses a single name and returns a one-row data frame. Set

@@ -21,7 +21,10 @@ furrr::future_map_dfr()."></head><body>
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-guides" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Guides</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-guides"><li><a class="dropdown-item" href="../articles/canonical-first-names.html">Canonical first names, nicknames and gender</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-guides"><li><a class="dropdown-item" href="../articles/name-cleaning.html">Cleaning names</a></li>
+    <li><a class="dropdown-item" href="../articles/name-order.html">Name order and compound surnames</a></li>
+    <li><a class="dropdown-item" href="../articles/gender-scoring.html">Gender scoring and the census table</a></li>
+    <li><a class="dropdown-item" href="../articles/canonical-first-names.html">Canonical first names, nicknames and gender</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -103,7 +106,8 @@ Defaults to <code>FALSE</code>.</p></dd>
     <p>A <code>data.frame</code> with one row per input name and columns <code>name</code> (the
 original input) plus the parsed components returned by <code><a href="parse_name.html">parse_name()</a></code>:
 <code>salutation</code>, <code>first_name</code>, <code>middle_name</code>, <code>last_name</code>, <code>suffix</code>, <code>status</code>,
-<code>gender</code>, and <code>gender_confidence</code>.</p>
+<code>gender</code>, and <code>gender_confidence</code>, plus the nickname columns when
+<code>add_nicknames = TRUE</code>.</p>
     </div>
 
     <div class="section level2">

@@ -2,7 +2,9 @@
 
 Always applies
 [`split_glued_honorific()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/split_glued_honorific.md)
-(Defect 2). The stray-initial split
+(Defect 2), and from the third token on
+[`split_glued_credentials()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/split_glued_credentials.md)
+(`JRMD`, `MDMPH`). The stray-initial split
 [`split_glued_initial()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/split_glued_initial.md)
 (Defect 3) is applied only when `split_initials` is `TRUE`, because it
 cannot be made safe from a single record: a foreign given name absent

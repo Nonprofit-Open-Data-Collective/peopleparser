@@ -4,12 +4,17 @@
 \alias{resolve_middle_name}
 \title{Resolve Middle Names as Potential Surnames}
 \usage{
-resolve_middle_name(middle, last)
+resolve_middle_name(middle, last, tokens = NULL)
 }
 \arguments{
 \item{middle}{Character string of middle name.}
 
 \item{last}{Character string of last name.}
+
+\item{tokens}{Optional character vector of the name tokens in their original
+order. When the surname parts sit next to each other there, they are joined
+in that order (\verb{MARY ANN SMITH JONES} gives \code{SMITH-JONES}, not
+\code{JONES-SMITH}). Otherwise they are joined middle first, then last.}
 }
 \value{
 A character vector of length 2: updated middle name and last name.

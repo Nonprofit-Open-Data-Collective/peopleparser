@@ -11,7 +11,7 @@ A character vector.
 sfx
 }
 \description{
-A character vector of generational suffixes that are stripped from the end of
-a name during parsing.
+A character vector of generational suffixes that \code{\link[=parse_name]{parse_name()}} removes
+wherever they occur in a name and reports in the \code{suffix} column.
 }
 \keyword{datasets}

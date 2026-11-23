@@ -12,6 +12,8 @@ canonical form, using a variant table observed in Form 990 filings.
 
 Useful links:
 
+- <https://nonprofit-open-data-collective.github.io/peopleparser/>
+
 - <https://github.com/Nonprofit-Open-Data-Collective/peopleparser>
 
 - Report bugs at

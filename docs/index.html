@@ -37,7 +37,10 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-guides" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Guides</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-guides">
-<li><a class="dropdown-item" href="articles/canonical-first-names.html">Canonical first names, nicknames and gender</a></li>
+<li><a class="dropdown-item" href="articles/name-cleaning.html">Cleaning names</a></li>
+    <li><a class="dropdown-item" href="articles/name-order.html">Name order and compound surnames</a></li>
+    <li><a class="dropdown-item" href="articles/gender-scoring.html">Gender scoring and the census table</a></li>
+    <li><a class="dropdown-item" href="articles/canonical-first-names.html">Canonical first names, nicknames and gender</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
@@ -89,8 +92,19 @@
 <li>GENDER</li>
 <li>GENDER_CONFIDENCE</li>
 </ul>
-<p>The matching is done probabilistically based upon frequencies of the name appearing as a first name or last name on US birth certificates.</p>
-<p>Gender coding is similarly done probabilistically using the first name from the parsed string and the same Census data table.</p>
+<p>The matching is done probabilistically based upon how often each token appears as a first name or a surname in U.S. Census Bureau name lists (the bundled <code>census.names</code> table: 1990 Census first names, 2010 Census surnames).</p>
+<p>Gender coding is similarly done probabilistically using the given names from the parsed string and the same Census data table.</p>
+<p>With <code>add_nicknames = TRUE</code>, <code><a href="reference/parse_name.html">parse_name()</a></code> and <code><a href="reference/parse_names.html">parse_names()</a></code> also add each first name’s formal names, nicknames and one canonical first name.</p>
+</div>
+<div class="section level2">
+<h2 id="guides">Guides<a class="anchor" aria-label="anchor" href="#guides"></a>
+</h2>
+<ul>
+<li><a href="https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-cleaning.html">Cleaning names: clutter, titles, credentials and suffixes</a></li>
+<li><a href="https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-order.html">Name order and compound surnames</a></li>
+<li><a href="https://nonprofit-open-data-collective.github.io/peopleparser/articles/gender-scoring.html">Gender scoring and the census name table</a></li>
+<li><a href="https://nonprofit-open-data-collective.github.io/peopleparser/articles/canonical-first-names.html">Canonical first names, nicknames and gender</a></li>
+</ul>
 <p><code><a href="reference/parse_name.html">parse_name()</a></code> parses a single name and returns a one-row data frame. Set <code>sanitize = TRUE</code> when the input still contains punctuation, titles, or other clutter:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a></span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="st">'livingston III,  Mr. MICHAEL JOHN9'</span></span>

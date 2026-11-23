@@ -1,5 +1,32 @@
 # peopleparser (development version)
 
+## Name-order and gender fixes
+
+* `prep_name()` no longer glues `VAN DER` onto the word before it
+  (`MARY VAN DER BERG` gave `MARYVAN-DER-BERG`).
+* `fix_locative_surnames()` joins particle chains fully: `DE LA ROSA` ->
+  `DE-LA-ROSA` (was last name `DE-LA` with `ROSA` as a middle name).
+* Double surnames keep their written order when the parts are adjacent:
+  `MARY ANN SMITH JONES` -> `SMITH-JONES` (was `JONES-SMITH`), `JEAN A DU
+  PONT` -> `DU-PONT`. `resolve_middle_name()` gains a `tokens` argument.
+* Three-token names now count initials correctly, so two initials
+  (`A J SMITH`, `SMITH A J`) take their own rule, and a three-token name with
+  no census gender evidence gets `U`/`50.0` (or `M`/`50.0` with a suffix)
+  instead of an `NA` confidence. On the 1,000 sample names, 7 parses change,
+  all fixes.
+
+## Documentation
+
+* Three new guides: `vignette("name-cleaning")` (clutter, titles,
+  credentials, suffixes, status), `vignette("name-order")` (name-order rules
+  and compound surnames) and `vignette("gender-scoring")` (the gender score
+  and where `census.names` comes from).
+* `census.names` is documented as what it is: a bundled, frozen table of 1990
+  Census first names and 2010 Census surnames, not birth-certificate counts.
+  The README is corrected to match.
+* `prx` and `sfx` are documented as removed wherever they occur, not only at
+  the front or the end of a name.
+
 ## Suffix gaps on Form 990 Part VII names
 
 * About 90 credentials, religious-order post-nominals, Masonic offices and

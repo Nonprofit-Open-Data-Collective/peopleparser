@@ -52,15 +52,16 @@ extract_component <- function( name_vec, elements ) {
 assign_names <- function( x, suffix.name ) {
   l <- nchar( x )
   i <- length( x )
-  s <- 1 %in% l
+  s <- l == 1                            # which tokens are initials
 
-  get_gender <- function(xx, fallback = FALSE) {
+  # gender from the given-name tokens; with no census evidence, fall back to
+  # "U" (or "M" when a generational suffix is present) at 50.0 -- the same
+  # fallback as the 2-token and 4+-token branches. determine_gender() returns
+  # a bare "U" in that case, which used to leave gender_confidence NA.
+  get_gender <- function(xx) {
     if ( length(xx) == 0 ) return( c("U", "0.0") )
     g <- determine_gender( get_census_data( xx ) )
-    if ( g[1] == "U" && fallback ) {
-      if ( suffix.name != "" ) g <- c("M", "50.0")
-      g[2] <- "50.0"
-    }
+    if ( g[1] == "U" ) g <- c( ifelse( suffix.name != "", "M", "U" ), "50.0" )
     g
   }
 
@@ -73,7 +74,7 @@ assign_names <- function( x, suffix.name ) {
 
   } else if ( i == 3 && sum( s ) == 2 ) {
     last <- x[ which( l > 1 ) ]; first <- x[ - which( l > 1 ) ][1]; middle <- x[ - which( l > 1 ) ][2]
-    gender <- c("U", "0.0")
+    gender <- get_gender( c( first, middle ) )
 
   } else if ( i == 3 ) {
     is.surname <- check_if_surname( x )
@@ -120,24 +121,36 @@ assign_names <- function( x, suffix.name ) {
 #'
 #' @param middle Character string of middle name.
 #' @param last Character string of last name.
+#' @param tokens Optional character vector of the name tokens in their original
+#'   order. When the surname parts sit next to each other there, they are joined
+#'   in that order (`MARY ANN SMITH JONES` gives `SMITH-JONES`, not
+#'   `JONES-SMITH`). Otherwise they are joined middle first, then last.
 #'
 #' @return A character vector of length 2: updated middle name and last name.
 #' @export
-resolve_middle_name <- function( middle, last ) {
+resolve_middle_name <- function( middle, last, tokens = NULL ) {
   mn <- strsplit( middle, ' ' )[[1]]
-  
-  if ( length( mn ) == 1 && check_if_surname( mn ) ) return( c("", paste( mn, last, sep = "-" )) )
+
+  join_surname <- function( parts ) {
+    if ( !is.null( tokens ) ) {
+      p <- match( parts, tokens )
+      if ( !anyNA( p ) && !anyDuplicated( p ) &&
+           all( diff( sort( p ) ) == 1 ) ) parts <- parts[ order( p ) ]
+    }
+    paste( parts, collapse = "-" )
+  }
+
+  if ( length( mn ) == 1 && check_if_surname( mn ) ) return( c("", join_surname( c( mn, last ) )) )
 
   if ( length( mn ) > 1 ) {
     if ( nchar( mn[1] ) == 1 && nchar( mn[2] ) > 1 )
-      return( c( mn[1], paste0( paste( mn[-1], collapse = "-" ), "-", last ) ) )
+      return( c( mn[1], join_surname( c( mn[-1], last ) ) ) )
 
     surname_flags <- check_if_surname( mn )
     if ( any( surname_flags ) ) {
       start <- min( which( surname_flags ) )
       mid <- if ( start > 1 ) paste( mn[1:(start - 1)], collapse = " " ) else ""
-      last <- paste0( paste( mn[start:length(mn)], collapse = "-" ), "-", last )
-      return( c( mid, last ) )
+      return( c( mid, join_surname( c( mn[start:length(mn)], last ) ) ) )
     }
   }
 
@@ -449,7 +462,7 @@ parse_name <- function( x, prefixes = prx, suffixes = sfx, sanitize = FALSE,
 
   # fix middle/last inference
   if ( nchar( middle.name ) > 2 ) {
-    mn_fixed <- resolve_middle_name( middle.name, last.name )
+    mn_fixed <- resolve_middle_name( middle.name, last.name, tokens = Lx )
     middle.name <- mn_fixed[1]
     last.name <- mn_fixed[2]
   }

@@ -35,7 +35,8 @@ Defaults to \code{FALSE}.}
 A \code{data.frame} with one row per input name and columns \code{name} (the
 original input) plus the parsed components returned by \code{\link[=parse_name]{parse_name()}}:
 \code{salutation}, \code{first_name}, \code{middle_name}, \code{last_name}, \code{suffix}, \code{status},
-\code{gender}, and \code{gender_confidence}.
+\code{gender}, and \code{gender_confidence}, plus the nickname columns when
+\code{add_nicknames = TRUE}.
 }
 \description{
 Parses a character vector of raw names into a data frame of structured name

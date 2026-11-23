@@ -19,7 +19,8 @@
 #' @return A `data.frame` with one row per input name and columns `name` (the
 #'   original input) plus the parsed components returned by [parse_name()]:
 #'   `salutation`, `first_name`, `middle_name`, `last_name`, `suffix`, `status`,
-#'   `gender`, and `gender_confidence`.
+#'   `gender`, and `gender_confidence`, plus the nickname columns when
+#'   `add_nicknames = TRUE`.
 #' @keywords parse
 #' @export
 #' @examples

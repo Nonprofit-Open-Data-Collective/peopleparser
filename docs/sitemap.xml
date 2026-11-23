@@ -1,7 +1,10 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/404.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/articles/canonical-first-names.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/articles/gender-scoring.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/articles/index.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-cleaning.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-order.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/authors.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/index.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/LICENSE.html</loc></url>
@@ -39,6 +42,7 @@
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/resolve_middle_name.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/sanitize_input.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/sfx.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/split_glued_credentials.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/split_glued_honorific.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/split_glued_initial.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/trailing_ambiguous_credentials.html</loc></url>

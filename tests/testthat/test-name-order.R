@@ -1,0 +1,58 @@
+# Regression tests for name-order and compound-surname bugs found while
+# writing the name-order and gender-scoring vignettes.
+
+pn <- function(x) parse_name(x, sanitize = TRUE)
+
+test_that("VAN DER keeps the space before it", {
+  expect_equal(prep_name("MARY VAN DER BERG"), "MARY VAN-DER-BERG")
+  r <- pn("MARY VAN DER BERG")
+  expect_equal(r$first_name, "MARY")
+  expect_equal(r$last_name, "VAN-DER-BERG")
+})
+
+test_that("particle chains join fully (DE LA ROSA)", {
+  expect_equal(fix_locative_surnames("Carlos De La Rosa"), "Carlos De-La-Rosa")
+  expect_equal(fix_locative_surnames("CARLOS DE-LA ROSA"), "CARLOS DE-LA-ROSA")
+  expect_equal(fix_locative_surnames("Dylan Van"), "Dylan Van")
+  r <- pn("JUAN CARLOS DE LA ROSA")
+  expect_equal(r$first_name, "JUAN")
+  expect_equal(r$middle_name, "CARLOS")
+  expect_equal(r$last_name, "DE-LA-ROSA")
+  expect_equal(pn("ANNA MARIA DE LA CRUZ")$last_name, "DE-LA-CRUZ")
+})
+
+test_that("double surnames keep their written order", {
+  r <- pn("MARY ANN SMITH JONES")
+  expect_equal(r$middle_name, "ANN")
+  expect_equal(r$last_name, "SMITH-JONES")
+  expect_equal(pn("MARIA GARCIA LOPEZ")$last_name, "GARCIA-LOPEZ")
+  expect_equal(pn("ELIZABETH ANNE WALKER SMITH")$last_name, "WALKER-SMITH")
+  # surname-first input: parts are not adjacent, so middle-then-last order
+  expect_equal(pn("SMITH JOHN WALKER")$last_name, "WALKER-SMITH")
+})
+
+test_that("resolve_middle_name orders adjacent parts by the tokens", {
+  expect_equal(resolve_middle_name("ANN JONES", "SMITH"), c("ANN", "JONES-SMITH"))
+  expect_equal(resolve_middle_name("ANN JONES", "SMITH",
+                                   tokens = c("MARY", "ANN", "SMITH", "JONES")),
+               c("ANN", "SMITH-JONES"))
+})
+
+test_that("names with two initials are parsed and never get NA confidence", {
+  for (x in c("A J SMITH", "SMITH A J")) {
+    r <- pn(x)
+    expect_equal(r$first_name, "A")
+    expect_equal(r$middle_name, "J")
+    expect_equal(r$last_name, "SMITH")
+    expect_equal(r$gender, "U")
+    expect_equal(r$gender_confidence, "50.0")
+  }
+  expect_equal(pn("A J SMITH JR")$gender, "M")
+  expect_false(is.na(pn("JOHN SMITH A")$gender_confidence))
+})
+
+test_that("no NA gender confidence on the sample names", {
+  set.seed(1)
+  d <- do.call(rbind, lapply(sanitize_input(sample(names_1000, 200)), parse_name))
+  expect_false(anyNA(d$gender_confidence))
+})

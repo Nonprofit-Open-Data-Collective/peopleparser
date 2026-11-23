@@ -2,6 +2,40 @@
 
 ## peopleparser (development version)
 
+### Name-order and gender fixes
+
+- [`prep_name()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/prep_name.md)
+  no longer glues `VAN DER` onto the word before it (`MARY VAN DER BERG`
+  gave `MARYVAN-DER-BERG`).
+- [`fix_locative_surnames()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/fix_locative_surnames.md)
+  joins particle chains fully: `DE LA ROSA` -\> `DE-LA-ROSA` (was last
+  name `DE-LA` with `ROSA` as a middle name).
+- Double surnames keep their written order when the parts are adjacent:
+  `MARY ANN SMITH JONES` -\> `SMITH-JONES` (was `JONES-SMITH`),
+  `JEAN A DU PONT` -\> `DU-PONT`.
+  [`resolve_middle_name()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/resolve_middle_name.md)
+  gains a `tokens` argument.
+- Three-token names now count initials correctly, so two initials
+  (`A J SMITH`, `SMITH A J`) take their own rule, and a three-token name
+  with no census gender evidence gets `U`/`50.0` (or `M`/`50.0` with a
+  suffix) instead of an `NA` confidence. On the 1,000 sample names, 7
+  parses change, all fixes.
+
+### Documentation
+
+- Three new guides:
+  [`vignette("name-cleaning")`](https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-cleaning.md)
+  (clutter, titles, credentials, suffixes, status),
+  [`vignette("name-order")`](https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-order.md)
+  (name-order rules and compound surnames) and
+  [`vignette("gender-scoring")`](https://nonprofit-open-data-collective.github.io/peopleparser/articles/gender-scoring.md)
+  (the gender score and where `census.names` comes from).
+- `census.names` is documented as what it is: a bundled, frozen table of
+  1990 Census first names and 2010 Census surnames, not
+  birth-certificate counts. The README is corrected to match.
+- `prx` and `sfx` are documented as removed wherever they occur, not
+  only at the front or the end of a name.
+
 ### Suffix gaps on Form 990 Part VII names
 
 - About 90 credentials, religious-order post-nominals, Masonic offices
@@ -14,9 +48,14 @@
   `JOINED`, `NON VOTING`, …) strip only at the end of a name. `BISHOP`,
   `SHERIFF`, `CANTOR`, `DEACON`, `CAPTAIN`, `MOST` and similar strip
   only as the first word. So `JOHN BISHOP` keeps the surname.
-- 23 short credentials that are also names or places (`MA`, `DC`, `OP`,
-  `SC`, …) strip only inside a trailing run that has a clear credential,
-  as `RM` already did.
+- 17 short credentials that are also names or places (`MA`, `DC`, `NP`,
+  …) strip only inside a trailing run that has a clear credential, as
+  `RM` already did. The short religious-order post-nominals `OP`, `SC`,
+  `SP`, `CR`, `HM` and `DD` strip at the end of a name even on their
+  own, but never as leading initials.
+- Fused credentials are split before stripping (`JRMD` -\> `JR` `MD`,
+  `MDMPH` -\> `MD` `MPH`), from the third token on and never for a
+  census name.
 - [`prep_name()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/prep_name.md)
   joins `ST` to the following surname (`ST-CLAIR`, which no longer loses
   `ST`), `DR PH` into `DRPH` and `NON VOTING` into one word, and treats

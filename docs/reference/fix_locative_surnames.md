@@ -56,8 +56,8 @@ names <- c(
 )
 
 fix_locative_surnames(names)
-#> [1] "Jane Van-Dyke"        "Bob VAN-DERVAL"       "Mary von-Diesel"     
-#> [4] "Carlos De-La NA-Rosa" "VAN-CLIBURN"          "Dylan Van"           
+#> [1] "Jane Van-Dyke"     "Bob VAN-DERVAL"    "Mary von-Diesel"  
+#> [4] "Carlos De-La-Rosa" "VAN-CLIBURN"       "Dylan Van"        
 #> [1] "Jane Van-Dyke"     "Bob VAN-DERVAL"     "Mary von-Diesel"
-#> [4] "Carlos De-La-Rosa" "VAN CLIBURN"        "Dylan Van"
+#> [4] "Carlos De-La-Rosa" "VAN-CLIBURN"        "Dylan Van"
 ```

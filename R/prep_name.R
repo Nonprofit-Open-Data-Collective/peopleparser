@@ -55,7 +55,7 @@ remove_punctuation <- function(x) {
 #'
 #' fix_locative_surnames(names)
 #' #> [1] "Jane Van-Dyke"     "Bob VAN-DERVAL"     "Mary von-Diesel"
-#' #> [4] "Carlos De-La-Rosa" "VAN CLIBURN"        "Dylan Van"
+#' #> [4] "Carlos De-La-Rosa" "VAN-CLIBURN"        "Dylan Van"
 #'
 #' @seealso
 #'   For background on surname particles and compound surnames, see
@@ -64,22 +64,21 @@ remove_punctuation <- function(x) {
 #' @export
 fix_locative_surnames <- function(x,
                                   particles = c("LA", "VON", "VAN", "VANDER", "DEL", "DE", "DI", "DEN", "DER", "MC", "O")) {
+  particles <- toupper(particles)
   lapply(strsplit(x, "\\s+"), function(words) {
-    upper_words <- toupper(words)
-    i <- seq_along(words)
-    
-    # find positions where current word is a prefix and next exists
-    b <- upper_words %in% particles & i < length(words)
-    
-    # merge prefix and next word with a dash
-    if (any(b)) {
-      for (j in which(b)) {
+    # Join a word that is (or, once dashed, ends in) a particle to the next
+    # word, and keep going, so chains join fully: DE LA ROSA -> DE-LA-ROSA,
+    # and DE-LA ROSA (after prep_name()'s " DE " rule) -> DE-LA-ROSA.
+    j <- 1
+    while (j < length(words)) {
+      tail_part <- sub(".*-", "", toupper(words[j]))
+      if (tail_part %in% particles) {
         words[j] <- paste0(words[j], "-", words[j + 1])
-        words[j + 1] <- NA_character_  # remove merged element
+        words <- words[-(j + 1)]
+      } else {
+        j <- j + 1
       }
-      words <- words[!is.na(words)]
     }
-    
     paste(words, collapse = " ")
   }) |> unlist()
 }
@@ -129,7 +128,7 @@ prep_name <- function(x) {
   # strip: join it to the next word, as for DE
   x <- gsub( "(?<=[A-Z]) ST (?=[A-Z])", " ST-", x, perl = TRUE )
   x <- gsub( "LO GRANDE", "LO-GRANDE", x )
-  x <- gsub( " VAN DER ", "VAN-DER-", x )        
+  x <- gsub( " VAN DER ", " VAN-DER-", x )
   x <- gsub( " DE ", " DE-", x )  # DE LEEUW to DE-LEEUW
   x <- gsub( "-DE ", "-DE-", x )  # BAILEY-DE LEEUW to BAILEY-DE-LEEUW: double compound last name
   x <- gsub( " DI ", " DI-", x )  # Julia Di Bussolo  

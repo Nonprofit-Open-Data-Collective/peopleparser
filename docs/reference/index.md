@@ -70,7 +70,7 @@ first name.
 Bundled datasets and lookup tables.
 
 - [`census.names`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/census.names.md)
-  : Frequency of name occurrence on US birth certificates.
+  : U.S. Census first-name and surname frequencies.
 - [`known_titles()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/known_titles.md)
   : Known Titles and Abbreviations
 - [`prx`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/prx.md)

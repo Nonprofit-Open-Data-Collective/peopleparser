@@ -16,6 +16,12 @@ navbar:
     guides:
       text: Guides
       menu:
+      - text: Cleaning names
+        href: articles/name-cleaning.html
+      - text: Name order and compound surnames
+        href: articles/name-order.html
+      - text: Gender scoring and the census table
+        href: articles/gender-scoring.html
       - text: Canonical first names, nicknames and gender
         href: articles/canonical-first-names.html
 
@@ -23,6 +29,9 @@ articles:
 - title: Guides
   navbar: ~
   contents:
+  - name-cleaning
+  - name-order
+  - gender-scoring
   - canonical-first-names
 
 reference:
