@@ -11,6 +11,7 @@ Converts raw text names into structured components (salutation, first name, midd
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://nonprofit-open-data-collective.github.io/peopleparser/}
   \item \url{https://github.com/Nonprofit-Open-Data-Collective/peopleparser}
   \item Report bugs at \url{https://github.com/Nonprofit-Open-Data-Collective/peopleparser/issues}
 }

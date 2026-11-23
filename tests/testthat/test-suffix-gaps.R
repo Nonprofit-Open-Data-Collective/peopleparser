@@ -61,6 +61,30 @@ test_that("ST, VANDER and DR PH are joined in prep_name", {
 test_that("known_titles covers the new tokens without duplicates", {
   kt <- known_titles()
   expect_false(anyDuplicated(kt$abbr) > 0)
-  expect_true(all(c("SJ", "RSM", "PA-C", "MA", "RABBI", "BISHOP", "TRUSTEE") %in% kt$abbr))
+  expect_true(all(c("SJ", "RSM", "PA-C", "MA", "OP", "RABBI", "BISHOP", "TRUSTEE") %in% kt$abbr))
   expect_equal(kt$type[kt$abbr == "CSC"], "Religious Order")
+})
+
+test_that("short religious-order post-nominals strip at the end, not as initials", {
+  expect_equal(pn("SISTER CATHERINE BAZAR OP")$last_name, "BAZAR")
+  expect_equal(pn("SR VIVIENNE JOYCE SC")$last_name, "JOYCE")
+  expect_equal(pn("FR JORGE RATIVA OP")$last_name, "RATIVA")
+  expect_equal(pn("SR ANN M HORGAN SP")$last_name, "HORGAN")
+  expect_equal(pn("Most Rev Richard C Hanifen DD")$last_name, "HANIFEN")
+  expect_equal(pn("CR HACKWORTHY")$first_name, "CR")        # initials, kept
+  r <- pn("HM CHERRY"); expect_true("HM" %in% c(r$first_name, r$last_name))   # kept (order is census-based)
+  r <- pn("BRUCE DD MACRAE")
+  expect_equal(c(r$first_name, r$last_name), c("BRUCE", "MACRAE"))
+  expect_equal(r$middle_name, "DD")
+})
+
+test_that("fused credentials are split and stripped", {
+  r <- pn("JOHN SMITH JRMD")
+  expect_equal(c(r$first_name, r$last_name, r$suffix), c("JOHN", "SMITH", "JR"))
+  expect_equal(pn("ANNA LEE MDMPH")$last_name, "LEE")
+  expect_equal(pn("JANE ROE PHDMPH")$last_name, "ROE")
+  expect_equal(split_glued_credentials("JRMD"), c("JR", "MD"))
+  expect_equal(split_glued_credentials("COVERY"), "COVERY")      # a surname
+  expect_equal(split_glued_credentials("EXOFFICIO"), "EXOFFICIO") # a status word
+  expect_equal(pn("RONALD H COVERY JR")$last_name, "COVERY")
 })

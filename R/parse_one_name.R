@@ -210,14 +210,47 @@ split_glued_initial <- function( tok ) {
   tok
 }
 
+#' Split Two Credentials Fused Into One Token
+#'
+#' Suffix gaps (data-raw/SUFFIX-GAPS-PART7.md): `JRMD` -> `c("JR", "MD")`,
+#' `MDMPH` -> `c("MD", "MPH")`. Splits only when both parts are known suffixes
+#' or credentials of two or more letters, and the whole token is not itself a
+#' census name. [deglue_tokens()] applies it only from the third token on, so
+#' a given name or initials at the start are never split.
+#'
+#' @param tok A single uppercased name token.
+#' @param parts Known suffixes and credentials. Defaults to `sfx` and the
+#'   single-word entries of `prx`.
+#' @return The token unchanged, or a length-2 vector of the two credentials.
+#' @keywords internal
+split_glued_credentials <- function( tok, parts = c( sfx, prx[ !grepl( " ", prx ) ] ) ) {
+  n <- nchar( tok )
+  if ( n < 4 || tok %in% c( parts, .status_words, .trailing_status_words,
+                            .trailing_only_titles, .leading_only_titles ) ||
+       .is_census_name( tok ) ) return( tok )
+  for ( i in 2:( n - 2 ) ) {
+    a <- substring( tok, 1, i ); b <- substring( tok, i + 1 )
+    if ( a %in% .glue_credential_syllables ) next
+    if ( a %in% parts && b %in% parts ) return( c( a, b ) )
+  }
+  tok
+}
+
+# Two-letter prx entries that are also common name syllables; they may not
+# start a fused-credential split (COVERY is a surname, CODO a given name).
+.glue_credential_syllables <- c("CO", "DO", "EX", "AP", "HE", "LA", "LL", "TG",
+                                "BG", "MG", "FC", "CE", "RT")
+
 #' Repair Glued Tokens in a Name Vector
 #'
-#' Always applies [split_glued_honorific()] (Defect 2). The stray-initial split
-#' [split_glued_initial()] (Defect 3) is applied only when `split_initials` is
-#' `TRUE`, because it cannot be made safe from a single record: a foreign given
-#' name absent from the census (e.g. `KYUN`) is indistinguishable from a glued
-#' initial + surname (`C` + `WOOLFOLK`) on frequency alone, so it should run
-#' only where cross-year consensus (synthid) can vet the result.
+#' Always applies [split_glued_honorific()] (Defect 2), and from the third
+#' token on [split_glued_credentials()] (`JRMD`, `MDMPH`). The stray-initial
+#' split [split_glued_initial()] (Defect 3) is applied only when
+#' `split_initials` is `TRUE`, because it cannot be made safe from a single
+#' record: a foreign given name absent from the census (e.g. `KYUN`) is
+#' indistinguishable from a glued initial + surname (`C` + `WOOLFOLK`) on
+#' frequency alone, so it should run only where cross-year consensus (synthid)
+#' can vet the result.
 #'
 #' @param name_vec A character vector of name tokens.
 #' @param split_initials Logical; enable the Defect 3 stray-initial split.
@@ -226,9 +259,14 @@ split_glued_initial <- function( tok ) {
 #' @keywords internal
 deglue_tokens <- function( name_vec, split_initials = FALSE ) {
   if ( length( name_vec ) == 0 ) return( name_vec )
-  unlist( lapply( name_vec, function( tok ) {
+  unlist( lapply( seq_along( name_vec ), function( i ) {
+    tok <- name_vec[ i ]
     h <- split_glued_honorific( tok )
     if ( length( h ) > 1 ) return( h )
+    if ( i >= 3 ) {
+      g <- split_glued_credentials( tok )
+      if ( length( g ) > 1 ) return( g )
+    }
     if ( split_initials ) split_glued_initial( tok ) else tok
   } ), use.names = FALSE )
 }
@@ -240,9 +278,10 @@ deglue_tokens <- function( name_vec, split_initials = FALSE ) {
 .ambiguous_suffix_credentials <- c(
   "RM",
   # Suffix gaps tier 2 (data-raw/SUFFIX-GAPS-PART7.md): short credentials that
-  # collide with surnames (MA, BA), initials (OP, SC, NP), places (DC, ND) or
-  # words (APR, PT, DBA, STD).
-  "MA", "BA", "AB", "ND", "NP", "PT", "DC", "SC", "OP", "HM", "CR", "SP", "DD",
+  # collide with surnames (MA, BA), initials (NP, AB), places (DC, ND) or words
+  # (APR, PT, DBA, STD) even at the end of a name, so they need a real
+  # credential beside them. (OP, SC, SP, CR, HM, DD are trailing-only titles.)
+  "MA", "BA", "AB", "ND", "NP", "PT", "DC",
   "VF", "VG", "PM", "APR", "DBA", "CEM", "CRP", "MSA", "AUD", "STD")
 
 # Status words that parse_name() always moves to `status`.
@@ -265,6 +304,12 @@ deglue_tokens <- function( name_vec, split_initials = FALSE ) {
 # its role word by prep_name() (VICE CHAIR -> VICECHAIR).
 .trailing_only_titles <- c(
   "SJ", "CISA", "IHM", "FAIA",
+  # Short religious-order and church post-nominals: Dominicans (OP), Sisters of
+  # Charity (SC), Sisters of Providence (SP), Resurrectionists (CR), Humility of
+  # Mary (HM), Doctor of Divinity (DD). In 410,071 Part VII names none is a
+  # census name; at the end of a name they are the order (26 of 28 OP), while
+  # first-word uses are initials (CR HACKWORTHY, HM CHERRY, BRUCE DD MACRAE).
+  "OP", "SC", "SP", "CR", "HM", "DD",
   "PRESIDENT", "CHAIR", "CHAIRMAN", "CHAIRWOMAN", "CHAIRPERSON", "SECRETARY",
   "TREASURER", "TRUSTEE", "SVP", "EVP", "ASSOCIATE", "ASSOC", "ASST",
   "VICECHAIR", "VICECHAIRMAN", "VICECHAIRWOMAN", "VICECHAIRPERSON",

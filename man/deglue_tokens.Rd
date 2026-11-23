@@ -16,11 +16,13 @@ Defaults to \code{FALSE}.}
 A character vector, possibly longer than the input.
 }
 \description{
-Always applies \code{\link[=split_glued_honorific]{split_glued_honorific()}} (Defect 2). The stray-initial split
-\code{\link[=split_glued_initial]{split_glued_initial()}} (Defect 3) is applied only when \code{split_initials} is
-\code{TRUE}, because it cannot be made safe from a single record: a foreign given
-name absent from the census (e.g. \code{KYUN}) is indistinguishable from a glued
-initial + surname (\code{C} + \code{WOOLFOLK}) on frequency alone, so it should run
-only where cross-year consensus (synthid) can vet the result.
+Always applies \code{\link[=split_glued_honorific]{split_glued_honorific()}} (Defect 2), and from the third
+token on \code{\link[=split_glued_credentials]{split_glued_credentials()}} (\code{JRMD}, \code{MDMPH}). The stray-initial
+split \code{\link[=split_glued_initial]{split_glued_initial()}} (Defect 3) is applied only when
+\code{split_initials} is \code{TRUE}, because it cannot be made safe from a single
+record: a foreign given name absent from the census (e.g. \code{KYUN}) is
+indistinguishable from a glued initial + surname (\code{C} + \code{WOOLFOLK}) on
+frequency alone, so it should run only where cross-year consensus (synthid)
+can vet the result.
 }
 \keyword{internal}

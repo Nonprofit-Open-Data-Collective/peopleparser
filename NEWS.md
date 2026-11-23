@@ -12,9 +12,14 @@
   `JOINED`, `NON VOTING`, ...) strip only at the end of a name. `BISHOP`,
   `SHERIFF`, `CANTOR`, `DEACON`, `CAPTAIN`, `MOST` and similar strip only as
   the first word. So `JOHN BISHOP` keeps the surname.
-* 23 short credentials that are also names or places (`MA`, `DC`, `OP`,
-  `SC`, ...) strip only inside a trailing run that has a clear credential, as
-  `RM` already did.
+* 17 short credentials that are also names or places (`MA`, `DC`, `NP`,
+  ...) strip only inside a trailing run that has a clear credential, as `RM`
+  already did. The short religious-order post-nominals `OP`, `SC`, `SP`, `CR`,
+  `HM` and `DD` strip at the end of a name even on their own, but never as
+  leading initials.
+* Fused credentials are split before stripping (`JRMD` -> `JR` `MD`,
+  `MDMPH` -> `MD` `MPH`), from the third token on and never for a census
+  name.
 * `prep_name()` joins `ST` to the following surname (`ST-CLAIR`, which no
   longer loses `ST`), `DR PH` into `DRPH` and `NON VOTING` into one word, and
   treats `VANDER` as a surname particle.

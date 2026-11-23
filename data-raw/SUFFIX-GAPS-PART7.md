@@ -29,9 +29,25 @@ definition for every entry.
     Most of the 742 are by design. Real surnames are kept (BISHOP, CANTOR,
     DEACON, SHERIFF, BEGIN, VANDER-...). Tier-2 tokens with no real
     credential beside them are kept (DC 105, MA 76, OP 28, SC 21).
-  * Not done: step 6 (entity names, affiliate codes); fused JRMD/MDMPH;
-    new credentials seen in the check (FNP-BC, FHIMSS, CNS). A rerun of
-    suffix-gaps-part7.R now treats all of the lists above as known. -->
+  * Not done: step 6 (entity names, affiliate codes); new credentials seen
+    in the check (FNP-BC, FHIMSS, CNS). A rerun of suffix-gaps-part7.R now
+    treats all of the lists above as known. -->
+
+<!-- STATUS 2026-11-23 (2): short religious orders and fused credentials.
+  * OP, SC, SP, CR, HM and DD moved from the tier-2 ambiguous list to
+    `.trailing_only_titles`. None is a census name. In the 410,071 names they
+    almost always sit last (OP 26 of 28), where they are the order, usually
+    alone ("SISTER CATHERINE BAZAR OP"), so the credential-run rule missed
+    them. First-word uses are initials (CR HACKWORTHY, HM CHERRY,
+    BRUCE DD MACRAE), so they could not go in `prx`.
+  * Fused credentials: `split_glued_credentials()`, run by deglue_tokens()
+    from the third token on, splits a token that is not a census name and
+    is two known suffixes or credentials (JRMD -> JR MD, MDMPH -> MD MPH).
+    Two-letter prx syllables (CO, DO, EX, ...) may not start a split, which
+    keeps COVERY (surname) and CODO (given name). It splits 39 distinct
+    tokens in the 410,071 names, all genuine (VPCEO, LTCOL, PHDMPH,
+    CAPTUSNRET, ...). -->
+
 
 
 ## Summary
