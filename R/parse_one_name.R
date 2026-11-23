@@ -237,7 +237,77 @@ deglue_tokens <- function( name_vec, split_initials = FALSE ) {
 # in a TRAILING run of known titles/suffixes that also contains at least one
 # unambiguous credential -- so "MA LIN" (a real name) is never mistaken for a
 # credential, but "... RDMS RM" is.
-.ambiguous_suffix_credentials <- c("RM")
+.ambiguous_suffix_credentials <- c(
+  "RM",
+  # Suffix gaps tier 2 (data-raw/SUFFIX-GAPS-PART7.md): short credentials that
+  # collide with surnames (MA, BA), initials (OP, SC, NP), places (DC, ND) or
+  # words (APR, PT, DBA, STD).
+  "MA", "BA", "AB", "ND", "NP", "PT", "DC", "SC", "OP", "HM", "CR", "SP", "DD",
+  "VF", "VG", "PM", "APR", "DBA", "CEM", "CRP", "MSA", "AUD", "STD")
+
+# Status words that parse_name() always moves to `status`.
+.status_words <- c("-RESIGNED", "RESIGNED", "INTERIM", "EXOFFICIO",
+                   "FORMER", "PAST", "DECEASED", "RETIRED", "OUTGOING",
+                   "ASOF", "TEMPORARY", "THRU", "THROUGH", "PRESENT")
+
+# Tenure notes (suffix gaps): moved to `status` only from the trailing run,
+# because some are also surnames (BEGIN 2,644 and BEGAN 351 census records;
+# PART 103): "KENT CASHELL TERM ENDED" -> status TERM_ENDED.
+.trailing_status_words <- c(
+  "TERM", "ENDED", "EXIT", "EXITED", "JOINED", "BEGAN", "BEGIN", "ENTERED",
+  "ENTRY", "TERMINATED", "RESIGN", "SINCE", "TIL", "THR", "EFFECTIVE",
+  "INCOMING", "EMERITUS", "DECD", "NONVOTING", "PART", "PARTIAL", "YEAR")
+
+# Titles stripped only from the trailing run, with at least two name tokens
+# before it: SJ and CISA begin some names as initials or a given name, IHM and
+# FAIA are rare surnames, and role words appended to a name ("LARRY BLACK
+# SECRETARY") include surnames (PRESIDENT 895, CHAIR 139). VICE is joined to
+# its role word by prep_name() (VICE CHAIR -> VICECHAIR).
+.trailing_only_titles <- c(
+  "SJ", "CISA", "IHM", "FAIA",
+  "PRESIDENT", "CHAIR", "CHAIRMAN", "CHAIRWOMAN", "CHAIRPERSON", "SECRETARY",
+  "TREASURER", "TRUSTEE", "SVP", "EVP", "ASSOCIATE", "ASSOC", "ASST",
+  "VICECHAIR", "VICECHAIRMAN", "VICECHAIRWOMAN", "VICECHAIRPERSON",
+  "VICEPRESIDENT", "VICEPRES")
+
+# Titles that are also common surnames (BISHOP 116,618 census records; SHERIFF,
+# CANTOR, DEACON, CAPTAIN, MOST, IMAM, BROTHER): stripped only as the first
+# token with at least two tokens after it ("RABBI"-style "BISHOP JOHN SMITH"),
+# so "JOHN BISHOP" keeps its surname. MOST is nearly always "MOST REV".
+.leading_only_titles <- c("BISHOP", "SHERIFF", "CANTOR", "DEACON", "CAPTAIN",
+                          "MOTHER", "MOST", "IMAM", "BROTHER")
+
+#' Position-Restricted Titles and Status Words to Strip
+#'
+#' Finds the tokens that may be stripped from this name only because of where
+#' they sit: trailing-only titles and tenure status words inside the maximal
+#' trailing run of known tokens (each with at least two tokens before it), and a
+#' leading-only title in first position (with at least two tokens after it).
+#'
+#' @param name_vec A character vector of name tokens.
+#' @param prefixes,suffixes The active prefix/suffix removal sets.
+#' @return A list with `titles` (tokens to add to the prefix set for this name)
+#'   and `status` (tokens to add to the status set).
+#' @keywords internal
+positional_tokens <- function( name_vec, prefixes, suffixes ) {
+  out <- list( titles = character( 0 ), status = character( 0 ) )
+  n <- length( name_vec )
+  if ( n == 0 ) return( out )
+  known <- c( prefixes, suffixes, .ambiguous_suffix_credentials, .status_words,
+              .trailing_status_words, .trailing_only_titles )
+  k <- 0
+  while ( k < n && name_vec[ n - k ] %in% known ) k <- k + 1
+  if ( k > 0 ) {
+    idx <- ( n - k + 1 ):n
+    idx <- idx[ idx >= 3 ]          # at least two tokens before the token itself
+    run <- name_vec[ idx ]
+    out$titles <- unique( run[ run %in% .trailing_only_titles ] )
+    out$status <- unique( run[ run %in% .trailing_status_words ] )
+  }
+  if ( n >= 3 && name_vec[1] %in% .leading_only_titles )
+    out$titles <- unique( c( out$titles, name_vec[1] ) )
+  out
+}
 
 #' Ambiguous Suffix Credentials Eligible to Strip
 #'
@@ -255,7 +325,10 @@ trailing_ambiguous_credentials <- function( name_vec, prefixes, suffixes,
                                             ambiguous = .ambiguous_suffix_credentials ) {
   n <- length( name_vec )
   if ( n == 0 ) return( character( 0 ) )
-  known <- c( prefixes, suffixes, ambiguous )
+  # the run may also hold role words and tenure notes ("... RN MA TERM ENDED"),
+  # but only real credentials (prefixes/suffixes) license an ambiguous strip
+  known <- c( prefixes, suffixes, ambiguous, .status_words,
+              .trailing_status_words, .trailing_only_titles )
   k <- 0
   while ( k < n && name_vec[ n - k ] %in% known ) k <- k + 1
   if ( k == 0 ) return( character( 0 ) )
@@ -306,8 +379,13 @@ parse_name <- function( x, prefixes = prx, suffixes = sfx, sanitize = FALSE,
 
   # Ambiguous short credentials (e.g. RM) strip only from a trailing credential
   # run (Defect 1 follow-up); fold the eligible ones into the prefix set here.
+  # Position-restricted titles and tenure notes (suffix gaps,
+  # data-raw/SUFFIX-GAPS-PART7.md): trailing-only titles and role words,
+  # leading-only titles that are also surnames, tenure words at the end.
+  pos <- positional_tokens( Lx, prefixes, suffixes )
   prefixes <- c( prefixes,
-                 trailing_ambiguous_credentials( Lx, prefixes, suffixes ) )
+                 trailing_ambiguous_credentials( Lx, prefixes, suffixes ),
+                 pos$titles )
 
   salutation.out <- extract_component( Lx, prefixes )
   salutation.name <- salutation.out$name; Lx <- salutation.out$remainder
@@ -315,9 +393,7 @@ parse_name <- function( x, prefixes = prx, suffixes = sfx, sanitize = FALSE,
   suffix.out <- extract_component( Lx, suffixes )
   suffix.name <- suffix.out$name; Lx <- suffix.out$remainder
 
-  status.out <- extract_component( Lx, c("-RESIGNED", "RESIGNED", "INTERIM", "EXOFFICIO",
-                                        "FORMER", "PAST", "DECEASED", "RETIRED", "OUTGOING",
-                                        "ASOF", "TEMPORARY", "THRU", "THROUGH", "PRESENT") )
+  status.out <- extract_component( Lx, c( .status_words, pos$status ) )
   status <- status.out$name; Lx <- status.out$remainder
 
   name.parts <- assign_names( Lx, suffix.name )

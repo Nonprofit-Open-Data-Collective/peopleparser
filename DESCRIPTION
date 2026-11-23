@@ -13,7 +13,8 @@ Description: Converts raw text names into structured components (salutation,
     their formal names, nicknames and spelling variants, and reduced to one
     canonical form, using a variant table observed in Form 990 filings.
 License: GPL-3
-URL: https://github.com/Nonprofit-Open-Data-Collective/peopleparser
+URL: https://nonprofit-open-data-collective.github.io/peopleparser/,
+    https://github.com/Nonprofit-Open-Data-Collective/peopleparser
 BugReports: https://github.com/Nonprofit-Open-Data-Collective/peopleparser/issues
 Depends:
     R (>= 4.1.0)
@@ -31,6 +32,7 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
+Config/Needs/website: Nonprofit-Open-Data-Collective/pkgstyle
 Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true

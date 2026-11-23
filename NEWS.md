@@ -1,5 +1,27 @@
 # peopleparser (development version)
 
+## Suffix gaps on Form 990 Part VII names
+
+* About 90 credentials, religious-order post-nominals, Masonic offices and
+  fused military tokens (`RSM`, `CSJ`, `PHARMD`, `FACHE`, `CFRE`, `USNRET`,
+  ...) and the hyphenated credentials (`PA-C`, `SHRM-SCP`, ...) are now
+  stripped, so they no longer end up in `last_name` (`REARDON-RSM`). Source:
+  `data-raw/SUFFIX-GAPS-PART7.md`.
+* Some titles now strip only by position. `SJ`, `CISA`, role words
+  (`TRUSTEE`, `SECRETARY`, `VICE CHAIR`, ...) and tenure notes (`TERM`,
+  `JOINED`, `NON VOTING`, ...) strip only at the end of a name. `BISHOP`,
+  `SHERIFF`, `CANTOR`, `DEACON`, `CAPTAIN`, `MOST` and similar strip only as
+  the first word. So `JOHN BISHOP` keeps the surname.
+* 23 short credentials that are also names or places (`MA`, `DC`, `OP`,
+  `SC`, ...) strip only inside a trailing run that has a clear credential, as
+  `RM` already did.
+* `prep_name()` joins `ST` to the following surname (`ST-CLAIR`, which no
+  longer loses `ST`), `DR PH` into `DRPH` and `NON VOTING` into one word, and
+  treats `VANDER` as a surname particle.
+* `known_titles()` covers the new tokens and has new types: Religious Order,
+  Fraternal Office and Military Status.
+* The pkgdown site uses the NODC `pkgstyle` template.
+
 ## Name parsing: title vs. given-name / surname collisions
 
 * Given names that were miscategorized as credentials in the `prx` prefix list

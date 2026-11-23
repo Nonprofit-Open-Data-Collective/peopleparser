@@ -34,6 +34,9 @@ The \code{type} field groups each abbreviation into broad semantic categories su
 \item \strong{Military Rank / Affiliation}: formal ranks or affiliations (e.g., "Lt", "Col", "USAF").
 \item \strong{Professional Credential}: licensed or certified professional credentials (e.g., "CPA", "PE", "RN").
 \item \strong{Organizational Role}: internal titles or positions (e.g., "CEO", "VP", "Ex Officio").
+\item \strong{Religious Order}: post-nominals of religious congregations (e.g., "SJ", "OSB", "RSM").
+\item \strong{Fraternal Office}: Masonic and similar offices (e.g., "RWGM", "PM").
+\item \strong{Military Status}: service status such as retired (e.g., "USNRET").
 \item \strong{Other}: geographic or contextual markers not part of formal titles (e.g., "La", "ZL").
 }
 }

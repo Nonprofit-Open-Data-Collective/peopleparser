@@ -105,6 +105,14 @@ c("TAMMY HICKEL - ZOLA", "LILLIE BRYANT-HOBBS", "Rev M Fisher IV",
 "Angela Brooks LCSW", "David Chen MHA CNMT", "Maria Torres CRA MSRS",
 # Defect 2: honorific glued to the given name with no separating space.
 "MRWILLIAM SMITH", "MRJOHN DOE", "MRHENRY", "MRTOM JONES", "MRJASON REED",
-"MREDWARD KING"
+"MREDWARD KING",
+# Suffix gaps on Part VII names (SUFFIX-GAPS-PART7.md), one per group:
+# religious orders, health care, business, hyphenated, ambiguous run,
+# trailing-only, leading-only, tenure, role words, ST and VANDER.
+"Sister Maureen Reardon RSM", "SALVATORE MASON PHARMD", "MARY JONES CFRE",
+"JANE DOE PA-C", "KATHY WILDE RN MA", "JOHN SMITH SJ", "BISHOP JOHN SMITH",
+"MOST REV JOHN SMITH", "Kent Cashell term ended 1231", "LARRY BLACK SECRETARY",
+"MARY ANN SMITH VICE CHAIR", "SEAN ST CLAIR", "ANNE H VANDER GHEYNST",
+"RABBI DAVID COHEN", "JOHN DOE USNRET"
 )
 

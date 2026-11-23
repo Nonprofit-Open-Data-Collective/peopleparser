@@ -57,6 +57,14 @@ such as:
 - **Organizational Role**: internal titles or positions (e.g., "CEO",
   "VP", "Ex Officio").
 
+- **Religious Order**: post-nominals of religious congregations (e.g.,
+  "SJ", "OSB", "RSM").
+
+- **Fraternal Office**: Masonic and similar offices (e.g., "RWGM",
+  "PM").
+
+- **Military Status**: service status such as retired (e.g., "USNRET").
+
 - **Other**: geographic or contextual markers not part of formal titles
   (e.g., "La", "ZL").
 

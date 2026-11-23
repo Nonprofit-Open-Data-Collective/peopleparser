@@ -6,7 +6,7 @@
 \usage{
 fix_locative_surnames(
   x,
-  particles = c("LA", "VON", "VAN", "DEL", "DE", "DI", "DEN", "DER", "MC", "O")
+  particles = c("LA", "VON", "VAN", "VANDER", "DEL", "DE", "DI", "DEN", "DER", "MC", "O")
 )
 }
 \arguments{

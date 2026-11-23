@@ -14,12 +14,12 @@ Source:
 
 Lecy J, Flanigan M (2026). *peopleparser: Parse Raw Person Names into
 Structured Components*. R package version 0.0.0.9000,
-<https://github.com/Nonprofit-Open-Data-Collective/peopleparser>.
+<https://nonprofit-open-data-collective.github.io/peopleparser/>.
 
     @Manual{,
       title = {peopleparser: Parse Raw Person Names into Structured Components},
       author = {Jesse Lecy and Michael Flanigan},
       year = {2026},
       note = {R package version 0.0.0.9000},
-      url = {https://github.com/Nonprofit-Open-Data-Collective/peopleparser},
+      url = {https://nonprofit-open-data-collective.github.io/peopleparser/},
     }

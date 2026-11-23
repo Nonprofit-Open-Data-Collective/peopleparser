@@ -1,7 +1,29 @@
 url: https://nonprofit-open-data-collective.github.io/peopleparser/
+destination: docs
 
+# The site style (colours, fonts, navbar, light/dark switch) comes from the
+# pkgstyle template package (github.com/Nonprofit-Open-Data-Collective/pkgstyle).
 template:
-  bootstrap: 5
+  package: pkgstyle
+
+home:
+  title: "peopleparser: parse raw person names"
+
+navbar:
+  structure:
+    left: [intro, guides, reference, news]
+  components:
+    guides:
+      text: Guides
+      menu:
+      - text: Canonical first names, nicknames and gender
+        href: articles/canonical-first-names.html
+
+articles:
+- title: Guides
+  navbar: ~
+  contents:
+  - canonical-first-names
 
 reference:
 - title: Parse names

@@ -161,7 +161,30 @@ c("MR", "DR", "MISS", "MS", "MRS", "MD", "RN", "DOCTOR", "DDS",
 "FACMPE", "CE", "CAE",
 # Health-care post-nominal credentials leaking into last_name (Defect 1,
 # data-raw/PARSE-FAIL-NOTES.md). Multi-letter, low collision risk with names.
-"RTR", "FASRT", "RDMS", "RVT", "LCSW", "MHA", "CNMT", "CRA", "MSRS")
+"RTR", "FASRT", "RDMS", "RVT", "LCSW", "MHA", "CNMT", "CRA", "MSRS",
+# Suffix gaps on Form 990 Part VII names, tier 1 (data-raw/SUFFIX-GAPS-PART7.md).
+# Unambiguous; stripped wherever they occur. SJ, CISA, IHM and FAIA are in
+# .trailing_only_titles instead (initials, a given name, rare surnames).
+# Religious orders and church degrees
+"RSM", "OSF", "CSJ", "FSC", "CBS", "CSJP", "SCC", "OSB", "SSJ", "CSJB", "SCL",
+"FSGM", "CCVI", "PHJC", "DMIN", "MDIV", "JCD", "JCL", "STL",
+# Health care
+"FACHE", "BSN", "PHARMD", "FCCP", "DPM", "FACP", "CRNA", "MBBS", "CCM", "LICSW",
+"FAAP", "FACC", "FAAN", "LMSW", "FNP", "PSYD", "APRN", "FHFMA", "DSW", "CCRN",
+"DHA", "MHSA", "MSPH", "DPT", "MSHA", "BDS", "CNM", "CPHQ", "LPC", "LSCSW",
+"CPHIMS", "FACOG", "OTRL", "CHFP", "LMFT", "LPN", "MDS",
+# Professional, business and legal
+"CFRE", "ESQUIRE", "MPA", "CCIFP", "CIC", "SPHR", "CPM", "CLU", "CHFC", "CPCU",
+"ACFRE", "CHMM", "PMP", "CDT", "CLFP", "CMA", "LEED", "CCIM", "CFM", "LLM",
+"CGMA", "MPP", "AICP", "CTFA", "PHR", "CEBS", "CFE",
+# Masonic offices; retired military with USN/USMC/USAF and RET fused
+"RWJGW", "RWGM", "RWDGM", "RWSGW", "USNRET", "USMCRET", "USAFRET",
+# Hyphenated credentials (prep_name() keeps the hyphen, so they arrive whole)
+"SHRM-SCP", "SHRM-CP", "PA-C", "RN-BC", "NP-C", "RNC-OB",
+# Prefixes that are not surnames (ATTY and RABBI are, rarely; see
+# .leading_only_titles for the common ones)
+"RABBI", "ARCHBISHOP", "MONSIGNOR", "PROFESSOR", "ATTY", "BR",
+"RADM", "VADM", "ADM", "ADMIRAL", "BGEN", "CMSGT", "MSGT", "CPL", "CSM", "SGTMAJ")
 # NOTE: "RM" (Registered Tech., Mammography) is deliberately NOT added here.
 # As a 2-letter token it collides with initials/short names and must only be
 # stripped inside a trailing run of already-known credentials -- see Defect 1

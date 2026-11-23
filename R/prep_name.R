@@ -63,7 +63,7 @@ remove_punctuation <- function(x) {
 #'
 #' @export
 fix_locative_surnames <- function(x,
-                                  particles = c("LA", "VON", "VAN", "DEL", "DE", "DI", "DEN", "DER", "MC", "O")) {
+                                  particles = c("LA", "VON", "VAN", "VANDER", "DEL", "DE", "DI", "DEN", "DER", "MC", "O")) {
   lapply(strsplit(x, "\\s+"), function(words) {
     upper_words <- toupper(words)
     i <- seq_along(words)
@@ -120,6 +120,14 @@ prep_name <- function(x) {
   x <- gsub( "LT GEN", "LTGEN", x )
   x <- gsub( "EX OFFICIO", "EXOFFICIO", x )
   x <- gsub( "EX-OFFICIO", "EXOFFICIO", x )
+  # suffix gaps (data-raw/SUFFIX-GAPS-PART7.md)
+  x <- gsub( "\\bDR PH\\b", "DRPH", x )                 # Dr.P.H. -> DRPH
+  x <- gsub( "\\bNON[ -]VOTING\\b", "NONVOTING", x )
+  x <- gsub( "\\bVICE[ -](CHAIR|CHAIRMAN|CHAIRWOMAN|CHAIRPERSON|PRESIDENT|PRES)\\b",
+             "VICE\\1", x )                            # VICE alone is a surname
+  # ST inside a name is "Saint" in a surname (SEAN ST CLAIR), not a title to
+  # strip: join it to the next word, as for DE
+  x <- gsub( "(?<=[A-Z]) ST (?=[A-Z])", " ST-", x, perl = TRUE )
   x <- gsub( "LO GRANDE", "LO-GRANDE", x )
   x <- gsub( " VAN DER ", "VAN-DER-", x )        
   x <- gsub( " DE ", " DE-", x )  # DE LEEUW to DE-LEEUW
