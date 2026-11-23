@@ -1,29 +1,18 @@
-#' U.S. Census first-name and surname frequencies.
+#' Frequency of name occurrence on US birth certificates.
 #'
-#' Names with how often each is a given name (by gender) and a surname in U.S.
-#' Census Bureau name lists. Used to decide name order and to score gender.
-#'
-#' A frozen copy bundled with the package: it is not downloaded or rebuilt,
-#' and no build script survives. Its contents date from the package's first
-#' commit (2020-08-01), adapted from Michael Flanigan's Name-Parser. Judging by
-#' its contents, the given names are the 1990 Census first-name lists (1,219
-#' male and 4,275 female names, published as percentages and scaled here to
-#' counts) and the surnames are the 2010 Census surname file (162,253 names
-#' held by 100 or more people, plus an `ALL OTHER NAMES` row). See
-#' `vignette("gender-scoring")`.
+#' A dataset containing names cross-tabbed by whether they
+#' are listed as first or last names in the US Census.
 #'
 #' @format A [data.table::data.table] with 164,850 rows and 5 variables, keyed on
 #'   `name`:
 #' \describe{
-#'   \item{name}{upper-case name (a factor)}
-#'   \item{male_value}{count of men with this first name (1990 lists)}
-#'   \item{female_value}{count of women with this first name (1990 lists)}
-#'   \item{first_name_value}{count as a first name: `male_value + female_value`}
-#'   \item{last_name_value}{count as a surname (2010 surname file)}
+#'   \item{name}{name as listed on US birth certificates}
+#'   \item{male_value}{count of times the name is listed for a male}
+#'   \item{female_value}{count of times the name is listed for a female}
+#'   \item{first_name_value}{count of times the name appears in the first-name position}
+#'   \item{last_name_value}{count of times the name appears in the last-name position}
 #' }
-#' @source U.S. Census Bureau: Frequently Occurring Surnames from the 2010
-#'   Census, and Frequently Occurring Names from the 1990 Census.
-#'   \url{https://www.census.gov/topics/population/genealogy/data.html}
+#' @source \url{https://www.census.gov/en.html}
 "census.names"
 
 

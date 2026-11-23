@@ -132,9 +132,7 @@ de_clutter <- function( x )
 #' Known Prefix (Salutation / Title) Strings
 #'
 #' A character vector of upper-cased salutations, titles, degrees, ranks, and
-#' credentials that [parse_name()] removes wherever they occur in a name and
-#' reports in the `salutation` column. Some further titles are removed only by
-#' position; see `vignette("name-cleaning")`.
+#' credentials that are stripped from the front of a name during parsing.
 #'
 #' @format A character vector.
 #' @export
@@ -199,8 +197,8 @@ c("MR", "DR", "MISS", "MS", "MRS", "MD", "RN", "DOCTOR", "DDS",
 
 #' Known Suffix Strings
 #'
-#' A character vector of generational suffixes that [parse_name()] removes
-#' wherever they occur in a name and reports in the `suffix` column.
+#' A character vector of generational suffixes that are stripped from the end of
+#' a name during parsing.
 #'
 #' @format A character vector.
 #' @export
