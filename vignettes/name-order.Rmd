@@ -100,6 +100,27 @@ show(c("JOHN SMITH", "SMITH JOHN", "JORDAN TAYLOR", "TAYLOR JORDAN",
 positions, and `JAMES` is the stronger given name, so the parse comes out as
 `JAMES LESLIE`.
 
+When exactly one of the two tokens is in neither census list, two more rules
+apply, because an unlisted token would otherwise always be ranked the surname:
+
+* an unlisted **first** token of one or two letters is initials, not the
+  surname (`HM CHERRY`, `DC ALLEN`). A trailing one is usually a middle
+  initial left after a stripped surname, and keeps the usual ranking;
+* a listed token whose surname share is at least 0.85 is the surname
+  (`NICKHATH SHERIFF`, `SANRDA COHEN`). Names that are also common given names
+  fall below that (`IRWIN`, `LEE`, `HOWARD`), so `HOWARD SITRON` keeps
+  `SITRON`.
+
+A title that is also a surname (`SHERIFF`, `BISHOP`, `BROTHER`) as the first of
+two tokens is treated as a title when the other token is not mostly a given
+name. `BISHOP JOHN` is left alone, because it may be `JOHN BISHOP` written
+surname first.
+
+```{r}
+show(c("HM CHERRY", "NICKHATH SHERIFF", "HOWARD SITRON", "SHERIFF MASRY",
+       "BISHOP JOHN"))
+```
+
 ### Three tokens with two initials
 
 The full token is the surname and the initials are the first and middle

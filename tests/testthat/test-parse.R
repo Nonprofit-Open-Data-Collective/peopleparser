@@ -237,3 +237,25 @@ test_that("census.names is the 2020 Census table and surnames win ties", {
   expect_equal(parse_name("SJ SMITH", sanitize = TRUE)$last_name, "SMITH")
   expect_equal(parse_name("BEGIN SMITH", sanitize = TRUE)$last_name, "SMITH")
 })
+
+test_that("two-token names: leading initials, strong surnames, leading titles", {
+  pn <- function(x) { r <- parse_name(x, sanitize = TRUE); c(r$salutation, r$first_name, r$last_name) }
+  # an unlisted leading token of one or two letters is initials
+  expect_equal(pn("HM CHERRY"), c("", "HM", "CHERRY"))
+  expect_equal(pn("DC ALLEN"), c("", "DC", "ALLEN"))
+  expect_equal(pn("J MARKEL"), c("", "J", "MARKEL"))
+  # a trailing initial left after stripping keeps the old ranking
+  expect_equal(pn("THOMAS H LEED")[2:3], c("THOMAS", "H"))
+  # a listed token with surname share >= 0.85 beats an unlisted token
+  expect_equal(pn("NICKHATH SHERIFF"), c("", "NICKHATH", "SHERIFF"))
+  expect_equal(pn("SANRDA COHEN"), c("", "SANRDA", "COHEN"))
+  # names that are also common given names do not (IRWIN 0.84, HOWARD 0.65)
+  expect_equal(pn("HOWARD SITRON"), c("", "HOWARD", "SITRON"))
+  expect_equal(pn("RABBI IRWIN ZEPLOWITZ"), c("RABBI", "IRWIN", "ZEPLOWITZ"))
+  # a leading title before a non-given name is a title
+  expect_equal(pn("SHERIFF MASRY"), c("SHERIFF", "", "MASRY"))
+  expect_equal(pn("BROTHER STEWART"), c("BROTHER", "", "STEWART"))
+  # ...but not before a given name or an initial (may be written surname first)
+  expect_equal(pn("BISHOP JOHN"), c("", "JOHN", "BISHOP"))
+  expect_equal(pn("BISHOP J"), c("", "J", "BISHOP"))
+})

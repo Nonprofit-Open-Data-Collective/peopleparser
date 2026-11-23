@@ -1,5 +1,19 @@
 # peopleparser (development version)
 
+## Two-token names
+
+* In a two-token name with exactly one token absent from the census, a
+  leading token of one or two letters is read as initials (`HM CHERRY`,
+  `DC ALLEN`), and a listed token whose surname share is at least 0.85 is the
+  surname (`NICKHATH SHERIFF`, `SANRDA COHEN`). Before, the unlisted token
+  always became the surname.
+* A title that is also a surname (`SHERIFF`, `BROTHER`, `BISHOP`, ...) as the
+  first of two tokens is a title when the other token is not mostly a given
+  name (`SHERIFF MASRY` -> salutation `SHERIFF`, last name `MASRY`).
+* On 9,608 Form 990 Part VII names, 20 parses change, 18 of them fixes.
+  Parse consistency for the 829 linked people written more than one way is
+  unchanged.
+
 * `first_name_pairs` is refreshed from synthid's revised first-name variant
   table: 24,967 pairs, 1,002 in the reviewed lexicon (was 24,972 and 1,007).
   Five pairs were dropped after a review of matches across organizations

@@ -85,7 +85,7 @@ assign_names <- function( x, suffix.name ) {
 
   } else if ( i == 2 ) {
     data <- get_census_data( x )
-    pos <- determine_surname( data )
+    pos <- two_token_surname( x, data )
     last <- x[pos]; first <- x[-pos]; middle <- ""
     gender <- determine_gender( data[-pos, ] )
     if ( gender[1] == "U" ) gender <- c( ifelse( suffix.name != "", "M", "U" ), "50.0" )
@@ -114,6 +114,40 @@ assign_names <- function( x, suffix.name ) {
   list( first = first, middle = middle, last = last, gender = gender )
 }
 
+
+#' Surname Position in a Two-Token Name
+#'
+#' [determine_surname()] with two extra rules for a two-token name in which
+#' exactly one token is absent from the census (there, the unlisted token
+#' otherwise ranks as the likely surname):
+#' * an unlisted first token of one or two letters is initials, not the
+#'   surname (`HM CHERRY`, `DC ALLEN`, `J MARKEL`);
+#' * a listed token whose surname share is at least 0.85 is the surname
+#'   (`NICKHATH SHERIFF`, `REETIKA KUMAR`, `SANRDA COHEN`). Names that are
+#'   also common given names stay below that (`IRWIN` 0.84, `LEE` 0.81,
+#'   `HOWARD` 0.65), so `HOWARD SITRON` keeps `SITRON` as the surname.
+#'
+#' @param x A length-2 character vector of name tokens.
+#' @param data Census rows for `x`, as returned by [get_census_data()].
+#' @return The position (1 or 2) of the surname.
+#' @keywords internal
+two_token_surname <- function( x, data ) {
+  pos <- determine_surname( data )
+  f <- data$first_name_value; l <- data$last_name_value
+  known <- f + l > 0
+  if ( sum( known ) != 1 ) return( pos )
+  k <- which( known ); u <- which( !known )
+  # leading initials (HM CHERRY); a trailing one is a middle initial left after
+  # a stripped surname or title (THOMAS H [LEED]) and keeps the old ranking
+  if ( nchar( x[u] ) <= 2 ) return( if ( u == 1L ) k else pos )
+  p_last <- ( 1 + l[k] ) / ( 1 + f[k] + l[k] )
+  if ( p_last >= .two_token_surname_min ) return( k )
+  pos
+}
+
+# Surname share at or above which a listed token beats an unlisted one as the
+# surname of a two-token name (two_token_surname()).
+.two_token_surname_min <- 0.85
 
 #' Resolve Middle Names as Potential Surnames
 #'
@@ -364,6 +398,14 @@ positional_tokens <- function( name_vec, prefixes, suffixes ) {
   }
   if ( n >= 3 && name_vec[1] %in% .leading_only_titles )
     out$titles <- unique( c( out$titles, name_vec[1] ) )
+  # two tokens: a leading title before a word that is not mostly a given name
+  # ("SHERIFF MASRY", "BROTHER STEWART"); "BISHOP JOHN" is left alone, since it
+  # may be JOHN BISHOP written surname first
+  if ( n == 2 && name_vec[1] %in% .leading_only_titles && nchar( name_vec[2] ) > 1 ) {
+    cd <- get_census_data( name_vec[2] )
+    if ( cd$first_name_value[1] <= cd$last_name_value[1] )
+      out$titles <- unique( c( out$titles, name_vec[1] ) )
+  }
   out
 }
 
@@ -496,7 +538,10 @@ parse_name <- function( x, prefixes = prx, suffixes = sfx, sanitize = FALSE,
   # first EARL), a TRAILING token is the surname and the remaining token is the
   # given name ("TOM MAJOR" -> first TOM, last MAJOR). JD/ED are kept explicitly
   # in case they fall below the census first-name threshold.
+  # A leading-only title stripped from a two-token name ("SHERIFF MASRY") was
+  # judged a title on purpose, so it is not restored.
   if ( first.name == "" && salutation.name != "" &&
+       !salutation.name %in% .leading_only_titles &&
        ( salutation.name %in% c( "JD", "ED" ) ||
          get_census_data( salutation.name )$first_name_value[1] > 0 ) ) {
     sal.pos  <- match( salutation.name, orig.tokens )

@@ -8,3 +8,4 @@ inst/doc
 # nickname pilot caches
 data-raw/pilot-nicknames/results/*.rds
 data-raw/census-names-src/
+data-raw/ssa-names-src/
