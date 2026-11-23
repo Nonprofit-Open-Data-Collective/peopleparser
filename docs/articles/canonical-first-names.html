@@ -304,7 +304,7 @@ CHRISTOPHER:</p>
 field in a parse is itself inferred from the first name (census name
 frequencies), and so is the female share recorded in the variant table.
 99.8% of PAT records in the table are female. A parse of PAT says female
-with only 66% confidence. That is below the threshold of 80, so PAT
+with only 60% confidence. That is below the threshold of 80, so PAT
 alone stays ambiguous. PAT resolves to a formal name only when a
 salutation gives the gender. The <code>gender</code> column of the parse
 does not use the salutation (MR PAT still reads F there); the nickname
@@ -313,9 +313,9 @@ step does:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/parse_names.html">parse_names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PAT SMITH"</span>, <span class="st">"MR PAT SMITH"</span>, <span class="st">"MRS PAT SMITH"</span><span class="op">)</span>, add_nicknames <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[</span></span>
 <span>  , <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"gender"</span>, <span class="st">"gender_confidence"</span>, <span class="st">"first_name_canonical"</span>, <span class="st">"canonical_rule"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;            name gender gender_confidence first_name_canonical canonical_rule</span></span>
-<span><span class="co">#&gt; 1     PAT SMITH      F              65.8                  PAT      ambiguous</span></span>
-<span><span class="co">#&gt; 2  MR PAT SMITH      F              65.8              PATRICK       nickname</span></span>
-<span><span class="co">#&gt; 3 MRS PAT SMITH      F              65.8             PATRICIA       nickname</span></span></code></pre></div>
+<span><span class="co">#&gt; 1     PAT SMITH      F              59.5                  PAT      ambiguous</span></span>
+<span><span class="co">#&gt; 2  MR PAT SMITH      F              59.5              PATRICK       nickname</span></span>
+<span><span class="co">#&gt; 3 MRS PAT SMITH      F              59.5             PATRICIA       nickname</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="a-names-whole-family-first_name_variants">A name’s whole family: <code>first_name_variants()</code><a class="anchor" aria-label="anchor" href="#a-names-whole-family-first_name_variants"></a>

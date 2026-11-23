@@ -21,21 +21,22 @@ for where the table comes from).
 looks up each token:
 
 ``` r
-get_census_data(c("JOHN", "SMITH", "JORDAN", "TAYLOR", "LESLIE", "KYUN"))
+get_census_data(c("JOHN", "SMITH", "JORDAN", "TAYLOR", "LESLIE", "TSHEPO"))
 #> Key: <ordinal>
 #>      name ordinal male_value female_value first_name_value last_name_value
 #>    <char>   <int>      <num>        <num>            <num>           <num>
-#> 1:   JOHN       1    4684909        18222          4703131           33543
-#> 2:  SMITH       2          0            0                0         2442977
-#> 3: JORDAN       3      80206        18222            98428          208403
-#> 4: TAYLOR       4      34374        18222            52596          751209
-#> 5: LESLIE       5     116012       233858           349870           25078
-#> 6:   KYUN       6          0            0                0               0
+#> 1:   JOHN       1    3118620         6503          3125123           37363
+#> 2:  SMITH       2       4102          897             4999         2369644
+#> 3: JORDAN       3     329734       122596           452330          200984
+#> 4: TAYLOR       4      95501       293715           389216          723758
+#> 5: LESLIE       5      52838       237654           290492           24015
+#> 6: TSHEPO       6          0            0                0               0
 ```
 
-Some tokens are clearly one or the other (`JOHN`, `SMITH`). Others are
-both: `JORDAN` and `TAYLOR` are common in both positions, and `LESLIE`
-is a common surname too. `KYUN` is in neither list.
+Some tokens are clearly one or the other (`JOHN`, `SMITH`), although in
+the 2020 lists even `SMITH` is a rare given name. Others are both:
+`JORDAN` and `TAYLOR` are common in both positions, and `LESLIE` is a
+common surname too. `TSHEPO` is in neither list.
 
 [`check_if_surname()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/check_if_surname.md)
 turns the counts into a yes/no: a token reads as a surname when more
@@ -43,23 +44,32 @@ than half of its count is in the surname position. A token found in
 neither list reads as a surname.
 
 ``` r
-x <- c("JOHN", "SMITH", "JORDAN", "TAYLOR", "LESLIE", "KYUN")
+x <- c("JOHN", "SMITH", "JORDAN", "TAYLOR", "LESLIE", "TSHEPO")
 setNames(check_if_surname(x), x)
-#>   JOHN  SMITH JORDAN TAYLOR LESLIE   KYUN 
-#>  FALSE   TRUE   TRUE   TRUE  FALSE   TRUE
+#>   JOHN  SMITH JORDAN TAYLOR LESLIE TSHEPO 
+#>  FALSE   TRUE  FALSE   TRUE  FALSE   TRUE
 ```
 
 [`determine_surname()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/determine_surname.md)
-picks the single most likely surname in a name. It ranks tokens by the
-share of their count in the surname position, with one added to the
-surname count so that unknown tokens score high:
+picks the single most likely surname in a name. It uses each token’s
+surname share,
 
 ``` math
 
 p_{last} = \frac{1 + n_{last}}{1 + n_{first} + n_{last}}
 ```
 
-Ties go to the more common token, then to the later position.
+and ranks tokens in three tiers:
+
+1.  known names that are overwhelmingly surnames
+    ($`p_{last} \ge 0.95`$), the more common first;
+2.  tokens in neither list;
+3.  all other names, by $`p_{last}`$.
+
+Remaining ties go to the later position. The first tier keeps `SMITH`
+ahead of an initial or an unlisted token: `SMITH` has a few thousand
+given-name uses in the 2020 lists, so its share is just under 1, while
+an unlisted token’s share is exactly 1.
 
 ``` r
 cd <- get_census_data(c("TAYLOR", "JORDAN"))
@@ -254,11 +264,13 @@ and a trailing one is the surname. See
 - The rules know only how common each token is, not which order a source
   uses. If you know the source writes `LAST FIRST`, reorder the tokens
   before parsing.
-- Tokens absent from the census read as surnames. A rare given name
-  (`KYUN`) can end up as the surname. When both tokens read as surnames,
-  the more common one wins: in `LUDWIG VAN BEETHOVEN`, `LUDWIG` (a
-  census surname, never a census first name) beats the unlisted
-  `VAN-BEETHOVEN`.
+- Tokens absent from the census rank above names that are mostly given
+  names, so an unlisted given name (`SEOKJIN`) next to a common given
+  name can end up as the surname. Strong surnames rank above unlisted
+  tokens (`TSHEPO CHO` keeps `CHO`), but a name with a large given-name
+  share does not: in `LUDWIG VAN BEETHOVEN` the unlisted `VAN-BEETHOVEN`
+  is the surname, as it should be, because `LUDWIG` is also a given
+  name.
 - A name that is both a common given name and a common surname (`JAMES`,
   `LESLIE`, `TAYLOR`, `JORDAN`) is decided by a small margin. Treat such
   parses as uncertain.

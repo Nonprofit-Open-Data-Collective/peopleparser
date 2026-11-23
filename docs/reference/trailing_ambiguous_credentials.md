@@ -33,3 +33,10 @@ trailing_ambiguous_credentials(
 ## Value
 
 A character vector of tokens to strip (possibly empty).
+
+## Details
+
+A religious title as the first word also licenses `DC` (Daughters of
+Charity) and `MA` in the trailing run, when at least two tokens sit
+between the title and the credential: `"SR ELLEN KRON DC"` -\> `KRON`,
+while `"SR ANNA MA"` keeps `MA`.

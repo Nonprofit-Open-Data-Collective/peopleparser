@@ -374,6 +374,11 @@ positional_tokens <- function( name_vec, prefixes, suffixes ) {
 #' contains at least one unambiguous credential. Callers add the result to the
 #' prefix-removal set for that name only.
 #'
+#' A religious title as the first word also licenses `DC` (Daughters of
+#' Charity) and `MA` in the trailing run, when at least two tokens sit between
+#' the title and the credential: `"SR ELLEN KRON DC"` -> `KRON`, while
+#' `"SR ANNA MA"` keeps `MA`.
+#'
 #' @param name_vec A character vector of name tokens.
 #' @param prefixes,suffixes The active prefix/suffix removal sets.
 #' @param ambiguous The ambiguous short-credential set.
@@ -390,10 +395,26 @@ trailing_ambiguous_credentials <- function( name_vec, prefixes, suffixes,
   k <- 0
   while ( k < n && name_vec[ n - k ] %in% known ) k <- k + 1
   if ( k == 0 ) return( character( 0 ) )
-  run <- name_vec[ ( n - k + 1 ):n ]
-  if ( !any( run %in% c( prefixes, suffixes ) ) ) return( character( 0 ) )
-  unique( run[ run %in% ambiguous ] )
+  idx <- ( n - k + 1 ):n
+  run <- name_vec[ idx ]
+  out <- if ( any( run %in% c( prefixes, suffixes ) ) ) unique( run[ run %in% ambiguous ] ) else character( 0 )
+  # religious-title licence: a leading religious title, and the token at least
+  # fourth (title + two names before it)
+  if ( name_vec[1] %in% .religious_titles ) {
+    rel <- name_vec[ idx[ idx >= 4 ] ]
+    out <- unique( c( out, rel[ rel %in% .religious_licensed_credentials ] ) )
+  }
+  out
 }
+
+# Religious titles that, as the first word, license .religious_licensed_credentials
+# at the end of the name. In 410,071 Part VII names, 39 of the 100 names ending in
+# DC start with SR/SISTER (Daughters of Charity); MA after a religious title is
+# the degree (1 of 57).
+.religious_titles <- c("SR", "SISTER", "SIS", "FR", "FATHER", "REV", "REVEREND",
+                       "BR", "BROTHER", "MSGR", "MONSIGNOR", "MOST", "VERY",
+                       "BISHOP", "ARCHBISHOP", "DEACON", "MOTHER")
+.religious_licensed_credentials <- c("DC", "MA")
 
 
 #' Parse a Full Name into Components

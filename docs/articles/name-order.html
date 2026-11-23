@@ -97,37 +97,49 @@ and how often a surname in U.S. Census Bureau name files (see
 <code><a href="../articles/gender-scoring.html">vignette("gender-scoring")</a></code> for where the table comes from).
 <code><a href="../reference/get_census_data.html">get_census_data()</a></code> looks up each token:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/get_census_data.html">get_census_data</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN"</span>, <span class="st">"SMITH"</span>, <span class="st">"JORDAN"</span>, <span class="st">"TAYLOR"</span>, <span class="st">"LESLIE"</span>, <span class="st">"KYUN"</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/get_census_data.html">get_census_data</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN"</span>, <span class="st">"SMITH"</span>, <span class="st">"JORDAN"</span>, <span class="st">"TAYLOR"</span>, <span class="st">"LESLIE"</span>, <span class="st">"TSHEPO"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Key: &lt;ordinal&gt;</span></span>
 <span><span class="co">#&gt;      name ordinal male_value female_value first_name_value last_name_value</span></span>
 <span><span class="co">#&gt;    &lt;char&gt;   &lt;int&gt;      &lt;num&gt;        &lt;num&gt;            &lt;num&gt;           &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:   JOHN       1    4684909        18222          4703131           33543</span></span>
-<span><span class="co">#&gt; 2:  SMITH       2          0            0                0         2442977</span></span>
-<span><span class="co">#&gt; 3: JORDAN       3      80206        18222            98428          208403</span></span>
-<span><span class="co">#&gt; 4: TAYLOR       4      34374        18222            52596          751209</span></span>
-<span><span class="co">#&gt; 5: LESLIE       5     116012       233858           349870           25078</span></span>
-<span><span class="co">#&gt; 6:   KYUN       6          0            0                0               0</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:   JOHN       1    3118620         6503          3125123           37363</span></span>
+<span><span class="co">#&gt; 2:  SMITH       2       4102          897             4999         2369644</span></span>
+<span><span class="co">#&gt; 3: JORDAN       3     329734       122596           452330          200984</span></span>
+<span><span class="co">#&gt; 4: TAYLOR       4      95501       293715           389216          723758</span></span>
+<span><span class="co">#&gt; 5: LESLIE       5      52838       237654           290492           24015</span></span>
+<span><span class="co">#&gt; 6: TSHEPO       6          0            0                0               0</span></span></code></pre></div>
 <p>Some tokens are clearly one or the other (<code>JOHN</code>,
-<code>SMITH</code>). Others are both: <code>JORDAN</code> and
+<code>SMITH</code>), although in the 2020 lists even <code>SMITH</code>
+is a rare given name. Others are both: <code>JORDAN</code> and
 <code>TAYLOR</code> are common in both positions, and
-<code>LESLIE</code> is a common surname too. <code>KYUN</code> is in
+<code>LESLIE</code> is a common surname too. <code>TSHEPO</code> is in
 neither list.</p>
 <p><code><a href="../reference/check_if_surname.html">check_if_surname()</a></code> turns the counts into a yes/no: a
 token reads as a surname when more than half of its count is in the
 surname position. A token found in neither list reads as a surname.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN"</span>, <span class="st">"SMITH"</span>, <span class="st">"JORDAN"</span>, <span class="st">"TAYLOR"</span>, <span class="st">"LESLIE"</span>, <span class="st">"KYUN"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN"</span>, <span class="st">"SMITH"</span>, <span class="st">"JORDAN"</span>, <span class="st">"TAYLOR"</span>, <span class="st">"LESLIE"</span>, <span class="st">"TSHEPO"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="../reference/check_if_surname.html">check_if_surname</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="va">x</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   JOHN  SMITH JORDAN TAYLOR LESLIE   KYUN </span></span>
-<span><span class="co">#&gt;  FALSE   TRUE   TRUE   TRUE  FALSE   TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt;   JOHN  SMITH JORDAN TAYLOR LESLIE TSHEPO </span></span>
+<span><span class="co">#&gt;  FALSE   TRUE  FALSE   TRUE  FALSE   TRUE</span></span></code></pre></div>
 <p><code><a href="../reference/determine_surname.html">determine_surname()</a></code> picks the single most likely surname
-in a name. It ranks tokens by the share of their count in the surname
-position, with one added to the surname count so that unknown tokens
-score high:</p>
+in a name. It uses each token’s surname share,</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mi>l</mi><mi>a</mi><mi>s</mi><mi>t</mi></mrow></msub><mo>=</mo><mfrac><mrow><mn>1</mn><mo>+</mo><msub><mi>n</mi><mrow><mi>l</mi><mi>a</mi><mi>s</mi><mi>t</mi></mrow></msub></mrow><mrow><mn>1</mn><mo>+</mo><msub><mi>n</mi><mrow><mi>f</mi><mi>i</mi><mi>r</mi><mi>s</mi><mi>t</mi></mrow></msub><mo>+</mo><msub><mi>n</mi><mrow><mi>l</mi><mi>a</mi><mi>s</mi><mi>t</mi></mrow></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">
 p_{last} = \frac{1 + n_{last}}{1 + n_{first} + n_{last}}
 </annotation></semantics></math></p>
-<p>Ties go to the more common token, then to the later position.</p>
+<p>and ranks tokens in three tiers:</p>
+<ol style="list-style-type: decimal">
+<li>known names that are overwhelmingly surnames
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mi>l</mi><mi>a</mi><mi>s</mi><mi>t</mi></mrow></msub><mo>≥</mo><mn>0.95</mn></mrow><annotation encoding="application/x-tex">p_{last} \ge 0.95</annotation></semantics></math>),
+the more common first;</li>
+<li>tokens in neither list;</li>
+<li>all other names, by
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mrow><mi>l</mi><mi>a</mi><mi>s</mi><mi>t</mi></mrow></msub><annotation encoding="application/x-tex">p_{last}</annotation></semantics></math>.</li>
+</ol>
+<p>Remaining ties go to the later position. The first tier keeps
+<code>SMITH</code> ahead of an initial or an unlisted token:
+<code>SMITH</code> has a few thousand given-name uses in the 2020 lists,
+so its share is just under 1, while an unlisted token’s share is exactly
+1.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_census_data.html">get_census_data</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TAYLOR"</span>, <span class="st">"JORDAN"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/determine_surname.html">determine_surname</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span>   <span class="co"># position of the surname: JORDAN is first, TAYLOR the surname</span></span>
@@ -319,12 +331,14 @@ leading token is the first name and a trailing one is the surname. See
 <li>The rules know only how common each token is, not which order a
 source uses. If you know the source writes <code>LAST FIRST</code>,
 reorder the tokens before parsing.</li>
-<li>Tokens absent from the census read as surnames. A rare given name
-(<code>KYUN</code>) can end up as the surname. When both tokens read as
-surnames, the more common one wins: in
-<code>LUDWIG VAN BEETHOVEN</code>, <code>LUDWIG</code> (a census
-surname, never a census first name) beats the unlisted
-<code>VAN-BEETHOVEN</code>.</li>
+<li>Tokens absent from the census rank above names that are mostly given
+names, so an unlisted given name (<code>SEOKJIN</code>) next to a common
+given name can end up as the surname. Strong surnames rank above
+unlisted tokens (<code>TSHEPO CHO</code> keeps <code>CHO</code>), but a
+name with a large given-name share does not: in
+<code>LUDWIG VAN BEETHOVEN</code> the unlisted
+<code>VAN-BEETHOVEN</code> is the surname, as it should be, because
+<code>LUDWIG</code> is also a given name.</li>
 <li>A name that is both a common given name and a common surname
 (<code>JAMES</code>, <code>LESLIE</code>, <code>TAYLOR</code>,
 <code>JORDAN</code>) is decided by a small margin. Treat such parses as

@@ -90,7 +90,7 @@ The suffix rule reflects that generational suffixes are almost always used by
 men. The 50.0 says that the call is a default, not evidence.
 
 ```{r}
-show(c("J SMITH", "J SMITH JR", "A J SMITH", "KYUN CHO", "SMITH JR"))
+show(c("J SMITH", "J SMITH JR", "A J SMITH", "TSHEPO CHO", "SMITH JR"))
 ```
 
 ## Salutations
@@ -115,7 +115,7 @@ salutation (`MR`, `MRS`, `MS`, `MISS`) beats the census score. See
 `gender_confidence` is returned as text. Convert it before comparing:
 
 ```{r}
-d <- parse_names(c("JOHN SMITH", "LESLIE SMITH", "J SMITH", "CHRIS JONES"))
+d <- parse_names(c("JOHN SMITH", "PAT SMITH", "J SMITH", "CHRIS JONES"))
 d$gender_confidence <- as.numeric(d$gender_confidence)
 d$gender_80 <- ifelse(d$gender_confidence >= 80, d$gender, "U")
 d[c("name", "gender", "gender_confidence", "gender_80")]
@@ -124,13 +124,14 @@ d[c("name", "gender", "gender_confidence", "gender_80")]
 A threshold of 80 (what `nickname_lookup()` uses) keeps most names and drops
 the ones that are close to even. For counts of women and men in a population,
 summing the shares can be better than counting hard calls, because it does
-not round every `LESLIE` to female.
+not round every `PAT` to female.
 
 Keep in mind:
 
-* The counts are for the whole U.S. population around 1990. Name use changes
-  over time (`LESLIE` and `ASHLEY` were once mostly male names) and across
-  countries, so the score fits some groups better than others.
+* The counts are for the whole U.S. population in 2020, children included.
+  Name use changes over time (`LESLIE` and `ASHLEY` were once mostly male
+  names; `TAYLOR` and `RILEY` have become mostly female) and across countries,
+  so the score fits some groups better than others.
 * The census lists record only male and female. The scores say nothing about
   how people identify.
 * Names missing from the list, many of them non-English given names, get no
@@ -138,15 +139,11 @@ Keep in mind:
 
 ## Where the census table comes from
 
-`census.names` is a frozen copy bundled with the package in
-`data/census.names.RData`. It is not downloaded or rebuilt when the package is
-installed or used, and the package has no script that rebuilds it. Its contents
-are unchanged since the package's first commit (August 2020; a 2026 refresh
-only recompressed the file), which
-adapted the original **Name-Parser** package by Michael Flanigan; no record of
-how it was built was kept.
-
-The table itself shows what it was built from:
+`census.names` is bundled with the package in `data/census.names.rda`. It is
+not downloaded when the package is installed or used. It is built by
+`data-raw/census_names.R` from the Census Bureau's 2020 name release,
+*Frequently Occurring First Names and Last Names from the 2020 Census*
+(revised April 2026):
 
 ```{r}
 cn <- census.names
@@ -158,23 +155,30 @@ c(rows           = nrow(cn),
 cn[cn$name %in% c("SMITH", "ALL OTHER NAMES"), ]
 ```
 
-* **Given names and gender:** 1,219 male and 4,275 female names, exactly the
-  size of the Census Bureau's 1990 first-name lists (from the 1990 Post
-  Enumeration Survey). Those lists publish percentages, so the counts here are
-  the percentages scaled up to population totals. `first_name_value` is
-  `male_value + female_value`.
-* **Surnames:** 162,253 surnames with at least 100 people, plus a catch-all
-  `ALL OTHER NAMES` row. That matches the 2010 Census surname file; `SMITH`'s
-  count of 2,442,977 is the 2010 figure.
+* **Given names and gender:** every first name held by 91 or more people in
+  the 2020 Census, with the count of people recorded male and female.
+  `first_name_value` is `male_value + female_value`.
+* **Surnames:** every surname held by 92 or more people, plus a catch-all
+  `ALL OTHER NAMES` row (which no single name token matches).
 
-So the given-name side reflects the U.S. population of 1990 and the surname
-side that of 2010. Neither is a birth-certificate count.
+**Earlier table.** Until November 2026 the package shipped a table built from
+the 1990 first-name lists (1,219 male and 4,275 female names, published as
+percentages and scaled to counts) and the 2010 surname file. The 2020 lists
+hold ten times as many given names, so far fewer names get no gender. On a
+sample of 9,608 Form 990 Part VII names, the 2020 table:
 
-To update the table you would download newer files (for example, the Social
-Security Administration's baby-name counts by year and sex for given names,
-and a later Census surname file), rebuild the same five columns, key the
-table on `name` with `data.table::setkey()`, and save it with
-`usethis::use_data(census.names, overwrite = TRUE)`. Adding a script for this
-to `data-raw/` would make the source reproducible. Any change moves name-order
-and gender results, so rerun the tests and compare the parses before and
-after.
+* matched the gender implied by an `MR`, `MRS` or `MS` salutation in 86% of
+  cases, against 79%;
+* left 227 names with unknown gender, against 727;
+* kept the written first word as the first name in 96.3% of plain two- and
+  three-word names, against 95.4%.
+
+**Refreshing the table.** When the Bureau publishes new lists, update the file
+names in `data-raw/census_names.R` and run it from the package root. It
+downloads the files, records their sizes and SHA-256 hashes in
+`data-raw/census-names-src.csv`, rebuilds the five columns, and prints a
+comparison with the bundled table: size, names whose main role (first name
+or surname) changes, and names whose majority gender flips. Set
+`CENSUS_NAMES_SAVE=TRUE` to overwrite the bundled table, then rerun the tests
+and compare parses before and after, since any change moves name-order and
+gender results.

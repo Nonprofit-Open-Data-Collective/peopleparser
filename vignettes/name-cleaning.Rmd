@@ -119,7 +119,7 @@ only when census evidence says the pieces are real:
   so a leading given name is never split.
 * **A stray initial glued to a surname** (`CWOOLFOLK`). This split is off by
   default because it cannot be told apart from a given name missing from the
-  census (`KYUN`). Turn it on with `split_initials = TRUE` when you can check
+  census (`TSHEPO`). Turn it on with `split_initials = TRUE` when you can check
   the results another way, for example against the same person in other
   years.
 

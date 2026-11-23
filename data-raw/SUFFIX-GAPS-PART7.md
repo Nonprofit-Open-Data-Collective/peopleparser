@@ -480,3 +480,11 @@ Keep them out of every list.
 To recheck after a change, run `data-raw/suffix-gaps-part7.R`. The tier 1
 line at the end should still read "after 1" (or 0) with "control changes
 0", and the candidate file should shrink.
+
+<!-- STATUS 2026-11-23 (3): a leading religious title (.religious_titles: SR,
+  SISTER, FR, REV, BR, MSGR, MOST, ...) licenses DC (Daughters of Charity) and
+  MA at the end of the name, with at least two tokens between title and
+  credential (trailing_ambiguous_credentials()). 39 of the 100 names ending in
+  DC start with SR/SISTER; MA after a religious title is the degree (1 of 57).
+  Other two-letter endings after religious titles worth a look: OH (Hospitaller
+  Order of St. John of God, 11 names), CM (Vincentians), CS. -->

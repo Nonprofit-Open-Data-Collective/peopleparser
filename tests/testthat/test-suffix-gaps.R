@@ -88,3 +88,12 @@ test_that("fused credentials are split and stripped", {
   expect_equal(split_glued_credentials("EXOFFICIO"), "EXOFFICIO") # a status word
   expect_equal(pn("RONALD H COVERY JR")$last_name, "COVERY")
 })
+
+test_that("a leading religious title licenses DC and MA at the end", {
+  expect_equal(pn("SR ELLEN KRON DC")$last_name, "KRON")
+  expect_equal(pn("Sister Marie Rachelle Cruz DC")$last_name, "CRUZ")
+  expect_equal(pn("SR PATRICIA MCLAUGHLIN MA")$last_name, "MCLAUGHLIN")
+  expect_true("MA" %in% unlist(pn("SR ANNA MA")[c("first_name", "last_name")]))  # one name between: kept
+  expect_equal(pn("JOHN DOE DC")$last_name, "DOE-DC")      # no religious title, no credential: kept
+  expect_equal(pn("Palmer Piana DC")$last_name, "PIANA-DC")
+})

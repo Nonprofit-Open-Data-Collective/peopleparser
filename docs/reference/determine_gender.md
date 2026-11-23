@@ -1,8 +1,9 @@
 # Infer Gender from a Census Name Matrix
 
-Aggregates the male and female birth-certificate counts for the supplied
-name tokens and returns the majority gender together with its
-confidence.
+Aggregates the male and female census counts (see
+[census.names](https://nonprofit-open-data-collective.github.io/peopleparser/reference/census.names.md))
+for the supplied name tokens and returns the majority gender together
+with its confidence.
 
 ## Usage
 
@@ -32,5 +33,5 @@ x <- prep_name(x)
 x <- strsplit(x, " ")[[1]]
 cd <- get_census_data(x)
 determine_gender(cd)
-#> [1] "M"    "99.6"
+#> [1] "M"    "99.8"
 ```

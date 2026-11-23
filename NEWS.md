@@ -1,5 +1,35 @@
 # peopleparser (development version)
 
+## Census name table updated to the 2020 Census
+
+* `census.names` is rebuilt from the Census Bureau's 2020 name release
+  ("Frequently Occurring First Names and Last Names from the 2020 Census",
+  revised April 2026): 53,615 first names with counts by sex (was 5,494 from
+  the 1990 lists) and 156,621 surnames (was 162,253 from 2010). Real counts
+  replace the 1990 percentages scaled to counts.
+* New `data-raw/census_names.R` downloads the source files, records their
+  hashes in `data-raw/census-names-src.csv`, rebuilds the table, compares it
+  with the bundled one, and saves it when `CENSUS_NAMES_SAVE=TRUE`. It also
+  checks that the old 1990 given-name side can be rebuilt from the 1990 files.
+* `determine_surname()` now ranks tokens in tiers: known names that are at
+  least 95% surnames first, then unlisted tokens, then the rest by surname
+  share. In the 2020 lists nearly every common surname is also a rare given
+  name, and without the tiers an initial or unlisted token outranked `SMITH`
+  in `SJ SMITH`.
+* Effect on 9,608 Form 990 Part VII names: gender agrees with an `MR`, `MRS`
+  or `MS` salutation for 86% of names (was 79%), names with unknown gender
+  fall from 727 to 227, and plain two- and three-word names keep the written
+  first word as the first name 96.3% of the time (was 95.4%). 253 parses
+  change first or last name. Gender changes most for names that shifted since
+  1990 (`TAYLOR`, `RILEY`, `AVERY` are now mostly female).
+
+## Religious titles license `DC` and `MA`
+
+* After a leading religious title (`SR`, `SISTER`, `FR`, `REV`, ...), `DC`
+  (Daughters of Charity) and `MA` strip at the end of the name, with at least
+  two names in between: `SR ELLEN KRON DC` -> `KRON`. Without the title they
+  still need a clear credential beside them.
+
 ## Name-order and gender fixes
 
 * `prep_name()` no longer glues `VAN DER` onto the word before it

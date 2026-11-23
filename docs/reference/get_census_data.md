@@ -40,9 +40,9 @@ get_census_data(x)
 #> Key: <ordinal>
 #>          name ordinal male_value female_value first_name_value last_name_value
 #>        <char>   <int>      <num>        <num>            <num>           <num>
-#> 1: LIVINGSTON       1          0            0                0           42103
+#> 1: LIVINGSTON       1        653          102              755           40605
 #> 2:        III       2          0            0                0               0
 #> 3:         MR       3          0            0                0               0
-#> 4:    MICHAEL       4    3765401        18222          3783623           40736
-#> 5:       JOHN       5    4684909        18222          4703131           33543
+#> 4:    MICHAEL       4    3469434         7287          3476721           37760
+#> 5:       JOHN       5    3118620         6503          3125123           37363
 ```

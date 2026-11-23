@@ -1,6 +1,6 @@
 #' Infer Gender from a Census Name Matrix
 #'
-#' Aggregates the male and female birth-certificate counts for the supplied name
+#' Aggregates the male and female census counts (see [census.names]) for the supplied name
 #' tokens and returns the majority gender together with its confidence.
 #'
 #' @param x A `data.table` of census data as returned by [get_census_data()],

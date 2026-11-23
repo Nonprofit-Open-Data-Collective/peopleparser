@@ -70,10 +70,10 @@ parse_name("LIVINGSTON III MICHAEL JOHN")
 #>   salutation first_name middle_name  last_name suffix status gender
 #> 1               MICHAEL        JOHN LIVINGSTON    III             M
 #>   gender_confidence
-#> 1              99.6
+#> 1              99.8
 parse_name("livingston III,  Mr. MICHAEL JOHN9", sanitize = TRUE)
 #>   salutation first_name middle_name  last_name suffix status gender
 #> 1         MR    MICHAEL        JOHN LIVINGSTON    III             M
 #>   gender_confidence
-#> 1              99.6
+#> 1              99.8
 ```

@@ -101,9 +101,9 @@ side:</p>
 <span><span class="va">cd</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"male_value"</span>, <span class="st">"female_value"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;      name male_value female_value</span></span>
 <span><span class="co">#&gt;    &lt;char&gt;      &lt;num&gt;        &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: LESLIE     116012       233858</span></span>
+<span><span class="co">#&gt; 1: LESLIE      52838       237654</span></span>
 <span><span class="fu"><a href="../reference/determine_gender.html">determine_gender</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "F"    "66.8"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "F"    "81.8"</span></span></code></pre></div>
 <p>The confidence is the share of people with these names who have the
 reported gender. It runs from 50 (an even split) to 100 (only one gender
 recorded). It is not the probability that this particular person has
@@ -113,13 +113,13 @@ record comes from.</p>
 <code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN SMITH"</span>, <span class="st">"MARY SMITH"</span>, <span class="st">"LESLIE SMITH"</span>, <span class="st">"PAT SMITH"</span>,</span>
 <span>       <span class="st">"CHRIS JONES"</span>, <span class="st">"TAYLOR SWIFT"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;            raw salutation first_name middle_name suffix gender gender_confidence</span></span>
-<span><span class="co">#&gt; 1   JOHN SMITH                  JOHN                         M              99.6</span></span>
-<span><span class="co">#&gt; 2   MARY SMITH                  MARY                         F              99.7</span></span>
-<span><span class="co">#&gt; 3 LESLIE SMITH                LESLIE                         F              66.8</span></span>
-<span><span class="co">#&gt; 4    PAT SMITH                   PAT                         F              65.8</span></span>
-<span><span class="co">#&gt; 5  CHRIS JONES                 CHRIS                         M              88.6</span></span>
-<span><span class="co">#&gt; 6 TAYLOR SWIFT                TAYLOR                         M              65.4</span></span></code></pre></div>
-<p>Most first names in the table are strongly gendered. Of the 5163
+<span><span class="co">#&gt; 1   JOHN SMITH                  JOHN                         M              99.8</span></span>
+<span><span class="co">#&gt; 2   MARY SMITH                  MARY                         F              99.8</span></span>
+<span><span class="co">#&gt; 3 LESLIE SMITH                LESLIE                         F              81.8</span></span>
+<span><span class="co">#&gt; 4    PAT SMITH                   PAT                         F              59.5</span></span>
+<span><span class="co">#&gt; 5  CHRIS JONES                 CHRIS                         M              94.4</span></span>
+<span><span class="co">#&gt; 6 TAYLOR SWIFT                TAYLOR                         F              75.5</span></span></code></pre></div>
+<p>Most first names in the table are strongly gendered. Of the 53616
 first names, the majority gender holds 95% or more of the count for most
 of them:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -129,7 +129,7 @@ of them:</p>
 <span>          labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"50-80%"</span>, <span class="st">"80-95%"</span>, <span class="st">"95-100%"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  50-80%  80-95% 95-100% </span></span>
-<span><span class="co">#&gt;      90      91    4982</span></span></code></pre></div>
+<span><span class="co">#&gt;    7454    9093   37069</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="middle-names-count-too">Middle names count too<a class="anchor" aria-label="anchor" href="#middle-names-count-too"></a>
 </h3>
@@ -140,9 +140,9 @@ gender give a weak score whatever their order:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SARAH MAY WILSON"</span>, <span class="st">"JOHN MARY SMITH"</span>, <span class="st">"MARY JOHN SMITH"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                raw salutation first_name middle_name suffix gender gender_confidence</span></span>
-<span><span class="co">#&gt; 1 SARAH MAY WILSON                 SARAH         MAY             F               100</span></span>
-<span><span class="co">#&gt; 2  JOHN MARY SMITH                  JOHN        MARY             M              53.9</span></span>
-<span><span class="co">#&gt; 3  MARY JOHN SMITH                  MARY        JOHN             M              53.9</span></span></code></pre></div>
+<span><span class="co">#&gt; 1 SARAH MAY WILSON                 SARAH         MAY             F              99.8</span></span>
+<span><span class="co">#&gt; 2  JOHN MARY SMITH                  JOHN        MARY             M              63.8</span></span>
+<span><span class="co">#&gt; 3  MARY JOHN SMITH                  MARY        JOHN             M              63.8</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -183,12 +183,12 @@ or no given name at all), the parser falls back:</p>
 <p>The suffix rule reflects that generational suffixes are almost always
 used by men. The 50.0 says that the call is a default, not evidence.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"J SMITH"</span>, <span class="st">"J SMITH JR"</span>, <span class="st">"A J SMITH"</span>, <span class="st">"KYUN CHO"</span>, <span class="st">"SMITH JR"</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"J SMITH"</span>, <span class="st">"J SMITH JR"</span>, <span class="st">"A J SMITH"</span>, <span class="st">"TSHEPO CHO"</span>, <span class="st">"SMITH JR"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;          raw salutation first_name middle_name suffix gender gender_confidence</span></span>
 <span><span class="co">#&gt; 1    J SMITH                     J                         U              50.0</span></span>
 <span><span class="co">#&gt; 2 J SMITH JR                     J                 JR      M              50.0</span></span>
 <span><span class="co">#&gt; 3  A J SMITH                     A           J             U              50.0</span></span>
-<span><span class="co">#&gt; 4   KYUN CHO                  KYUN                         U              50.0</span></span>
+<span><span class="co">#&gt; 4 TSHEPO CHO                TSHEPO                         U              50.0</span></span>
 <span><span class="co">#&gt; 5   SMITH JR                                       JR      M              50.0</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -203,9 +203,9 @@ need a salutation to override the census score, do it after parsing:</p>
 <span>                <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">salutation</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MRS"</span>, <span class="st">"MS"</span>, <span class="st">"MISS"</span><span class="op">)</span>, <span class="st">"F"</span>, <span class="va">d</span><span class="op">$</span><span class="va">gender</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">d</span></span>
 <span><span class="co">#&gt;             raw salutation first_name middle_name suffix gender gender_confidence gender_sal</span></span>
-<span><span class="co">#&gt; 1  MR PAT SMITH         MR        PAT                         F              65.8          M</span></span>
-<span><span class="co">#&gt; 2 MRS PAT SMITH        MRS        PAT                         F              65.8          F</span></span>
-<span><span class="co">#&gt; 3  DR PAT SMITH         DR        PAT                         F              65.8          F</span></span></code></pre></div>
+<span><span class="co">#&gt; 1  MR PAT SMITH         MR        PAT                         F              59.5          M</span></span>
+<span><span class="co">#&gt; 2 MRS PAT SMITH        MRS        PAT                         F              59.5          F</span></span>
+<span><span class="co">#&gt; 3  DR PAT SMITH         DR        PAT                         F              59.5          F</span></span></code></pre></div>
 <p>The nickname functions do this already: in
 <code><a href="../reference/nickname_lookup.html">nickname_lookup()</a></code> a gendered salutation (<code>MR</code>,
 <code>MRS</code>, <code>MS</code>, <code>MISS</code>) beats the census
@@ -217,26 +217,27 @@ score. See <code><a href="../articles/canonical-first-names.html">vignette("cano
 <p><code>gender_confidence</code> is returned as text. Convert it before
 comparing:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parse_names.html">parse_names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN SMITH"</span>, <span class="st">"LESLIE SMITH"</span>, <span class="st">"J SMITH"</span>, <span class="st">"CHRIS JONES"</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parse_names.html">parse_names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN SMITH"</span>, <span class="st">"PAT SMITH"</span>, <span class="st">"J SMITH"</span>, <span class="st">"CHRIS JONES"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">d</span><span class="op">$</span><span class="va">gender_confidence</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">gender_confidence</span><span class="op">)</span></span>
 <span><span class="va">d</span><span class="op">$</span><span class="va">gender_80</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">gender_confidence</span> <span class="op">&gt;=</span> <span class="fl">80</span>, <span class="va">d</span><span class="op">$</span><span class="va">gender</span>, <span class="st">"U"</span><span class="op">)</span></span>
 <span><span class="va">d</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"gender"</span>, <span class="st">"gender_confidence"</span>, <span class="st">"gender_80"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt;           name gender gender_confidence gender_80</span></span>
-<span><span class="co">#&gt; 1   JOHN SMITH      M              99.6         M</span></span>
-<span><span class="co">#&gt; 2 LESLIE SMITH      F              66.8         U</span></span>
-<span><span class="co">#&gt; 3      J SMITH      U              50.0         U</span></span>
-<span><span class="co">#&gt; 4  CHRIS JONES      M              88.6         M</span></span></code></pre></div>
+<span><span class="co">#&gt;          name gender gender_confidence gender_80</span></span>
+<span><span class="co">#&gt; 1  JOHN SMITH      M              99.8         M</span></span>
+<span><span class="co">#&gt; 2   PAT SMITH      F              59.5         U</span></span>
+<span><span class="co">#&gt; 3     J SMITH      U              50.0         U</span></span>
+<span><span class="co">#&gt; 4 CHRIS JONES      M              94.4         M</span></span></code></pre></div>
 <p>A threshold of 80 (what <code><a href="../reference/nickname_lookup.html">nickname_lookup()</a></code> uses) keeps
 most names and drops the ones that are close to even. For counts of
 women and men in a population, summing the shares can be better than
-counting hard calls, because it does not round every <code>LESLIE</code>
-to female.</p>
+counting hard calls, because it does not round every <code>PAT</code> to
+female.</p>
 <p>Keep in mind:</p>
 <ul>
-<li>The counts are for the whole U.S. population around 1990. Name use
-changes over time (<code>LESLIE</code> and <code>ASHLEY</code> were once
-mostly male names) and across countries, so the score fits some groups
-better than others.</li>
+<li>The counts are for the whole U.S. population in 2020, children
+included. Name use changes over time (<code>LESLIE</code> and
+<code>ASHLEY</code> were once mostly male names; <code>TAYLOR</code> and
+<code>RILEY</code> have become mostly female) and across countries, so
+the score fits some groups better than others.</li>
 <li>The census lists record only male and female. The scores say nothing
 about how people identify.</li>
 <li>Names missing from the list, many of them non-English given names,
@@ -246,14 +247,12 @@ get no score at all.</li>
 <div class="section level2">
 <h2 id="where-the-census-table-comes-from">Where the census table comes from<a class="anchor" aria-label="anchor" href="#where-the-census-table-comes-from"></a>
 </h2>
-<p><code>census.names</code> is a frozen copy bundled with the package
-in <code>data/census.names.RData</code>. It is not downloaded or rebuilt
-when the package is installed or used, and the package has no script
-that rebuilds it. Its contents are unchanged since the package’s first
-commit (August 2020; a 2026 refresh only recompressed the file), which
-adapted the original <strong>Name-Parser</strong> package by Michael
-Flanigan; no record of how it was built was kept.</p>
-<p>The table itself shows what it was built from:</p>
+<p><code>census.names</code> is bundled with the package in
+<code>data/census.names.rda</code>. It is not downloaded when the
+package is installed or used. It is built by
+<code>data-raw/census_names.R</code> from the Census Bureau’s 2020 name
+release, <em>Frequently Occurring First Names and Last Names from the
+2020 Census</em> (revised April 2026):</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cn</span> <span class="op">&lt;-</span> <span class="va">census.names</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>rows           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">cn</span><span class="op">)</span>,</span>
@@ -262,38 +261,47 @@ Flanigan; no record of how it was built was kept.</p>
 <span>  first_names    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">cn</span><span class="op">$</span><span class="va">first_name_value</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>,</span>
 <span>  surnames       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">cn</span><span class="op">$</span><span class="va">last_name_value</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;         rows   male_names female_names  first_names     surnames </span></span>
-<span><span class="co">#&gt;       164850         1219         4275         5163       162254</span></span>
+<span><span class="co">#&gt;       195311        47089        51475        53616       156622</span></span>
 <span><span class="va">cn</span><span class="op">[</span><span class="va">cn</span><span class="op">$</span><span class="va">name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SMITH"</span>, <span class="st">"ALL OTHER NAMES"</span><span class="op">)</span>, <span class="op">]</span></span>
 <span><span class="co">#&gt; Key: &lt;name&gt;</span></span>
 <span><span class="co">#&gt;               name male_value female_value first_name_value last_name_value</span></span>
 <span><span class="co">#&gt;             &lt;fctr&gt;      &lt;num&gt;        &lt;num&gt;            &lt;num&gt;           &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: ALL OTHER NAMES          0            0                0        29312001</span></span>
-<span><span class="co">#&gt; 2:           SMITH          0            0                0         2442977</span></span></code></pre></div>
+<span><span class="co">#&gt; 1: ALL OTHER NAMES    7768920     11025786         18794706        36257637</span></span>
+<span><span class="co">#&gt; 2:           SMITH       4102          897             4999         2369644</span></span></code></pre></div>
 <ul>
 <li>
-<strong>Given names and gender:</strong> 1,219 male and 4,275 female
-names, exactly the size of the Census Bureau’s 1990 first-name lists
-(from the 1990 Post Enumeration Survey). Those lists publish
-percentages, so the counts here are the percentages scaled up to
-population totals. <code>first_name_value</code> is
+<strong>Given names and gender:</strong> every first name held by 91
+or more people in the 2020 Census, with the count of people recorded
+male and female. <code>first_name_value</code> is
 <code>male_value + female_value</code>.</li>
 <li>
-<strong>Surnames:</strong> 162,253 surnames with at least 100
-people, plus a catch-all <code>ALL OTHER NAMES</code> row. That matches
-the 2010 Census surname file; <code>SMITH</code>’s count of 2,442,977 is
-the 2010 figure.</li>
+<strong>Surnames:</strong> every surname held by 92 or more people,
+plus a catch-all <code>ALL OTHER NAMES</code> row (which no single name
+token matches).</li>
 </ul>
-<p>So the given-name side reflects the U.S. population of 1990 and the
-surname side that of 2010. Neither is a birth-certificate count.</p>
-<p>To update the table you would download newer files (for example, the
-Social Security Administration’s baby-name counts by year and sex for
-given names, and a later Census surname file), rebuild the same five
-columns, key the table on <code>name</code> with
-<code><a href="https://rdrr.io/pkg/data.table/man/setkey.html" class="external-link">data.table::setkey()</a></code>, and save it with
-<code>usethis::use_data(census.names, overwrite = TRUE)</code>. Adding a
-script for this to <code>data-raw/</code> would make the source
-reproducible. Any change moves name-order and gender results, so rerun
-the tests and compare the parses before and after.</p>
+<p><strong>Earlier table.</strong> Until November 2026 the package
+shipped a table built from the 1990 first-name lists (1,219 male and
+4,275 female names, published as percentages and scaled to counts) and
+the 2010 surname file. The 2020 lists hold ten times as many given
+names, so far fewer names get no gender. On a sample of 9,608 Form 990
+Part VII names, the 2020 table:</p>
+<ul>
+<li>matched the gender implied by an <code>MR</code>, <code>MRS</code>
+or <code>MS</code> salutation in 86% of cases, against 79%;</li>
+<li>left 227 names with unknown gender, against 727;</li>
+<li>kept the written first word as the first name in 96.3% of plain two-
+and three-word names, against 95.4%.</li>
+</ul>
+<p><strong>Refreshing the table.</strong> When the Bureau publishes new
+lists, update the file names in <code>data-raw/census_names.R</code> and
+run it from the package root. It downloads the files, records their
+sizes and SHA-256 hashes in <code>data-raw/census-names-src.csv</code>,
+rebuilds the five columns, and prints a comparison with the bundled
+table: size, names whose main role (first name or surname) changes, and
+names whose majority gender flips. Set
+<code>CENSUS_NAMES_SAVE=TRUE</code> to overwrite the bundled table, then
+rerun the tests and compare parses before and after, since any change
+moves name-order and gender results.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

@@ -18,9 +18,13 @@ surname. Returns \code{c(0, 0)} if \code{x} is not a \code{data.table}, and \cod
 \description{
 Uses census first-name / last-name frequencies (see \code{\link[=get_census_data]{get_census_data()}}) to
 decide which token in a name vector is most likely the surname. Tokens are
-ranked so that names appearing (relatively) more often in the last-name
-position rank highest; ties break toward higher overall frequency and then
-later ordinal position.
+ranked in three tiers: (1) known names that are overwhelmingly surnames
+(surname share of at least 0.95), the more common first; (2) tokens absent
+from the census; (3) all other known names by surname share. Remaining ties
+break toward the later position. The first tier matters because in the 2020
+Census lists nearly every common surname also appears, rarely, as a given
+name (4,999 people are named SMITH), so a pure share would let an unknown
+token or an initial outrank SMITH in \code{"SJ SMITH"}.
 }
 \examples{
 x <- "livingston III,  Mr. MICHAEL JOHN9"

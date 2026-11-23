@@ -25,7 +25,7 @@ The program takes raw text individual names as the input and returns a data fram
 * GENDER 
 * GENDER_CONFIDENCE
 
-The matching is done probabilistically based upon how often each token appears as a first name or a surname in U.S. Census Bureau name lists (the bundled `census.names` table: 1990 Census first names, 2010 Census surnames).
+The matching is done probabilistically based upon how often each token appears as a first name or a surname in U.S. Census Bureau name lists (the bundled `census.names` table, built from the 2020 Census first-name and surname lists).
 
 Gender coding is similarly done probabilistically using the given names from the parsed string and the same Census data table.
 

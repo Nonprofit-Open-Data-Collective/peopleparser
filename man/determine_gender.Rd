@@ -16,7 +16,7 @@ A character vector of length two: the inferred gender code (\code{"M"},
 for that call. When gender is unknown only \code{"U"} is returned.
 }
 \description{
-Aggregates the male and female birth-certificate counts for the supplied name
+Aggregates the male and female census counts (see \link{census.names}) for the supplied name
 tokens and returns the majority gender together with its confidence.
 }
 \examples{

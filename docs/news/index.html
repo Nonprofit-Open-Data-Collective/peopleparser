@@ -48,6 +48,20 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="peopleparser-development-version">peopleparser (development version)<a class="anchor" aria-label="anchor" href="#peopleparser-development-version"></a></h2>
 <div class="section level3">
+<h3 id="census-name-table-updated-to-the-census-development-version">Census name table updated to the 2020 Census<a class="anchor" aria-label="anchor" href="#census-name-table-updated-to-the-census-development-version"></a></h3>
+<ul><li>
+<code>census.names</code> is rebuilt from the Census Bureau’s 2020 name release (“Frequently Occurring First Names and Last Names from the 2020 Census”, revised April 2026): 53,615 first names with counts by sex (was 5,494 from the 1990 lists) and 156,621 surnames (was 162,253 from 2010). Real counts replace the 1990 percentages scaled to counts.</li>
+<li>New <code>data-raw/census_names.R</code> downloads the source files, records their hashes in <code>data-raw/census-names-src.csv</code>, rebuilds the table, compares it with the bundled one, and saves it when <code>CENSUS_NAMES_SAVE=TRUE</code>. It also checks that the old 1990 given-name side can be rebuilt from the 1990 files.</li>
+<li>
+<code><a href="../reference/determine_surname.html">determine_surname()</a></code> now ranks tokens in tiers: known names that are at least 95% surnames first, then unlisted tokens, then the rest by surname share. In the 2020 lists nearly every common surname is also a rare given name, and without the tiers an initial or unlisted token outranked <code>SMITH</code> in <code>SJ SMITH</code>.</li>
+<li>Effect on 9,608 Form 990 Part VII names: gender agrees with an <code>MR</code>, <code>MRS</code> or <code>MS</code> salutation for 86% of names (was 79%), names with unknown gender fall from 727 to 227, and plain two- and three-word names keep the written first word as the first name 96.3% of the time (was 95.4%). 253 parses change first or last name. Gender changes most for names that shifted since 1990 (<code>TAYLOR</code>, <code>RILEY</code>, <code>AVERY</code> are now mostly female).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="religious-titles-license-dc-and-ma-development-version">Religious titles license <code>DC</code> and <code>MA</code>
+<a class="anchor" aria-label="anchor" href="#religious-titles-license-dc-and-ma-development-version"></a></h3>
+<ul><li>After a leading religious title (<code>SR</code>, <code>SISTER</code>, <code>FR</code>, <code>REV</code>, …), <code>DC</code> (Daughters of Charity) and <code>MA</code> strip at the end of the name, with at least two names in between: <code>SR ELLEN KRON DC</code> -&gt; <code>KRON</code>. Without the title they still need a clear credential beside them.</li>
+</ul></div>
+<div class="section level3">
 <h3 id="name-order-and-gender-fixes-development-version">Name-order and gender fixes<a class="anchor" aria-label="anchor" href="#name-order-and-gender-fixes-development-version"></a></h3>
 <ul><li>
 <code><a href="../reference/prep_name.html">prep_name()</a></code> no longer glues <code>VAN DER</code> onto the word before it (<code>MARY VAN DER BERG</code> gave <code>MARYVAN-DER-BERG</code>).</li>

@@ -2,9 +2,13 @@
 #'
 #' Uses census first-name / last-name frequencies (see [get_census_data()]) to
 #' decide which token in a name vector is most likely the surname. Tokens are
-#' ranked so that names appearing (relatively) more often in the last-name
-#' position rank highest; ties break toward higher overall frequency and then
-#' later ordinal position.
+#' ranked in three tiers: (1) known names that are overwhelmingly surnames
+#' (surname share of at least 0.95), the more common first; (2) tokens absent
+#' from the census; (3) all other known names by surname share. Remaining ties
+#' break toward the later position. The first tier matters because in the 2020
+#' Census lists nearly every common surname also appears, rarely, as a given
+#' name (4,999 people are named SMITH), so a pure share would let an unknown
+#' token or an initial outrank SMITH in `"SJ SMITH"`.
 #'
 #' @param x A census-data `data.table` to evaluate, as produced by
 #'   [get_census_data()].
@@ -35,17 +39,25 @@ determine_surname <- function(x) {
     return(c(1, 2))
   }
 
-  # rank: (1) names that only ever appear as a last name, (2) names absent from
-  # the database, (3) relative frequency in the last-name position
+  # rank: (1) known names that are overwhelmingly surnames, more common first,
+  # (2) names absent from the census, (3) other names by surname share
   x <-
     x %>%
     dplyr::mutate(
       tot = first_name_value + last_name_value + 1,
       p.first = first_name_value / tot,
-      p.last = (1 + last_name_value) / tot
+      p.last = (1 + last_name_value) / tot,
+      known = first_name_value + last_name_value > 0,
+      tier = ifelse(known & p.last >= .surname_tier_min, 1L, ifelse(!known, 2L, 3L)),
+      score = ifelse(tier == 1L, tot, ifelse(tier == 3L, p.last, 0))
     ) %>%
-    dplyr::arrange(-p.last, -tot, -ordinal)
+    dplyr::arrange(tier, -score, -tot, -ordinal)
 
   most.likely <- (x$ordinal)[1]
   return(most.likely)
 }
+
+# Surname share at or above which a known name counts as a plain surname in
+# determine_surname() (tier 1). Chosen on Form 990 Part VII names: see
+# data-raw/census_names.R and NEWS.md.
+.surname_tier_min <- 0.95

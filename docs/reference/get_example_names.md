@@ -28,11 +28,11 @@ head( pn )
 #> 5       CLAUDIA DAGGETT               CLAUDIA                    DAGGETT       
 #> 6          JW CARPENTER                    JW                  CARPENTER       
 #>   status gender gender_confidence
-#> 1             M              99.6
-#> 2             F               100
-#> 3             M               100
-#> 4             M              99.6
-#> 5             F               100
+#> 1             M              99.9
+#> 2             F              99.9
+#> 3             M              99.7
+#> 4             M              99.8
+#> 5             F              99.8
 #> 6             U              50.0
 
 # micro-benchmark performance
@@ -41,5 +41,5 @@ start_time <- Sys.time()
 pn <- parse_names( x )
 end_time <- Sys.time()
 end_time - start_time
-#> Time difference of 4.045593 secs
+#> Time difference of 5.037467 secs
 ```

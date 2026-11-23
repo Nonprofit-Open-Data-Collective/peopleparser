@@ -92,7 +92,7 @@
 <li>GENDER</li>
 <li>GENDER_CONFIDENCE</li>
 </ul>
-<p>The matching is done probabilistically based upon how often each token appears as a first name or a surname in U.S. Census Bureau name lists (the bundled <code>census.names</code> table: 1990 Census first names, 2010 Census surnames).</p>
+<p>The matching is done probabilistically based upon how often each token appears as a first name or a surname in U.S. Census Bureau name lists (the bundled <code>census.names</code> table, built from the 2020 Census first-name and surname lists).</p>
 <p>Gender coding is similarly done probabilistically using the given names from the parsed string and the same Census data table.</p>
 <p>With <code>add_nicknames = TRUE</code>, <code><a href="reference/parse_name.html">parse_name()</a></code> and <code><a href="reference/parse_names.html">parse_names()</a></code> also add each first name’s formal names, nicknames and one canonical first name.</p>
 </div>

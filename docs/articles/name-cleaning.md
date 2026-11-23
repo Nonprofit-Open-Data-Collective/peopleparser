@@ -122,7 +122,7 @@ are real:
   token on, so a leading given name is never split.
 - **A stray initial glued to a surname** (`CWOOLFOLK`). This split is
   off by default because it cannot be told apart from a given name
-  missing from the census (`KYUN`). Turn it on with
+  missing from the census (`TSHEPO`). Turn it on with
   `split_initials = TRUE` when you can check the results another way,
   for example against the same person in other years.
 
@@ -134,7 +134,7 @@ show(c("MRWILLIAM JONES", "JOHN SMITH JRMD", "DREW CAREY"))
 #> 3      DREW CAREY                  DREW                 CAREY
 parse_name("JOHN CWOOLFOLK", split_initials = TRUE)
 #>   salutation first_name middle_name last_name suffix status gender gender_confidence
-#> 1                  JOHN           C  WOOLFOLK                    M              99.6
+#> 1                  JOHN           C  WOOLFOLK                    M              99.8
 ```
 
 ## Steps 6-9: stripping titles, credentials, suffixes and status

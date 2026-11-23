@@ -35,31 +35,41 @@ surname in U.S. Census Bureau name files (see `vignette("gender-scoring")` for
 where the table comes from). `get_census_data()` looks up each token:
 
 ```{r}
-get_census_data(c("JOHN", "SMITH", "JORDAN", "TAYLOR", "LESLIE", "KYUN"))
+get_census_data(c("JOHN", "SMITH", "JORDAN", "TAYLOR", "LESLIE", "TSHEPO"))
 ```
 
-Some tokens are clearly one or the other (`JOHN`, `SMITH`). Others are both:
-`JORDAN` and `TAYLOR` are common in both positions, and `LESLIE` is a common
-surname too. `KYUN` is in neither list.
+Some tokens are clearly one or the other (`JOHN`, `SMITH`), although in the
+2020 lists even `SMITH` is a rare given name. Others are both: `JORDAN` and
+`TAYLOR` are common in both positions, and `LESLIE` is a common surname too.
+`TSHEPO` is in neither list.
 
 `check_if_surname()` turns the counts into a yes/no: a token reads as a
 surname when more than half of its count is in the surname position. A token
 found in neither list reads as a surname.
 
 ```{r}
-x <- c("JOHN", "SMITH", "JORDAN", "TAYLOR", "LESLIE", "KYUN")
+x <- c("JOHN", "SMITH", "JORDAN", "TAYLOR", "LESLIE", "TSHEPO")
 setNames(check_if_surname(x), x)
 ```
 
 `determine_surname()` picks the single most likely surname in a name. It
-ranks tokens by the share of their count in the surname position, with one
-added to the surname count so that unknown tokens score high:
+uses each token's surname share,
 
 $$
 p_{last} = \frac{1 + n_{last}}{1 + n_{first} + n_{last}}
 $$
 
-Ties go to the more common token, then to the later position.
+and ranks tokens in three tiers:
+
+1. known names that are overwhelmingly surnames ($p_{last} \ge 0.95$), the
+   more common first;
+2. tokens in neither list;
+3. all other names, by $p_{last}$.
+
+Remaining ties go to the later position. The first tier keeps `SMITH` ahead of
+an initial or an unlisted token: `SMITH` has a few thousand given-name uses in
+the 2020 lists, so its share is just under 1, while an unlisted token's share
+is exactly 1.
 
 ```{r}
 cd <- get_census_data(c("TAYLOR", "JORDAN"))
@@ -205,10 +215,12 @@ is the surname. See `vignette("name-cleaning")`.
 * The rules know only how common each token is, not which order a source
   uses. If you know the source writes `LAST FIRST`, reorder the tokens before
   parsing.
-* Tokens absent from the census read as surnames. A rare given name
-  (`KYUN`) can end up as the surname. When both tokens read as surnames, the
-  more common one wins: in `LUDWIG VAN BEETHOVEN`, `LUDWIG` (a census
-  surname, never a census first name) beats the unlisted `VAN-BEETHOVEN`.
+* Tokens absent from the census rank above names that are mostly given
+  names, so an unlisted given name (`SEOKJIN`) next to a common given name
+  can end up as the surname. Strong surnames rank above unlisted tokens
+  (`TSHEPO CHO` keeps `CHO`), but a name with a large given-name share does
+  not: in `LUDWIG VAN BEETHOVEN` the unlisted `VAN-BEETHOVEN` is the surname,
+  as it should be, because `LUDWIG` is also a given name.
 * A name that is both a common given name and a common surname (`JAMES`,
   `LESLIE`, `TAYLOR`, `JORDAN`) is decided by a small margin. Treat such
   parses as uncertain.

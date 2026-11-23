@@ -70,6 +70,6 @@ parse_names(x)
 #> 1 livingston III,  Mr. MICHAEL JOHN9         MR    MICHAEL        JOHN
 #> 2               THOMAS H VON KAMECKE                THOMAS           H
 #>     last_name suffix status gender gender_confidence
-#> 1  LIVINGSTON    III             M              99.6
-#> 2 VON-KAMECKE                    M              99.8
+#> 1  LIVINGSTON    III             M              99.8
+#> 2 VON-KAMECKE                    M              99.9
 ```

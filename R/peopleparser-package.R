@@ -8,5 +8,5 @@
 utils::globalVariables(c(
   "census.names", "first_name_pairs",
   "first_name_value", "last_name_value",
-  "tot", "p.first", "p.last", "ordinal"
+  "tot", "p.first", "p.last", "ordinal", "known", "tier", "score"
 ))

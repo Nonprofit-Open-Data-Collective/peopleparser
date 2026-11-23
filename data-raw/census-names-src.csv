@@ -1,0 +1,5 @@
+file,url,bytes,sha256,downloaded
+Names2020_FirstNames_Sex.xlsx,https://www2.census.gov/topics/genealogy/2020surnames/Names2020_FirstNames_Sex.xlsx,3018453,b763374b9b0ea4a9496f8563721312e8572e5a45136d34244db9ffba666c3326,2026-11-23
+Names2020_LastNames_RaceHispanic.xlsx,https://www2.census.gov/topics/genealogy/2020surnames/Names2020_LastNames_RaceHispanic.xlsx,11359767,2e773c7edd934bb340b09be46e5d991b74a65cd63f547c94f80b6e233db462b3,2026-11-23
+dist.male.first,https://www2.census.gov/topics/genealogy/1990surnames/dist.male.first,42665,0a5078ef6effe3b483d15b0f7f95047662126c9bfb624ecd5e5b978fc0f2470b,2026-11-23
+dist.female.first,https://www2.census.gov/topics/genealogy/1990surnames/dist.female.first,149625,bd2f310fc4e5d5e5ea122c9d4342c9821145823118eb20db1647f305ec77b358,2026-11-23

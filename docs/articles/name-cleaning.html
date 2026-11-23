@@ -202,9 +202,9 @@ given name is never split.</li>
 <strong>A stray initial glued to a surname</strong>
 (<code>CWOOLFOLK</code>). This split is off by default because it cannot
 be told apart from a given name missing from the census
-(<code>KYUN</code>). Turn it on with <code>split_initials = TRUE</code>
-when you can check the results another way, for example against the same
-person in other years.</li>
+(<code>TSHEPO</code>). Turn it on with
+<code>split_initials = TRUE</code> when you can check the results
+another way, for example against the same person in other years.</li>
 </ul>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MRWILLIAM JONES"</span>, <span class="st">"JOHN SMITH JRMD"</span>, <span class="st">"DREW CAREY"</span><span class="op">)</span><span class="op">)</span></span>
@@ -214,7 +214,7 @@ person in other years.</li>
 <span><span class="co">#&gt; 3      DREW CAREY                  DREW                 CAREY</span></span>
 <span><span class="fu"><a href="../reference/parse_name.html">parse_name</a></span><span class="op">(</span><span class="st">"JOHN CWOOLFOLK"</span>, split_initials <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   salutation first_name middle_name last_name suffix status gender gender_confidence</span></span>
-<span><span class="co">#&gt; 1                  JOHN           C  WOOLFOLK                    M              99.6</span></span></code></pre></div>
+<span><span class="co">#&gt; 1                  JOHN           C  WOOLFOLK                    M              99.8</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="steps-6-9-stripping-titles-credentials-suffixes-and-status">Steps 6-9: stripping titles, credentials, suffixes and status<a class="anchor" aria-label="anchor" href="#steps-6-9-stripping-titles-credentials-suffixes-and-status"></a>

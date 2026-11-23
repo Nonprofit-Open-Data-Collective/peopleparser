@@ -27,4 +27,10 @@ maximal trailing run of known prefix/suffix tokens, provided that run also
 contains at least one unambiguous credential. Callers add the result to the
 prefix-removal set for that name only.
 }
+\details{
+A religious title as the first word also licenses \code{DC} (Daughters of
+Charity) and \code{MA} in the trailing run, when at least two tokens sit between
+the title and the credential: \code{"SR ELLEN KRON DC"} -> \code{KRON}, while
+\code{"SR ANNA MA"} keeps \code{MA}.
+}
 \keyword{internal}

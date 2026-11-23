@@ -183,7 +183,7 @@ nickname_lookup("CHRIS", gender = "F", gender_confidence = 95)[
 **A caution about gender.** The `gender` field in a parse is itself inferred
 from the first name (census name frequencies), and so is the female share
 recorded in the variant table. 99.8% of PAT records in the table are female.
-A parse of PAT says female with only 66% confidence. That is below the
+A parse of PAT says female with only 60% confidence. That is below the
 threshold of 80, so PAT alone stays ambiguous. PAT resolves to a formal name
 only when a salutation gives the gender. The `gender` column of the parse
 does not use the salutation (MR PAT still reads F there); the nickname step

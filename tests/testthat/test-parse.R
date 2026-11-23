@@ -207,9 +207,11 @@ test_that("stray-initial split is off by default and on via split_initials", {
   expect_equal(on$middle_name, "C")
   expect_equal(on$last_name,   "WOOLFOLK")
 
-  # a census-absent foreign given name must survive the default path
+  # a short foreign given name must not be split as initial + surname on the
+  # default path. (With the 1990 first-name lists KYUN was unknown and was
+  # glued into the surname; the 2020 lists know it as a given name.)
   kyun <- parse_name("SUNG KYUN WOO MD", sanitize = TRUE)
-  expect_equal(kyun$last_name, "KYUN-WOO")
+  expect_equal(c(kyun$first_name, kyun$middle_name, kyun$last_name), c("SUNG", "KYUN", "WOO"))
 })
 
 test_that("real titles still strip and are not restored as names", {
@@ -222,4 +224,16 @@ test_that("real titles still strip and are not restored as names", {
   expect_equal(dr$salutation, "DR")
   expect_equal(dr$first_name, "JANE")
   expect_equal(dr$last_name,  "GOODALL")
+})
+
+test_that("census.names is the 2020 Census table and surnames win ties", {
+  expect_true(data.table::is.data.table(census.names))
+  expect_equal(data.table::key(census.names), "name")
+  expect_equal(nrow(census.names), 195311L)
+  smith <- census.names[census.names$name == "SMITH", ]
+  expect_equal(smith$last_name_value, 2369644)
+  expect_equal(smith$first_name_value, smith$male_value + smith$female_value)
+  # SMITH is also a rare given name in 2020; it must still beat an unknown token
+  expect_equal(parse_name("SJ SMITH", sanitize = TRUE)$last_name, "SMITH")
+  expect_equal(parse_name("BEGIN SMITH", sanitize = TRUE)$last_name, "SMITH")
 })

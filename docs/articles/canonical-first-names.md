@@ -213,7 +213,7 @@ nickname_lookup("CHRIS", gender = "F", gender_confidence = 95)[
 **A caution about gender.** The `gender` field in a parse is itself
 inferred from the first name (census name frequencies), and so is the
 female share recorded in the variant table. 99.8% of PAT records in the
-table are female. A parse of PAT says female with only 66% confidence.
+table are female. A parse of PAT says female with only 60% confidence.
 That is below the threshold of 80, so PAT alone stays ambiguous. PAT
 resolves to a formal name only when a salutation gives the gender. The
 `gender` column of the parse does not use the salutation (MR PAT still
@@ -223,9 +223,9 @@ reads F there); the nickname step does:
 parse_names(c("PAT SMITH", "MR PAT SMITH", "MRS PAT SMITH"), add_nicknames = TRUE)[
   , c("name", "gender", "gender_confidence", "first_name_canonical", "canonical_rule")]
 #>            name gender gender_confidence first_name_canonical canonical_rule
-#> 1     PAT SMITH      F              65.8                  PAT      ambiguous
-#> 2  MR PAT SMITH      F              65.8              PATRICK       nickname
-#> 3 MRS PAT SMITH      F              65.8             PATRICIA       nickname
+#> 1     PAT SMITH      F              59.5                  PAT      ambiguous
+#> 2  MR PAT SMITH      F              59.5              PATRICK       nickname
+#> 3 MRS PAT SMITH      F              59.5             PATRICIA       nickname
 ```
 
 ## A name’s whole family: `first_name_variants()`
