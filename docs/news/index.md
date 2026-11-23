@@ -1,6 +1,13 @@
 # Changelog
 
-## peopleparser (development version)
+## peopleparser 0.1.0
+
+First tagged release. peopleparser parses raw person names into
+salutation, first, middle and last name, suffix and status, and scores
+gender from U.S. Census name frequencies. This release adds first-name
+variants and canonical first names, rebuilds the census table from the
+2020 Census, strips many more titles and credentials found on Form 990
+Part VII names, fixes several name-order bugs, and adds four guides.
 
 ### Census name table updated to the 2020 Census
 
@@ -63,9 +70,8 @@
   (name-order rules and compound surnames) and
   [`vignette("gender-scoring")`](https://nonprofit-open-data-collective.github.io/peopleparser/articles/gender-scoring.md)
   (the gender score and where `census.names` comes from).
-- `census.names` is documented as what it is: a bundled, frozen table of
-  1990 Census first names and 2010 Census surnames, not
-  birth-certificate counts. The README is corrected to match.
+- `census.names` is documented as Census Bureau name lists, not
+  birth-certificate counts, as the README and its help page used to say.
 - `prx` and `sfx` are documented as removed wherever they occur, not
   only at the front or the end of a name.
 

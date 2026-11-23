@@ -146,4 +146,5 @@ available at: https://github.com/mjfii/Name-Parser
 
 ## Versioning
 
-Initial release 2020-08-01
+Version 0.1.0 (2026-11-23) is the first tagged release; see `NEWS.md`.
+Development began 2020-08-01.
