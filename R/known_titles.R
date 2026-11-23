@@ -230,6 +230,8 @@ known_titles <- function(){
     "LMFT",        "Licensed Marriage and Family Therapist",         "Professional Credential",
     "LPN",         "Licensed Practical Nurse",                       "Professional Credential",
     "MDS",         "Master of Dental Surgery",                       "Academic Degree",
+    "MCCM",        "Master, American College of Critical Care Medicine", "Professional Credential",
+    "MC",          "Medical Corps (U.S. Navy; only at the end of a name)", "Military Affiliation",
     # Professional, business and legal
     "CFRE",        "Certified Fund Raising Executive",               "Professional Credential",
     "ESQUIRE",     "Esquire",                                        "Personal Title",

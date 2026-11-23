@@ -6,21 +6,24 @@
 \usage{
 fix_locative_surnames(
   x,
-  particles = c("LA", "VON", "VAN", "VANDER", "DEL", "DE", "DI", "DEN", "DER", "MC", "O")
+  particles = c("LA", "VON", "VAN", "VANDER", "DEL", "DE", "DI", "DEN", "DER", "O")
 )
 }
 \arguments{
 \item{x}{A character vector of full names.}
 
 \item{particles}{A character vector of common surname particles to merge
-with the following word. Matching is case-insensitive.}
+with the following word. Matching is case-insensitive. \code{MC} is not a
+default particle: \code{\link[=prep_name]{prep_name()}} joins a split \code{MC} surname without a dash
+(\verb{MC CORMICK} -> \code{MCCORMICK}, see \code{join_mc()}), and a leading or trailing
+\code{MC} is initials or a credential (Medical Corps).}
 }
 \value{
 A character vector of names with compound surnames corrected
 by inserting dashes between the particle and the following surname component.
 }
 \description{
-This function identifies common surname particles (e.g., \emph{Van}, \emph{De}, \emph{Von}, \emph{Mc})
+This function identifies common surname particles (e.g., \emph{Van}, \emph{De}, \emph{Von})
 that typically appear in compound or locative surnames (e.g., \emph{Van Dyke}, \emph{De La Rosa})
 and merges them with the following word using a dash (e.g., \emph{Van-Dyke}, \emph{De-La-Rosa}).
 }

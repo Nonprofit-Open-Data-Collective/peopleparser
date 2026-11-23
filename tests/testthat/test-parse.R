@@ -259,3 +259,21 @@ test_that("two-token names: leading initials, strong surnames, leading titles", 
   expect_equal(pn("BISHOP JOHN"), c("", "JOHN", "BISHOP"))
   expect_equal(pn("BISHOP J"), c("", "J", "BISHOP"))
 })
+
+test_that("a split MC surname is joined, not truncated", {
+  pn <- function(x) { r <- parse_name(x, sanitize = TRUE); c(r$first_name, r$middle_name, r$last_name) }
+  expect_equal(pn("CHARLES MC SPADDEN"), c("CHARLES", "", "MCSPADDEN"))
+  expect_equal(pn("DENISE MC DERMOTT"), c("DENISE", "", "MCDERMOTT"))
+  expect_equal(pn("JOHN L MC DONNELL JR"), c("JOHN", "L", "MCDONNELL"))
+  expect_equal(join_mc(c("STEVE MC CORMICK", "MC OLSON", "JOHN SMITH MC", "FRED SANFORD MC USN", "MC NELLY TORRES", "")),
+               c("STEVE MCCORMICK", "MC OLSON", "JOHN SMITH MC", "FRED SANFORD MC USN", "MC-NELLY TORRES", ""))
+})
+
+test_that("MC: initials at the start, a credential at the end", {
+  pn <- function(x) { r <- parse_name(x, sanitize = TRUE); c(r$salutation, r$first_name, r$last_name) }
+  expect_equal(pn("MC OLSON")[2:3], c("MC", "OLSON"))
+  expect_equal(pn("WAYNE DARVILLE MC"), c("MC", "WAYNE", "DARVILLE"))
+  expect_equal(pn("RADM FREDERIC G SANFORD MC USN RET")[3], "SANFORD")
+  expect_equal(pn("Neil A Halpern MC MCCM FACP")[3], "HALPERN")
+  expect_equal(fix_locative_surnames("JOHN MC COY"), "JOHN MC COY")   # MC is no longer a particle
+})

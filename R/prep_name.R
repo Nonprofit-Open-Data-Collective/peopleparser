@@ -29,7 +29,7 @@ remove_punctuation <- function(x) {
 
 #' Fix Locative or Compound Surnames by Adding Dashes
 #'
-#' This function identifies common surname particles (e.g., *Van*, *De*, *Von*, *Mc*)
+#' This function identifies common surname particles (e.g., *Van*, *De*, *Von*)
 #' that typically appear in compound or locative surnames (e.g., *Van Dyke*, *De La Rosa*)
 #' and merges them with the following word using a dash (e.g., *Van-Dyke*, *De-La-Rosa*).
 #'
@@ -38,7 +38,10 @@ remove_punctuation <- function(x) {
 #'
 #' @param x A character vector of full names.
 #' @param particles A character vector of common surname particles to merge
-#'   with the following word. Matching is case-insensitive.
+#'   with the following word. Matching is case-insensitive. `MC` is not a
+#'   default particle: [prep_name()] joins a split `MC` surname without a dash
+#'   (`MC CORMICK` -> `MCCORMICK`, see `join_mc()`), and a leading or trailing
+#'   `MC` is initials or a credential (Medical Corps).
 #'
 #' @return A character vector of names with compound surnames corrected
 #'   by inserting dashes between the particle and the following surname component.
@@ -63,7 +66,7 @@ remove_punctuation <- function(x) {
 #'
 #' @export
 fix_locative_surnames <- function(x,
-                                  particles = c("LA", "VON", "VAN", "VANDER", "DEL", "DE", "DI", "DEN", "DER", "MC", "O")) {
+                                  particles = c("LA", "VON", "VAN", "VANDER", "DEL", "DE", "DI", "DEN", "DER", "O")) {
   particles <- toupper(particles)
   lapply(strsplit(x, "\\s+"), function(words) {
     # Join a word that is (or, once dashed, ends in) a particle to the next
@@ -132,10 +135,47 @@ prep_name <- function(x) {
   x <- gsub( " DE ", " DE-", x )  # DE LEEUW to DE-LEEUW
   x <- gsub( "-DE ", "-DE-", x )  # BAILEY-DE LEEUW to BAILEY-DE-LEEUW: double compound last name
   x <- gsub( " DI ", " DI-", x )  # Julia Di Bussolo  
-  x <- gsub( " MC .*$", " MC", x )
-  
+  x <- join_mc( x )
+
   # turn locative surnames (van=from, de=of, etc) into compounds
   x <- fix_locative_surnames( x )
 
   return(x)
+}
+
+#' Join a Split "MC" Surname Prefix
+#'
+#' Inside a name, a standalone `MC` starts a surname written with a space
+#' (`STEVE MC CORMICK`, `DENISE MC DERMOTT`). It is joined to the next word
+#' without a dash (`MCCORMICK`), the spelling the census lists and other
+#' records use. A leading `MC` before two or more words is joined to the next
+#' word with a dash (`MC NELLY TORRES` -> `MC-NELLY`); before one word it is
+#' left as initials (`MC OLSON`). A trailing `MC` is a credential (Navy
+#' Medical Corps) and is left for the title rules, as is an `MC` followed by a
+#' credential or suffix (`SANFORD MC USN`) or by a word starting with `MC`.
+#'
+#' (This replaces a rule that cut everything after a standalone `MC`, which
+#' turned `CHARLES MC SPADDEN` into `CHARLES MC`.)
+#'
+#' @param x A character vector of upper-cased, space-separated names.
+#' @return `x` with split `MC` surnames joined.
+#' @keywords internal
+join_mc <- function( x ) {
+  vapply( strsplit( x, " ", fixed = TRUE ), function( t ) {
+    i <- which( t == "MC" )
+    i <- i[ i > 1 & i < length( t ) ]
+    for ( j in rev( i ) ) {
+      if ( !t[ j + 1 ] %in% c( prx, sfx ) && !startsWith( t[ j + 1 ], "MC" ) ) {
+        t[ j + 1 ] <- paste0( "MC", t[ j + 1 ] )
+        t <- t[ -j ]
+      }
+    }
+    # a leading MC before two or more words belongs to the first name
+    # (MC NELLY TORRES -> MC-NELLY TORRES), as the old particle rule did
+    if ( length( t ) >= 3 && t[1] == "MC" && !t[2] %in% c( prx, sfx ) ) {
+      t[2] <- paste0( "MC-", t[2] )
+      t <- t[-1]
+    }
+    paste( t, collapse = " " )
+  }, "" )
 }

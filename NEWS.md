@@ -1,5 +1,17 @@
 # peopleparser (development version)
 
+## Split `MC` surnames
+
+* `prep_name()` no longer cuts everything after a standalone `MC`
+  (`CHARLES MC SPADDEN` gave last name `MC`). A split `MC` surname inside a
+  name is now joined without a dash (`MCSPADDEN`, `MCDERMOTT`). A trailing
+  `MC` is a credential (Navy Medical Corps) stripped at the end of a name, and
+  a leading `MC` is initials before one word (`MC OLSON`) or part of the first
+  name before two or more (`MC-NELLY TORRES`). `MC` is no longer a default
+  particle of `fix_locative_surnames()`. `MCCM` is added as a credential.
+  Of the 60 Form 990 Part VII names with a standalone `MC`, 55 now parse
+  better and 5 are unchanged.
+
 ## Two-token names
 
 * In a two-token name with exactly one token absent from the census, a

@@ -139,7 +139,14 @@ Download notes:
 
   The census and the board-age window disagree on 16 names (SSA right on
   9). No measurable gain, so no second gender table was added.
-* **New: `MC` truncation.** `prep_name()` has `gsub(" MC .*$", " MC", x)`,
-  which cuts everything after a standalone MC: CHARLES MC SPADDEN ->
-  CHARLES MC, DENISE MC DERMOTT -> DENISE MC. MC should join the next word
-  like the other particles.
+* **`MC` truncation: fixed.** `prep_name()` had `gsub(" MC .*$", " MC", x)`
+  (added 2021-05-19, no comment), which cut everything after a standalone MC:
+  CHARLES MC SPADDEN -> last name MC. Now `join_mc()` joins a split MC
+  surname without a dash (MCSPADDEN), keeps a leading MC before two or more
+  words dashed to the next word (MC-NELLY TORRES, as before), and leaves a
+  leading MC before one word as initials (MC OLSON). A trailing MC is a
+  trailing-only title (Navy Medical Corps). MC was dropped from the default
+  particles of `fix_locative_surnames()`, which had turned SANFORD MC USN into
+  MC-USN once the truncation was gone. Of 60 npmerger names with a standalone
+  MC: 43 split surnames fixed, 9 trailing MC credentials stripped, 3 leading
+  MC before one word now initials, 5 unchanged.

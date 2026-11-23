@@ -179,7 +179,12 @@ with the dashes removed (`VON-KAMECKE` as `VONKAMECKE`).
 
 `prep_name()` and `fix_locative_surnames()` join a particle to the word after
 it. The particles are `LA`, `VON`, `VAN`, `VANDER`, `DEL`, `DE`, `DI`, `DEN`,
-`DER`, `MC` and `O`, plus `ST` inside a name (Saint) and `LO GRANDE`.
+`DER` and `O`, plus `ST` inside a name (Saint) and `LO GRANDE`.
+
+A split `MC` surname inside a name is joined without a dash, the way the
+census and most records spell it: `STEVE MC CORMICK` gives `MCCORMICK`. A
+leading `MC` is read as initials (`MC OLSON`), and a trailing one as a
+credential (Navy Medical Corps).
 
 Particles chain, so `DE LA ROSA` and `VAN DER BERG` become one token.
 

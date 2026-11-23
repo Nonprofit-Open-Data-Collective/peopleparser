@@ -351,6 +351,9 @@ deglue_tokens <- function( name_vec, split_initials = FALSE ) {
 # its role word by prep_name() (VICE CHAIR -> VICECHAIR).
 .trailing_only_titles <- c(
   "SJ", "CISA", "IHM", "FAIA",
+  # MC at the end is a credential (Navy Medical Corps); a split MC surname
+  # inside a name is joined by prep_name() before this point (MC CORMICK)
+  "MC",
   # Short religious-order and church post-nominals: Dominicans (OP), Sisters of
   # Charity (SC), Sisters of Providence (SP), Resurrectionists (CR), Humility of
   # Mary (HM), Doctor of Divinity (DD). In 410,071 Part VII names none is a
