@@ -5,7 +5,7 @@
 \alias{first_name_pairs}
 \title{First-name variants: nicknames, spellings, cognates and compounds.}
 \format{
-A \link[data.table:data.table]{data.table::data.table} with 24,972 rows and 13 variables, keyed
+A \link[data.table:data.table]{data.table::data.table} with 24,967 rows and 13 variables, keyed
 on \code{name_short}:
 \describe{
 \item{name_short, name_long}{the pair, shorter form first}
@@ -41,7 +41,7 @@ with some columns dropped and a \code{formal} column added. Used by
 \code{\link[=nickname_lookup]{nickname_lookup()}}.
 }
 \details{
-The 1,007 rows with \code{lexicon = TRUE} are the pairs seen in 25+ people,
+The 1,002 rows with \code{lexicon = TRUE} are the pairs seen in 25+ people,
 reviewed by hand. The other 23,965 rows are sound-alike and misspelling pairs
 from rarer pairs, not reviewed.
 }

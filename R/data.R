@@ -42,11 +42,11 @@
 #' with some columns dropped and a `formal` column added. Used by
 #' [nickname_lookup()].
 #'
-#' The 1,007 rows with `lexicon = TRUE` are the pairs seen in 25+ people,
+#' The 1,002 rows with `lexicon = TRUE` are the pairs seen in 25+ people,
 #' reviewed by hand. The other 23,965 rows are sound-alike and misspelling pairs
 #' from rarer pairs, not reviewed.
 #'
-#' @format A [data.table::data.table] with 24,972 rows and 13 variables, keyed
+#' @format A [data.table::data.table] with 24,967 rows and 13 variables, keyed
 #'   on `name_short`:
 #' \describe{
 #'   \item{name_short, name_long}{the pair, shorter form first}

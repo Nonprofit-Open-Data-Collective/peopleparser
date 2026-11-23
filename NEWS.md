@@ -1,3 +1,19 @@
+# peopleparser (development version)
+
+* `first_name_pairs` is refreshed from synthid's revised first-name variant
+  table: 24,967 pairs, 1,002 in the reviewed lexicon (was 24,972 and 1,007).
+  Five pairs were dropped after a review of matches across organizations
+  showed they mostly link two different people: JOHN/JONATHAN,
+  JOHN/JOHNATHAN, MARY/MARIE, MARY/MARIA and MARIA/MARIE. No other pair
+  changed; `chain_id` numbers shift for 82 rows (same chains, new numbers).
+* Effect on the nickname columns: JOHN is now `first_name_type = "formal"`
+  with no formal names (was `"both"`, formal JONATHAN and JOHNATHAN), and
+  JONATHAN and JOHNATHAN no longer list JOHN as a nickname. These are the only
+  changes to the nickname columns across all names in the table, and no
+  canonical first name changes. In `first_name_variants()`, MARIE and MARIA no
+  longer list each other or MARY as cognates (MARY still reaches them as
+  sound-alikes through MARI).
+
 # peopleparser 0.1.0
 
 First tagged release. peopleparser parses raw person names into salutation,

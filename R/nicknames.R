@@ -94,7 +94,7 @@ variant_index <- function(spelling = c("lexicon", "misspelling"), min_share = 0.
   # is a name in its own right and is not resolved to MARCUS.
   fams <- fams[as_nick[fams] / freq[fams] >= min_nick_rate]
   # a partner whose own family is mostly a nickname (KATE for KATIE) is not a
-  # target; JOHN stays a target for JACK although JOHN is a nickname of JONATHAN
+  # target
   E$formal_is_nick <- E$tgt %in% fams
 
   resolve <- function(e, g) {
