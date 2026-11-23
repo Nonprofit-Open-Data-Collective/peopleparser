@@ -2,14 +2,19 @@
 #
 # Run from the package root:  source("data-raw/first_name_pairs.R")
 #
-# Source: synthid dev/name-variants/first-name-variants.csv at synthid commit
-# 07c320f (2026-11-23). How the table was built: synthid vignette
+# Source: synthid dev/name-variants/first-name-variants.csv, revised 2026-11-23
+# (24,967 rows; first built from the 24,972-row table at synthid commit 07c320f).
+# How the table was built: synthid vignette
 # "First-name variants - how the table was built" (vignettes/first-name-variants.Rmd)
 # and dev/name-variants/README.md. In short: pairs of first-name forms carried by
 # one person (EMP_ID) across their own organization's Part VII filings,
-# 2010-2024, 15.0 million people. The 1,007 pairs seen in 25+ people were
-# reviewed by hand (lexicon = TRUE); 23,965 sound-alike and misspelling pairs
-# from rarer pairs are kept with lexicon = FALSE.
+# 2010-2024, 15.0 million people. The pairs seen in 25+ people were reviewed by
+# hand; 1,002 are kept as the lexicon (lexicon = TRUE); 23,965 sound-alike and
+# misspelling pairs from rarer pairs are kept with lexicon = FALSE.
+# The 2026-11-23 revision moved five pairs to synthid's questionable file
+# (first-name-variants-questionable.csv) after a review of cross-organization
+# matches showed they mostly link two different people: JOHN/JONATHAN,
+# JOHN/JOHNATHAN, MARY/MARIE, MARY/MARIA, MARIA/MARIE.
 #
 # Kept columns (the rest are matcher- or build-specific and stay in synthid):
 #   name_short, name_long  the pair, shorter form first (as in synthid)

@@ -34,7 +34,7 @@ and the hand review.
 table(first_name_pairs$type, first_name_pairs$lexicon)
 ```
 
-* The **lexicon** (`lexicon = TRUE`) is 1,007 pairs seen in 25 or more
+* The **lexicon** (`lexicon = TRUE`) is 1,002 pairs seen in 25 or more
   people, reviewed by hand: nicknames (BOB/ROBERT), spellings
   (STEVEN/STEPHEN), cognates (JOSE/JOSEPH) and compound names (MARY/MARYANN).
 * The other rows were not reviewed. **Misspellings** pair a rare form with a
