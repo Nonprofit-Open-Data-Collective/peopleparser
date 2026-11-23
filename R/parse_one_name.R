@@ -282,17 +282,19 @@ trailing_ambiguous_credentials <- function( name_vec, prefixes, suffixes,
 #'   because it is unreliable on a single record and can break legitimate names
 #'   absent from the census; enable only where cross-year consensus can vet the
 #'   output. See [deglue_tokens()].
+#' @param add_nicknames Logical; if `TRUE`, append the nickname columns from
+#'   [nickname_lookup()]. Defaults to `FALSE`.
 #'
 #' @return A one-row `data.frame` with columns `salutation`, `first_name`,
 #'   `middle_name`, `last_name`, `suffix`, `status`, `gender`, and
-#'   `gender_confidence`.
+#'   `gender_confidence` (plus the nickname columns if `add_nicknames = TRUE`).
 #' @export
 #'
 #' @examples
 #' parse_name("LIVINGSTON III MICHAEL JOHN")
 #' parse_name("livingston III,  Mr. MICHAEL JOHN9", sanitize = TRUE)
 parse_name <- function( x, prefixes = prx, suffixes = sfx, sanitize = FALSE,
-                        split_initials = FALSE ) {
+                        split_initials = FALSE, add_nicknames = FALSE ) {
   if ( sanitize ) { x <- sanitize_input( x ) }
   Lx <- strsplit( x, ' ' ) |> unlist()   # strsplit( x, ' ' )[[1]]
 
@@ -364,7 +366,7 @@ parse_name <- function( x, prefixes = prx, suffixes = sfx, sanitize = FALSE,
     last.name <- gsub( "^MAY-", "", last.name )
   }
 
-  data.frame(
+  out <- data.frame(
     salutation        = salutation.name,
     first_name        = first.name,
     middle_name       = middle.name,
@@ -374,4 +376,6 @@ parse_name <- function( x, prefixes = prx, suffixes = sfx, sanitize = FALSE,
     gender            = gender[1],
     gender_confidence = gender[2]
   )
+  if ( add_nicknames ) out <- add_nickname_columns( out )
+  out
 }

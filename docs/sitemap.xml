@@ -1,22 +1,32 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/404.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/articles/canonical-first-names.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/articles/index.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/authors.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/index.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/LICENSE.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/news/index.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/assign_names.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/canonical_first_name.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/census.names.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/check_if_surname.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/deglue_tokens.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/determine_gender.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/determine_surname.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/de_clutter.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/extract_component.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/first_name_pairs.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/first_name_variants.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/fix_locative_surnames.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/get_census_data.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/get_example_names.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/get_formal_names.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/get_nicknames.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/index.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/known_titles.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/names_100.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/names_1000.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/nickname_lookup.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/parse_name.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/parse_names.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/peopleparser-package.html</loc></url>
@@ -28,6 +38,9 @@
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/resolve_middle_name.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/sanitize_input.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/sfx.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/split_glued_honorific.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/split_glued_initial.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/trailing_ambiguous_credentials.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/trim_spaces.html</loc></url>
 </urlset>
 

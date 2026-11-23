@@ -1,0 +1,18 @@
+setting,rule,same_person,diff_per_1k,nick_formal_same_key,records_rewritten,records_ambiguous
+old: synthid 70-name direct pairs,direct pair,0.564,2.17,,,
+"min_share 0.6, min_nick_rate 0.002, spelling lexicon+misspelling",canonical,0.833,2.85,0.934,0.264,0.012
+"min_share 0.6, min_nick_rate 0.002, spelling lexicon+misspelling",canonical or lexicon pair,0.892,3.39,0.934,0.264,0.012
+"min_share 0.5, min_nick_rate 0.002, spelling lexicon+misspelling",canonical,0.838,2.94,0.941,0.273,0.001
+"min_share 0.5, min_nick_rate 0.002, spelling lexicon+misspelling",canonical or lexicon pair,0.892,3.45,0.941,0.273,0.001
+"min_share 0.75, min_nick_rate 0.002, spelling lexicon+misspelling",canonical,0.819,2.81,0.912,0.257,0.019
+"min_share 0.75, min_nick_rate 0.002, spelling lexicon+misspelling",canonical or lexicon pair,0.892,3.37,0.912,0.257,0.019
+"min_share 0.6, min_nick_rate 0, spelling lexicon+misspelling",canonical,0.838,3.01,0.941,0.304,0.015
+"min_share 0.6, min_nick_rate 0, spelling lexicon+misspelling",canonical or lexicon pair,0.892,3.46,0.941,0.304,0.015
+"min_share 0.6, min_nick_rate 0.001, spelling lexicon+misspelling",canonical,0.838,2.86,0.941,0.271,0.015
+"min_share 0.6, min_nick_rate 0.001, spelling lexicon+misspelling",canonical or lexicon pair,0.892,3.39,0.941,0.271,0.015
+"min_share 0.6, min_nick_rate 0.005, spelling lexicon+misspelling",canonical,0.828,2.83,0.926,0.252,0.012
+"min_share 0.6, min_nick_rate 0.005, spelling lexicon+misspelling",canonical or lexicon pair,0.892,3.38,0.926,0.252,0.012
+"min_share 0.6, min_nick_rate 0.002, spelling lexicon",canonical,0.775,2.81,0.934,0.259,0.012
+"min_share 0.6, min_nick_rate 0.002, spelling lexicon",canonical or lexicon pair,0.833,3.36,0.934,0.259,0.012
+"min_share 0.6, min_nick_rate 0.002, spelling lexicon+misspelling+sound_alike",canonical,0.853,3.5,0.949,0.318,0.007
+"min_share 0.6, min_nick_rate 0.002, spelling lexicon+misspelling+sound_alike",canonical or lexicon pair,0.902,3.97,0.949,0.318,0.007

@@ -4,7 +4,14 @@
 \alias{parse_name}
 \title{Parse a Full Name into Components}
 \usage{
-parse_name(x, prefixes = prx, suffixes = sfx, sanitize = FALSE)
+parse_name(
+  x,
+  prefixes = prx,
+  suffixes = sfx,
+  sanitize = FALSE,
+  split_initials = FALSE,
+  add_nicknames = FALSE
+)
 }
 \arguments{
 \item{x}{A character string representing a person's name.}
@@ -17,11 +24,20 @@ Defaults to \link{prx}.}
 \item{sanitize}{Logical; if \code{TRUE}, run \code{\link[=sanitize_input]{sanitize_input()}} on \code{x} first. Set
 \code{FALSE} (the default) when the input has already been sanitized, as
 \code{\link[=parse_names]{parse_names()}} does for the whole vector.}
+
+\item{split_initials}{Logical; if \code{TRUE}, also split a stray initial fused
+onto a surname (Defect 3, e.g. \code{CWOOLFOLK} -> \verb{C WOOLFOLK}). Off by default
+because it is unreliable on a single record and can break legitimate names
+absent from the census; enable only where cross-year consensus can vet the
+output. See \code{\link[=deglue_tokens]{deglue_tokens()}}.}
+
+\item{add_nicknames}{Logical; if \code{TRUE}, append the nickname columns from
+\code{\link[=nickname_lookup]{nickname_lookup()}}. Defaults to \code{FALSE}.}
 }
 \value{
 A one-row \code{data.frame} with columns \code{salutation}, \code{first_name},
 \code{middle_name}, \code{last_name}, \code{suffix}, \code{status}, \code{gender}, and
-\code{gender_confidence}.
+\code{gender_confidence} (plus the nickname columns if \code{add_nicknames = TRUE}).
 }
 \description{
 Parses a full name string into components such as salutation, first name, middle name, last name,

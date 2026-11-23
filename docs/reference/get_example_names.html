@@ -16,6 +16,11 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/canonical-first-names.html">Canonical first names, nicknames and gender</a></li>
+  </ul></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/Nonprofit-Open-Data-Collective/peopleparser/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -55,20 +60,20 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">get_example_names</span><span class="op">(</span> n<span class="op">=</span><span class="fl">10</span> <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pn</span> <span class="op">&lt;-</span> <span class="fu"><a href="parse_names.html">parse_names</a></span><span class="op">(</span> <span class="va">x</span> <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span> <span class="va">pn</span> <span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 name salutation first_name middle_name  last_name suffix status</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 Michael VanDerhoef               MICHAEL             VANDERHOEF              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2     CHAD A WILKINS                  CHAD           A    WILKINS              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 BARRY J BARRESI OD         OD      BARRY           J    BARRESI              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4     STEPHANIE FLOM             STEPHANIE                   FLOM              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5       JOHN HARBUCK                  JOHN                HARBUCK              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6       ANNE BOURDON                  ANNE                BOURDON              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   gender gender_confidence</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1      M              99.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2      M               100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3      M               100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4      F               100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5      M              99.6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6      F               100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                    name salutation first_name middle_name      last_name suffix</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1        Joseph S McCoy                JOSEPH           S          MCCOY       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 RHONDA BLANFORD-GREEN                RHONDA             BLANFORD-GREEN       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3             TIM KITTS                   TIM                      KITTS       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4             ADAM ROBE                  ADAM                       ROBE       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5       CLAUDIA DAGGETT               CLAUDIA                    DAGGETT       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6          JW CARPENTER                    JW                  CARPENTER       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   status gender gender_confidence</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1             M              99.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2             F               100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3             M               100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4             M              99.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5             F               100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6             U              50.0</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># micro-benchmark performance</span></span></span>
 <span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu">get_example_names</span><span class="op">(</span> n<span class="op">=</span><span class="fl">1000</span> <span class="op">)</span></span></span>
@@ -76,7 +81,7 @@
 <span class="r-in"><span><span class="va">pn</span> <span class="op">&lt;-</span> <span class="fu"><a href="parse_names.html">parse_names</a></span><span class="op">(</span> <span class="va">x</span> <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">end_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">end_time</span> <span class="op">-</span> <span class="va">start_time</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Time difference of 6.170809 secs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Time difference of 3.717714 secs</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -88,7 +93,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

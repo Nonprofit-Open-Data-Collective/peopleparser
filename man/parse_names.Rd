@@ -4,7 +4,14 @@
 \alias{parse_names}
 \title{Parse a Vector of Names}
 \usage{
-parse_names(x, prefixes = prx, suffixes = sfx, ...)
+parse_names(
+  x,
+  prefixes = prx,
+  suffixes = sfx,
+  split_initials = FALSE,
+  add_nicknames = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{A character vector of raw names to parse.}
@@ -13,6 +20,14 @@ parse_names(x, prefixes = prx, suffixes = sfx, ...)
 Defaults to \link{prx}.}
 
 \item{suffixes}{A character vector of suffixes to remove. Defaults to \link{sfx}.}
+
+\item{split_initials}{Logical; forwarded to \code{\link[=parse_name]{parse_name()}} to enable the
+opt-in Defect 3 stray-initial split. Defaults to \code{FALSE}.}
+
+\item{add_nicknames}{Logical; if \code{TRUE}, append the nickname columns from
+\code{\link[=nickname_lookup]{nickname_lookup()}} (\code{first_name_type}, \code{first_name_formal},
+\code{first_name_nicknames}, \code{first_name_canonical}, \code{canonical_rule}).
+Defaults to \code{FALSE}.}
 
 \item{...}{Reserved for future arguments; currently unused.}
 }

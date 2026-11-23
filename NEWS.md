@@ -14,3 +14,23 @@
 * Real titles/credentials (`MR`, `DR`, `REV`, ...) are unaffected: they are not
   census names, so they are never restored as first names.
 * Added regression tests covering these cases.
+
+## Nicknames (experimental)
+
+* New `first_name_pairs` dataset: synthid's first-name variant table
+  (24,972 pairs observed as one person's first names across Form 990 Part VII
+  filings; 1,007 reviewed nickname, spelling, cognate and compound pairs plus
+  unreviewed sound-alikes and misspellings), with a `formal` column saying
+  which side of a nickname pair is the formal name.
+* New `nickname_lookup()`, `canonical_first_name()`, `get_formal_names()` and
+  `get_nicknames()`. The canonical rule takes a spelling step to the most
+  common spelling, then at most one nickname step, chosen by the people
+  carrying each pair, filtered by gender, and left `"ambiguous"` when no formal
+  name holds 60% of the evidence. Variant chains are never followed.
+* New `first_name_variants()`: every name in a name's canonical family, with
+  how it gets there, plus related names that are not merged.
+* `parse_name()` and `parse_names()` gain `add_nicknames = FALSE`, which
+  appends `first_name_type`, `first_name_formal`, `first_name_nicknames`,
+  `first_name_canonical` and `canonical_rule`.
+* New vignette, "Canonical first names, nicknames and gender".
+* Pilot on 33,535 linked Part VII records: `data-raw/PLAN-nicknames.md`.

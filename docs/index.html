@@ -11,8 +11,8 @@
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Parse Raw Person Names into Structured Components">
-<meta name="description" content="Converts raw text names into structured components (salutation, first name, middle name, last name, suffix, and status) and infers gender using U.S. Census name-frequency data. Proper name ordering is disambiguated probabilistically based on how often each token appears in the first-name versus last-name position.">
-<meta property="og:description" content="Converts raw text names into structured components (salutation, first name, middle name, last name, suffix, and status) and infers gender using U.S. Census name-frequency data. Proper name ordering is disambiguated probabilistically based on how often each token appears in the first-name versus last-name position.">
+<meta name="description" content="Converts raw text names into structured components (salutation, first name, middle name, last name, suffix, and status) and infers gender using U.S. Census name-frequency data. Proper name ordering is disambiguated probabilistically based on how often each token appears in the first-name versus last-name position. First names can be linked to their formal names, nicknames and spelling variants, and reduced to one canonical form, using a variant table observed in Form 990 filings.">
+<meta property="og:description" content="Converts raw text names into structured components (salutation, first name, middle name, last name, suffix, and status) and infers gender using U.S. Census name-frequency data. Proper name ordering is disambiguated probabilistically based on how often each token appears in the first-name versus last-name position. First names can be linked to their formal names, nicknames and spelling variants, and reduced to one canonical form, using a variant table observed in Form 990 filings.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -32,6 +32,13 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="articles/canonical-first-names.html">Canonical first names, nicknames and gender</a></li>
+  </ul>
+</li>
+<li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -54,7 +61,7 @@
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span> <span class="st">"Nonprofit-Open-Data-Collective/peopleparser"</span> <span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install-deprecated.html" class="external-link">install_github</a></span><span class="op">(</span> <span class="st">"Nonprofit-Open-Data-Collective/peopleparser"</span> <span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span> <span class="va"><a href="https://github.com/Nonprofit-Open-Data-Collective/peopleparser" class="external-link">peopleparser</a></span> <span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -74,39 +81,39 @@
 <p>The matching is done probabilistically based upon frequencies of the name appearing as a first name or last name on US birth certificates.</p>
 <p>Gender coding is similarly done probabilistically using the first name from the parsed string and the same Census data table.</p>
 <p><code><a href="reference/parse_name.html">parse_name()</a></code> parses a single name and returns a one-row data frame. Set <code>sanitize = TRUE</code> when the input still contains punctuation, titles, or other clutter:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="st">'livingston III,  Mr. MICHAEL JOHN9'</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">parse_name</span>( x, <span class="at">sanitize =</span> <span class="cn">TRUE</span> )</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#   salutation first_name middle_name  last_name suffix status gender gender_confidence</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 1         MR    MICHAEL        JOHN LIVINGSTON    III             M              99.6</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="st">"THOMAS H VON KAMECKE"</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">parse_name</span>( x, <span class="at">sanitize =</span> <span class="cn">TRUE</span> )</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#   salutation first_name middle_name   last_name suffix status gender gender_confidence</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 1               THOMAS           H VON-KAMECKE                    M              99.8</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Karen H Green"</span>, <span class="st">"ED MARKS"</span>, <span class="st">"MATTHEW BERSHADKER"</span>, <span class="st">"R Blincoe"</span>,</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>       <span class="st">"HAFER JR EDMUND L AIA"</span>, <span class="st">"Dr Leslie Smith"</span>, <span class="st">"THOMAS H VON KAMECKE"</span>)</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="fu">parse_names</span>(x)</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>                   name salutation first_name middle_name   last_name suffix status gender gender_confidence</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span>         Karen H Green                 KAREN           H       GREEN                    F               <span class="dv">100</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span>              ED MARKS                    ED                   MARKS                    M               <span class="dv">100</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span>    MATTHEW BERSHADKER               MATTHEW              BERSHADKER                    M              <span class="fl">99.7</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="dv">4</span>             R Blincoe                     R                 BLINCOE                    U              <span class="fl">50.0</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="dv">5</span> HAFER JR EDMUND L AIA        AIA     EDMUND           L       HAFER     JR             M               <span class="dv">100</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="dv">6</span>       Dr Leslie Smith         DR     LESLIE                   SMITH                    F              <span class="fl">66.8</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="dv">7</span>  THOMAS H VON KAMECKE                THOMAS           H VON<span class="sc">-</span>KAMECKE                    M              <span class="fl">99.8</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co"># census data table used for name position assignment and gender </span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>( census.names )</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>      name male_value female_value first_name_value last_name_value</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span><span class="sc">:</span>     AAB          <span class="dv">0</span>            <span class="dv">0</span>                <span class="dv">0</span>             <span class="dv">133</span></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span><span class="sc">:</span>  AABERG          <span class="dv">0</span>            <span class="dv">0</span>                <span class="dv">0</span>             <span class="dv">469</span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span><span class="sc">:</span>    AABY          <span class="dv">0</span>            <span class="dv">0</span>                <span class="dv">0</span>             <span class="dv">220</span></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="dv">4</span><span class="sc">:</span> AADLAND          <span class="dv">0</span>            <span class="dv">0</span>                <span class="dv">0</span>             <span class="dv">374</span></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="dv">5</span><span class="sc">:</span>  AAFEDT          <span class="dv">0</span>            <span class="dv">0</span>                <span class="dv">0</span>             <span class="dv">138</span></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="dv">6</span><span class="sc">:</span> AAGAARD          <span class="dv">0</span>            <span class="dv">0</span>                <span class="dv">0</span>             <span class="dv">300</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="st">'livingston III,  Mr. MICHAEL JOHN9'</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">parse_name</span>( x, <span class="at">sanitize =</span> <span class="cn">TRUE</span> )</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#   salutation first_name middle_name  last_name suffix status gender gender_confidence</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co"># 1         MR    MICHAEL        JOHN LIVINGSTON    III             M              99.6</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="st">"THOMAS H VON KAMECKE"</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="fu">parse_name</span>( x, <span class="at">sanitize =</span> <span class="cn">TRUE</span> )</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#   salutation first_name middle_name   last_name suffix status gender gender_confidence</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co"># 1               THOMAS           H VON-KAMECKE                    M              99.8</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Karen H Green"</span>, <span class="st">"ED MARKS"</span>, <span class="st">"MATTHEW BERSHADKER"</span>, <span class="st">"R Blincoe"</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>       <span class="st">"HAFER JR EDMUND L AIA"</span>, <span class="st">"Dr Leslie Smith"</span>, <span class="st">"THOMAS H VON KAMECKE"</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="fu">parse_names</span>(x)</span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>                   name salutation first_name middle_name   last_name suffix status gender gender_confidence</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="dv">1</span>         Karen H Green                 KAREN           H       GREEN                    F               <span class="dv">100</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="dv">2</span>              ED MARKS                    ED                   MARKS                    M               <span class="dv">100</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="dv">3</span>    MATTHEW BERSHADKER               MATTHEW              BERSHADKER                    M              <span class="fl">99.7</span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="dv">4</span>             R Blincoe                     R                 BLINCOE                    U              <span class="fl">50.0</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="dv">5</span> HAFER JR EDMUND L AIA        AIA     EDMUND           L       HAFER     JR             M               <span class="dv">100</span></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="dv">6</span>       Dr Leslie Smith         DR     LESLIE                   SMITH                    F              <span class="fl">66.8</span></span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="dv">7</span>  THOMAS H VON KAMECKE                THOMAS           H VON<span class="sc">-</span>KAMECKE                    M              <span class="fl">99.8</span></span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a><span class="co"># census data table used for name position assignment and gender </span></span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a><span class="fu">head</span>( census.names )</span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>      name male_value female_value first_name_value last_name_value</span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a><span class="dv">1</span><span class="sc">:</span>     AAB          <span class="dv">0</span>            <span class="dv">0</span>                <span class="dv">0</span>             <span class="dv">133</span></span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a><span class="dv">2</span><span class="sc">:</span>  AABERG          <span class="dv">0</span>            <span class="dv">0</span>                <span class="dv">0</span>             <span class="dv">469</span></span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a><span class="dv">3</span><span class="sc">:</span>    AABY          <span class="dv">0</span>            <span class="dv">0</span>                <span class="dv">0</span>             <span class="dv">220</span></span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a><span class="dv">4</span><span class="sc">:</span> AADLAND          <span class="dv">0</span>            <span class="dv">0</span>                <span class="dv">0</span>             <span class="dv">374</span></span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a><span class="dv">5</span><span class="sc">:</span>  AAFEDT          <span class="dv">0</span>            <span class="dv">0</span>                <span class="dv">0</span>             <span class="dv">138</span></span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a><span class="dv">6</span><span class="sc">:</span> AAGAARD          <span class="dv">0</span>            <span class="dv">0</span>                <span class="dv">0</span>             <span class="dv">300</span></span></code></pre></div>
 <p>The <strong>parse_names()</strong> function utilizes parallelization to speed up large jobs.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_example_names.html">get_example_names</a></span><span class="op">(</span> n<span class="op">=</span><span class="fl">1000</span> <span class="op">)</span></span>
@@ -212,7 +219,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

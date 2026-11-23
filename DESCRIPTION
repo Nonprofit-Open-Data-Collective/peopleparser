@@ -9,7 +9,9 @@ Description: Converts raw text names into structured components (salutation,
     first name, middle name, last name, suffix, and status) and infers gender
     using U.S. Census name-frequency data. Proper name ordering is
     disambiguated probabilistically based on how often each token appears in
-    the first-name versus last-name position.
+    the first-name versus last-name position. First names can be linked to
+    their formal names, nicknames and spelling variants, and reduced to one
+    canonical form, using a variant table observed in Form 990 filings.
 License: GPL-3
 URL: https://github.com/Nonprofit-Open-Data-Collective/peopleparser
 BugReports: https://github.com/Nonprofit-Open-Data-Collective/peopleparser/issues
@@ -21,10 +23,14 @@ Imports:
     furrr,
     future,
     magrittr,
-    tibble
+    stats,
+    tibble,
+    utils
 Suggests:
     knitr,
+    rmarkdown,
     testthat (>= 3.0.0)
+VignetteBuilder: knitr
 Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true

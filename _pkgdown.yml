@@ -32,6 +32,16 @@ reference:
   - assign_names
   - resolve_middle_name
 
+- title: Nicknames and canonical first names
+  desc: Formal names, nicknames, spelling variants and one canonical form per first name.
+  contents:
+  - nickname_lookup
+  - canonical_first_name
+  - first_name_variants
+  - get_formal_names
+  - get_nicknames
+  - first_name_pairs
+
 - title: Reference data
   desc: Bundled datasets and lookup tables.
   contents:

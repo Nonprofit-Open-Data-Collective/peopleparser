@@ -4,3 +4,6 @@
 .Ruserdata
 *.Rproj
 inst/doc
+
+# nickname pilot caches
+data-raw/pilot-nicknames/results/*.rds
