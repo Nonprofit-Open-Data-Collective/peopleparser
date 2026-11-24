@@ -462,6 +462,16 @@ positional_tokens <- function( name_vec, prefixes, suffixes ) {
   }
   if ( n >= 3 && name_vec[1] %in% .leading_only_titles )
     out$titles <- unique( c( out$titles, name_vec[1] ) )
+  # a leading ambiguous credential that is not a census name, before a strong
+  # given name and at least one more word (0.2.5): DC DAVID BEER, PT RISHI
+  # MISIR (Pandit), RM THAD WARREN. MA, BA, AB and AUD are census names and
+  # stay: MA BERNADETTE SALGARINO is Maria.
+  if ( n >= 3 && name_vec[1] %in% .ambiguous_suffix_credentials && nchar( name_vec[2] ) > 1 ) {
+    cd <- get_census_data( name_vec[1:2] )
+    f <- cd$first_name_value; l <- cd$last_name_value
+    if ( f[1] + l[1] == 0 && f[2] / max( f[2] + l[2], 1 ) >= 0.9 )
+      out$titles <- unique( c( out$titles, name_vec[1] ) )
+  }
   # two tokens: a leading title before a word that is not mostly a given name
   # ("SHERIFF MASRY", "BROTHER STEWART"); "BISHOP JOHN" is left alone, since it
   # may be JOHN BISHOP written surname first

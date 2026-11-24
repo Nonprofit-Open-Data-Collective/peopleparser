@@ -73,6 +73,14 @@ test_that("a lone ambiguous credential at the end is stripped after a surname", 
   expect_equal(pn("WEI MA")$last_name, "MA")
 })
 
+test_that("a leading ambiguous credential before a given name is a title", {
+  r <- pn("DC David Beer")
+  expect_equal(c(r$salutation, r$first_name, r$last_name), c("DC", "DAVID", "BEER"))
+  expect_equal(pn("PT RISHI MISIR")$first_name, "RISHI")
+  expect_equal(pn("MA BERNADETTE SALGARINO")$first_name, "MA")   # Maria
+  expect_equal(pn("AB SKIP CONLEY")$first_name, "AB")            # AB is a census name
+})
+
 test_that("inner particles, titles and ranks", {
   expect_equal(pn("KATRINA VANDEN HEUVEL")$last_name, "VANDEN-HEUVEL")
   expect_equal(pn("PATRICIA SAN PEDRO")$last_name, "SAN-PEDRO")

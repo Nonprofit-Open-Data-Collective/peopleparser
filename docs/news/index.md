@@ -1,5 +1,16 @@
 # Changelog
 
+## peopleparser 0.2.5
+
+- A leading ambiguous credential that is not a census name, before a
+  strong given name and at least one more word, is now a title:
+  `DC David Beer` gives first name `DAVID`, where before it gave `DC`.
+  Also `PT RISHI MISIR` (Pandit) and `RM THAD WARREN`. `MA`, `BA`, `AB`
+  and `AUD` are census names and stay where they are: a leading `MA` is
+  usually Maria (`MA BERNADETTE SALGARINO`), and `AB SKIP CONLEY` keeps
+  `AB`. About 30 national Part VII names are affected; none in the
+  10,000-name sample.
+
 ## peopleparser 0.2.4
 
 - A lone ambiguous credential at the end of a name, after two name
