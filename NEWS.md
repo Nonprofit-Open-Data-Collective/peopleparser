@@ -1,3 +1,45 @@
+# peopleparser 0.2.6
+
+## Role words, tenure notes and employers no longer become the surname
+
+npmerger's rebuild on 0.2.4 left a few role words among the most common
+surname parts: `INSURANCE`, `STARTING`, `APPOINTED`, `MANAGING-DIR`.
+
+* **Tenure words.** `STARTING`, `STARTED`, `APPOINTED` and `ELECTED` at the
+  end of a name go to `status`, and the date after them is dropped:
+  `DUANE LARSON STARTING 6-2022` gives `LARSON` with status `STARTING`.
+  `NOT APPOINTED` is a placeholder in `classify_names()`.
+* **Role words.** `MANAGING`, `DIR` and `MGMT` are trailing-only titles, and
+  `MANAGING` followed by another word (`MANAGING PARTNER`, `MANAGING EDITOR`)
+  is cut by `de_clutter()`: `CRAIG WILSON MANAGING DIR` gives `WILSON`.
+* **Employers after the name.** From an employer word (`INSURANCE`,
+  `ASSURANCE`, `COMPANY`, `COMPANIES`, `AGENCY`, `CORPORATION`, `CORP`, `INC`,
+  `LLC`) at the third word or later, the name keeps its given name and
+  surname, plus any title or suffix right after them:
+  `LISA PIERCE ALLSTATE INSURANCE CO` gives `PIERCE`, where before it gave
+  `PIERCE-ALLSTATE-INSURANCE`.
+* **A dash at the end of a word** (`KARA JAMES- JOHNSON`,
+  `JASON FRENN- MANAGING DIRECTOR`) used to glue the two words
+  (`JAMESJOHNSON`, `FRENNMANAGING`). A last word that is not a title or note
+  is now joined as a double surname (`JAMES-JOHNSON`), as is the word after a
+  single word (`ADKINS- RICEHOUSE PAULA`); otherwise the dash starts a note
+  and the rest is cut, as for ` - `.
+* On 200,000 distinct national Part VII names, 103 (0.05%) parse
+  differently from 0.2.5. Most are double surnames written with a dangling
+  dash (`STETSON-COMPTON`, `JEAN-BAPTISTE`) and tenure words now in `status`;
+  the rest are organisation names.
+
+## Documentation
+
+* The README is now built from `README.Rmd`, with live examples of nicknames,
+  name types and run-together names.
+* Examples in the README and the guides print their results as tables
+  (`knitr::kable()`) instead of wide console output, and the helper the
+  guides use is shown.
+* The name-cleaning guide covers the rules added since 0.2.3: unknown
+  trailing credentials, the dangling dash, employers and the new tenure and
+  role words.
+
 # peopleparser 0.2.5
 
 * A leading ambiguous credential that is not a census name, before a strong

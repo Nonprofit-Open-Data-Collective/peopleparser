@@ -51,7 +51,7 @@ waiting to happen.
 x <- c("JOHN A SMITH", "PNC BANK NA", "TEAMSTERS LOCAL NO 338", "BNY MELLON",
        "SEE SCHEDULE O", "VACANT", "MICHAEL AND ASHLEY SMITH",
        "MARY SHURTS - LHS INC", "LARRY CHURCH", "SEE MOUA")
-classify_names(x)
+classify_names(x) |> knitr::kable()
 ```
 
 * **Placeholders** are found by rules: notes such as `SEE SCHEDULE O`, `NONE`,
@@ -69,13 +69,17 @@ classify_names(x)
   are a given name and a surname (`MARY SHURTS - LHS INC`, an employer after
   the name). Organisations named after a person (`KURT SUZUKI FAMILY
   FOUNDATION`) stay organisations, unless a dash separates the parts.
+  `parse_names()` still finds the person in most of these: the part after a
+  dash is cut, and from an employer word such as `INSURANCE` or `COMPANY`
+  on, the rest is dropped (`JOHN HEISER INSURANCE` gives `JOHN HEISER`; see
+  `vignette("name-cleaning")`).
 
 `parse_names(x, classify = TRUE)` adds the `name_type` and `org_score`
 columns to the parsed names, so the non-people can be set aside:
 
 ```{r}
 p <- parse_names(x, classify = TRUE)
-p[, c("name", "first_name", "last_name", "name_type")]
+p[, c("name", "first_name", "last_name", "name_type")] |> knitr::kable()
 ```
 
 ### The organisation model
@@ -154,7 +158,7 @@ The parser's order rules then decide which part is the surname:
 
 ```{r}
 parse_names(c("LedbetterJennifer A", "KramerKenneth", "MURPHYSANDRA"),
-            split_run_together = TRUE)[, c("name", "first_name", "middle_name", "last_name")]
+            split_run_together = TRUE)[, c("name", "first_name", "middle_name", "last_name")] |> knitr::kable()
 ```
 
 On the Part VII names, the capital-letter rule splits 2,014 distinct words

@@ -1,0 +1,140 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Edit README.Rmd, then run
+     rmarkdown::render("README.Rmd") (or devtools::build_readme()). -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(peopleparser)
+```
+
+# peopleparser
+
+R package to convert a raw text version of an individual's name into a
+structured format.
+
+The functions work out the order of the name parts (first, middle and last),
+strip titles, credentials and suffixes, and estimate gender from the given
+names.
+
+## Installation
+
+```{r, eval = FALSE}
+remotes::install_github("Nonprofit-Open-Data-Collective/peopleparser")
+library(peopleparser)
+```
+
+## Use
+
+`parse_names()` takes a vector of raw names and returns a data frame with one
+row per name and these columns:
+
+* `name`, the input
+* `salutation`, titles and credentials (`DR`, `MD_PHD`, `TREASURER`)
+* `first_name`, `middle_name`, `last_name`
+* `suffix` (`JR`, `III`) and `status` (`RESIGNED`, `PAST`, `ASOF`)
+* `gender` (`M`, `F` or `U`) and `gender_confidence` (50 to 100)
+
+```{r}
+x <- c("Karen H Green", "ED MARKS", "MATTHEW BERSHADKER", "R Blincoe",
+       "HAFER JR EDMUND L AIA", "Dr Leslie Smith", "THOMAS H VON KAMECKE",
+       "livingston III,  Mr. MICHAEL JOHN9", "JANE DOE RN MA TERM ENDED")
+parse_names(x) |> knitr::kable()
+```
+
+The name order and gender come from how often each word is a first name or a
+surname, and how often a first name is given to men or to women, in U.S.
+Census Bureau name lists (the bundled `census.names` table, built from the
+2020 Census first-name and surname lists).
+
+`parse_name()` parses a single name. It expects sanitized input, so set
+`sanitize = TRUE` for raw text:
+
+```{r}
+parse_name("livingston III,  Mr. MICHAEL JOHN9", sanitize = TRUE) |> knitr::kable()
+```
+
+### Nicknames and canonical first names
+
+With `add_nicknames = TRUE`, each first name also gets its formal names, its
+type (formal name or nickname) and one canonical first name, so that `BOB`,
+`ROBERT` and `ROB` can be matched as the same person. Lists of formal names
+are separated by `;; `. A gendered salutation decides names such as `PAT`
+(the `gender` column itself comes from the census counts only):
+
+```{r}
+x <- c("Bob Jones", "MRS PAT LEE", "MR PAT LEE", "Kathy Ruiz", "STEVEN H PARK")
+parse_names(x, add_nicknames = TRUE)[
+  , c("name", "salutation", "first_name", "first_name_type", "first_name_formal",
+      "first_name_canonical")] |> knitr::kable()
+```
+
+### Organisations, placeholders and run-together names
+
+Officer lists also hold banks, notes and couples. With `classify = TRUE`,
+`parse_names()` adds a `name_type` column so that they can be set aside
+before people are matched (`classify_names()` does this on its own). With
+`split_run_together = TRUE` it first splits a surname and given name typed as
+one word (`KramerKenneth`, `MURPHYSANDRA`). Both are off by default.
+
+```{r}
+x <- c("JOHN A SMITH", "PNC BANK NA", "SEE SCHEDULE O",
+       "MICHAEL AND ASHLEY SMITH", "KramerKenneth", "MURPHYSANDRA")
+parse_names(x, classify = TRUE, split_run_together = TRUE)[
+  , c("name", "first_name", "last_name", "name_type")] |> knitr::kable()
+```
+
+## Guides
+
+* [Cleaning names: clutter, titles, credentials and suffixes](https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-cleaning.html)
+* [Name order and compound surnames](https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-order.html)
+* [Gender scoring and the census name table](https://nonprofit-open-data-collective.github.io/peopleparser/articles/gender-scoring.html)
+* [Canonical first names, nicknames and gender](https://nonprofit-open-data-collective.github.io/peopleparser/articles/canonical-first-names.html)
+* [People, organisations and run-together names](https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-types.html)
+* [What changed since the synthid parses](https://nonprofit-open-data-collective.github.io/peopleparser/articles/version-comparison.html)
+
+## Speed and parallel workers
+
+`parse_names()` runs in the current R session and starts no background
+processes unless you ask for them. For large inputs, use workers:
+
+```{r, eval = FALSE}
+x <- get_example_names(n = 1000)
+system.time(pn <- parse_names(x))           # sequential
+
+pn <- parse_names(big_vector, workers = 4)  # 4 workers for this call
+
+future::plan(future::multisession, workers = 4)  # or reuse workers
+a <- parse_names(batch_1)                        # across calls
+b <- parse_names(batch_2)
+future::plan(future::sequential)
+```
+
+Starting workers takes a few seconds, so they help only on large inputs.
+
+## The steps on their own
+
+The parser's steps are exported, which helps when a name parses in a
+surprising way:
+
+```{r}
+x <- prep_name("livingston III,  Mr. MICHAEL JOHN9")   # clean the string
+x
+tokens <- strsplit(x, " ")[[1]]
+cd <- get_census_data(tokens)                          # census counts per word
+cd |> knitr::kable()
+determine_surname(cd)                                  # position of the surname
+```
+
+## Contributors
+
+This package was adapted by Jesse Lecy from **Name-Parser** by Michael
+Flanigan (<https://github.com/mjfii/Name-Parser>).
+
+## Versioning
+
+Development began 2020-08-01; version 0.1.0 (2026-11-23) was the first tagged
+release. See the [changelog](https://nonprofit-open-data-collective.github.io/peopleparser/news/index.html)
+for each release.

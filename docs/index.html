@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="index.html">peopleparser</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,32 +72,323 @@
 <div class="page-header"><h1 id="peopleparser">peopleparser<a class="anchor" aria-label="anchor" href="#peopleparser"></a>
 </h1></div>
 <p>R package to convert a raw text version of an individual’s name into a structured format.</p>
-<p>The functions attempt to disambiguate proper name ordering (first, middle, and last), parse prefixes and suffixes, and assign gender based upon first names.</p>
+<p>The functions work out the order of the name parts (first, middle and last), strip titles, credentials and suffixes, and estimate gender from the given names.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install-deprecated.html" class="external-link">install_github</a></span><span class="op">(</span> <span class="st">"Nonprofit-Open-Data-Collective/peopleparser"</span> <span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span> <span class="va"><a href="https://nonprofit-open-data-collective.github.io/peopleparser/">peopleparser</a></span> <span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"Nonprofit-Open-Data-Collective/peopleparser"</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://nonprofit-open-data-collective.github.io/peopleparser/">peopleparser</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="use">Use<a class="anchor" aria-label="anchor" href="#use"></a>
 </h2>
-<p>The program takes raw text individual names as the input and returns a data frame with the name parsed into the component parts:</p>
+<p><code><a href="reference/parse_names.html">parse_names()</a></code> takes a vector of raw names and returns a data frame with one row per name and these columns:</p>
 <ul>
-<li>SALUTATION</li>
-<li>FIRST_NAME</li>
-<li>MIDDLE_NAME</li>
-<li>LAST_NAME</li>
-<li>SUFFIX</li>
-<li>STATUS</li>
-<li>GENDER</li>
-<li>GENDER_CONFIDENCE</li>
+<li>
+<code>name</code>, the input</li>
+<li>
+<code>salutation</code>, titles and credentials (<code>DR</code>, <code>MD_PHD</code>, <code>TREASURER</code>)</li>
+<li>
+<code>first_name</code>, <code>middle_name</code>, <code>last_name</code>
+</li>
+<li>
+<code>suffix</code> (<code>JR</code>, <code>III</code>) and <code>status</code> (<code>RESIGNED</code>, <code>PAST</code>, <code>ASOF</code>)</li>
+<li>
+<code>gender</code> (<code>M</code>, <code>F</code> or <code>U</code>) and <code>gender_confidence</code> (50 to 100)</li>
 </ul>
-<p>The matching is done probabilistically based upon how often each token appears as a first name or a surname in U.S. Census Bureau name lists (the bundled <code>census.names</code> table, built from the 2020 Census first-name and surname lists).</p>
-<p>Gender coding is similarly done probabilistically using the given names from the parsed string and the same Census data table.</p>
-<p>With <code>add_nicknames = TRUE</code>, <code><a href="reference/parse_name.html">parse_name()</a></code> and <code><a href="reference/parse_names.html">parse_names()</a></code> also add each first name’s formal names, nicknames and one canonical first name.</p>
-<p>With <code>classify = TRUE</code>, <code><a href="reference/parse_names.html">parse_names()</a></code> adds a <code>name_type</code> column that marks organisations (<code>PNC BANK NA</code>), placeholders (<code>SEE SCHEDULE O</code>), couples and a person followed by an employer, so they can be set aside before matching people (<code><a href="reference/classify_names.html">classify_names()</a></code> does this on its own). With <code>split_run_together = TRUE</code> it first splits a surname and given name typed as one word (<code>KramerKenneth</code>, <code>MURPHYSANDRA</code>). Both are off by default.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Karen H Green"</span>, <span class="st">"ED MARKS"</span>, <span class="st">"MATTHEW BERSHADKER"</span>, <span class="st">"R Blincoe"</span>,</span>
+<span>       <span class="st">"HAFER JR EDMUND L AIA"</span>, <span class="st">"Dr Leslie Smith"</span>, <span class="st">"THOMAS H VON KAMECKE"</span>,</span>
+<span>       <span class="st">"livingston III,  Mr. MICHAEL JOHN9"</span>, <span class="st">"JANE DOE RN MA TERM ENDED"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/parse_names.html">parse_names</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="11%">
+<col width="11%">
+<col width="11%">
+<col width="11%">
+<col width="11%">
+<col width="11%">
+<col width="11%">
+<col width="11%">
+<col width="11%">
+</colgroup>
+<thead><tr>
+<th align="left">name</th>
+<th align="left">salutation</th>
+<th align="left">first_name</th>
+<th align="left">middle_name</th>
+<th align="left">last_name</th>
+<th align="left">suffix</th>
+<th align="left">status</th>
+<th align="left">gender</th>
+<th align="left">gender_confidence</th>
+</tr></thead>
+<tbody>
+<tr>
+<td align="left">Karen H Green</td>
+<td align="left"></td>
+<td align="left">KAREN</td>
+<td align="left">H</td>
+<td align="left">GREEN</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">F</td>
+<td align="left">99.8</td>
+</tr>
+<tr>
+<td align="left">ED MARKS</td>
+<td align="left"></td>
+<td align="left">ED</td>
+<td align="left"></td>
+<td align="left">MARKS</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">M</td>
+<td align="left">99.4</td>
+</tr>
+<tr>
+<td align="left">MATTHEW BERSHADKER</td>
+<td align="left"></td>
+<td align="left">MATTHEW</td>
+<td align="left"></td>
+<td align="left">BERSHADKER</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">M</td>
+<td align="left">99.9</td>
+</tr>
+<tr>
+<td align="left">R Blincoe</td>
+<td align="left"></td>
+<td align="left">R</td>
+<td align="left"></td>
+<td align="left">BLINCOE</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">U</td>
+<td align="left">50.0</td>
+</tr>
+<tr>
+<td align="left">HAFER JR EDMUND L AIA</td>
+<td align="left">AIA</td>
+<td align="left">EDMUND</td>
+<td align="left">L</td>
+<td align="left">HAFER</td>
+<td align="left">JR</td>
+<td align="left"></td>
+<td align="left">M</td>
+<td align="left">99.9</td>
+</tr>
+<tr>
+<td align="left">Dr Leslie Smith</td>
+<td align="left">DR</td>
+<td align="left">LESLIE</td>
+<td align="left"></td>
+<td align="left">SMITH</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">F</td>
+<td align="left">81.8</td>
+</tr>
+<tr>
+<td align="left">THOMAS H VON KAMECKE</td>
+<td align="left"></td>
+<td align="left">THOMAS</td>
+<td align="left">H</td>
+<td align="left">VON-KAMECKE</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">M</td>
+<td align="left">99.9</td>
+</tr>
+<tr>
+<td align="left">livingston III, Mr. MICHAEL JOHN9</td>
+<td align="left">MR</td>
+<td align="left">MICHAEL</td>
+<td align="left">JOHN</td>
+<td align="left">LIVINGSTON</td>
+<td align="left">III</td>
+<td align="left"></td>
+<td align="left">M</td>
+<td align="left">99.8</td>
+</tr>
+<tr>
+<td align="left">JANE DOE RN MA TERM ENDED</td>
+<td align="left">RN_MA</td>
+<td align="left">JANE</td>
+<td align="left"></td>
+<td align="left">DOE</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">F</td>
+<td align="left">99.4</td>
+</tr>
+</tbody>
+</table>
+<p>The name order and gender come from how often each word is a first name or a surname, and how often a first name is given to men or to women, in U.S. Census Bureau name lists (the bundled <code>census.names</code> table, built from the 2020 Census first-name and surname lists).</p>
+<p><code><a href="reference/parse_name.html">parse_name()</a></code> parses a single name. It expects sanitized input, so set <code>sanitize = TRUE</code> for raw text:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/parse_name.html">parse_name</a></span><span class="op">(</span><span class="st">"livingston III,  Mr. MICHAEL JOHN9"</span>, sanitize <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="12%">
+<col width="12%">
+<col width="12%">
+<col width="12%">
+<col width="12%">
+<col width="12%">
+<col width="12%">
+<col width="12%">
+</colgroup>
+<thead><tr>
+<th align="left">salutation</th>
+<th align="left">first_name</th>
+<th align="left">middle_name</th>
+<th align="left">last_name</th>
+<th align="left">suffix</th>
+<th align="left">status</th>
+<th align="left">gender</th>
+<th align="left">gender_confidence</th>
+</tr></thead>
+<tbody><tr>
+<td align="left">MR</td>
+<td align="left">MICHAEL</td>
+<td align="left">JOHN</td>
+<td align="left">LIVINGSTON</td>
+<td align="left">III</td>
+<td align="left"></td>
+<td align="left">M</td>
+<td align="left">99.8</td>
+</tr></tbody>
+</table>
+<div class="section level3">
+<h3 id="nicknames-and-canonical-first-names">Nicknames and canonical first names<a class="anchor" aria-label="anchor" href="#nicknames-and-canonical-first-names"></a>
+</h3>
+<p>With <code>add_nicknames = TRUE</code>, each first name also gets its formal names, its type (formal name or nickname) and one canonical first name, so that <code>BOB</code>, <code>ROBERT</code> and <code>ROB</code> can be matched as the same person. Lists of formal names are separated by <code>;;</code>. A gendered salutation decides names such as <code>PAT</code> (the <code>gender</code> column itself comes from the census counts only):</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Bob Jones"</span>, <span class="st">"MRS PAT LEE"</span>, <span class="st">"MR PAT LEE"</span>, <span class="st">"Kathy Ruiz"</span>, <span class="st">"STEVEN H PARK"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/parse_names.html">parse_names</a></span><span class="op">(</span><span class="va">x</span>, add_nicknames <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[</span></span>
+<span>  , <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"salutation"</span>, <span class="st">"first_name"</span>, <span class="st">"first_name_type"</span>, <span class="st">"first_name_formal"</span>,</span>
+<span>      <span class="st">"first_name_canonical"</span><span class="op">)</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="16%">
+<col width="16%">
+<col width="16%">
+<col width="16%">
+<col width="16%">
+<col width="16%">
+</colgroup>
+<thead><tr>
+<th align="left">name</th>
+<th align="left">salutation</th>
+<th align="left">first_name</th>
+<th align="left">first_name_type</th>
+<th align="left">first_name_formal</th>
+<th align="left">first_name_canonical</th>
+</tr></thead>
+<tbody>
+<tr>
+<td align="left">Bob Jones</td>
+<td align="left"></td>
+<td align="left">BOB</td>
+<td align="left">both</td>
+<td align="left">ROBERT</td>
+<td align="left">ROBERT</td>
+</tr>
+<tr>
+<td align="left">MRS PAT LEE</td>
+<td align="left">MRS</td>
+<td align="left">PAT</td>
+<td align="left">both</td>
+<td align="left">PATRICIA;; PATSY</td>
+<td align="left">PATRICIA</td>
+</tr>
+<tr>
+<td align="left">MR PAT LEE</td>
+<td align="left">MR</td>
+<td align="left">PAT</td>
+<td align="left">both</td>
+<td align="left">PATRICK</td>
+<td align="left">PATRICK</td>
+</tr>
+<tr>
+<td align="left">Kathy Ruiz</td>
+<td align="left"></td>
+<td align="left">KATHY</td>
+<td align="left">nickname</td>
+<td align="left">KATHLEEN;; KATHRYN;; KATHERINE;; KATHARINE</td>
+<td align="left">KATHY</td>
+</tr>
+<tr>
+<td align="left">STEVEN H PARK</td>
+<td align="left"></td>
+<td align="left">STEVEN</td>
+<td align="left">formal</td>
+<td align="left"></td>
+<td align="left">STEPHEN</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level3">
+<h3 id="organisations-placeholders-and-run-together-names">Organisations, placeholders and run-together names<a class="anchor" aria-label="anchor" href="#organisations-placeholders-and-run-together-names"></a>
+</h3>
+<p>Officer lists also hold banks, notes and couples. With <code>classify = TRUE</code>, <code><a href="reference/parse_names.html">parse_names()</a></code> adds a <code>name_type</code> column so that they can be set aside before people are matched (<code><a href="reference/classify_names.html">classify_names()</a></code> does this on its own). With <code>split_run_together = TRUE</code> it first splits a surname and given name typed as one word (<code>KramerKenneth</code>, <code>MURPHYSANDRA</code>). Both are off by default.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN A SMITH"</span>, <span class="st">"PNC BANK NA"</span>, <span class="st">"SEE SCHEDULE O"</span>,</span>
+<span>       <span class="st">"MICHAEL AND ASHLEY SMITH"</span>, <span class="st">"KramerKenneth"</span>, <span class="st">"MURPHYSANDRA"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/parse_names.html">parse_names</a></span><span class="op">(</span><span class="va">x</span>, classify <span class="op">=</span> <span class="cn">TRUE</span>, split_run_together <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[</span></span>
+<span>  , <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"first_name"</span>, <span class="st">"last_name"</span>, <span class="st">"name_type"</span><span class="op">)</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr>
+<th align="left">name</th>
+<th align="left">first_name</th>
+<th align="left">last_name</th>
+<th align="left">name_type</th>
+</tr></thead>
+<tbody>
+<tr>
+<td align="left">JOHN A SMITH</td>
+<td align="left">JOHN</td>
+<td align="left">SMITH</td>
+<td align="left">person</td>
+</tr>
+<tr>
+<td align="left">PNC BANK NA</td>
+<td align="left">PNC</td>
+<td align="left">BANK-NA</td>
+<td align="left">organisation</td>
+</tr>
+<tr>
+<td align="left">SEE SCHEDULE O</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">placeholder</td>
+</tr>
+<tr>
+<td align="left">MICHAEL AND ASHLEY SMITH</td>
+<td align="left">MICHAEL</td>
+<td align="left">SMITH</td>
+<td align="left">several people</td>
+</tr>
+<tr>
+<td align="left">KramerKenneth</td>
+<td align="left">KENNETH</td>
+<td align="left">KRAMER</td>
+<td align="left">person</td>
+</tr>
+<tr>
+<td align="left">MURPHYSANDRA</td>
+<td align="left">SANDRA</td>
+<td align="left">MURPHY</td>
+<td align="left">person</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 <div class="section level2">
 <h2 id="guides">Guides<a class="anchor" aria-label="anchor" href="#guides"></a>
@@ -108,102 +399,109 @@
 <li><a href="https://nonprofit-open-data-collective.github.io/peopleparser/articles/gender-scoring.html">Gender scoring and the census name table</a></li>
 <li><a href="https://nonprofit-open-data-collective.github.io/peopleparser/articles/canonical-first-names.html">Canonical first names, nicknames and gender</a></li>
 <li><a href="https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-types.html">People, organisations and run-together names</a></li>
+<li><a href="https://nonprofit-open-data-collective.github.io/peopleparser/articles/version-comparison.html">What changed since the synthid parses</a></li>
 </ul>
-<p><code><a href="reference/parse_name.html">parse_name()</a></code> parses a single name and returns a one-row data frame. Set <code>sanitize = TRUE</code> when the input still contains punctuation, titles, or other clutter:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="st">'livingston III,  Mr. MICHAEL JOHN9'</span></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">parse_name</span>( x, <span class="at">sanitize =</span> <span class="cn">TRUE</span> )</span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#   salutation first_name middle_name  last_name suffix status gender gender_confidence</span></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co"># 1         MR    MICHAEL        JOHN LIVINGSTON    III             M              99.6</span></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="st">"THOMAS H VON KAMECKE"</span></span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="fu">parse_name</span>( x, <span class="at">sanitize =</span> <span class="cn">TRUE</span> )</span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#   salutation first_name middle_name   last_name suffix status gender gender_confidence</span></span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co"># 1               THOMAS           H VON-KAMECKE                    M              99.8</span></span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a></span>
-<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Karen H Green"</span>, <span class="st">"ED MARKS"</span>, <span class="st">"MATTHEW BERSHADKER"</span>, <span class="st">"R Blincoe"</span>,</span>
-<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>       <span class="st">"HAFER JR EDMUND L AIA"</span>, <span class="st">"Dr Leslie Smith"</span>, <span class="st">"THOMAS H VON KAMECKE"</span>)</span>
-<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="fu">parse_names</span>(x)</span>
-<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>                   name salutation first_name middle_name   last_name suffix status gender gender_confidence</span>
-<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="dv">1</span>         Karen H Green                 KAREN           H       GREEN                    F               <span class="dv">100</span></span>
-<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="dv">2</span>              ED MARKS                    ED                   MARKS                    M               <span class="dv">100</span></span>
-<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="dv">3</span>    MATTHEW BERSHADKER               MATTHEW              BERSHADKER                    M              <span class="fl">99.7</span></span>
-<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="dv">4</span>             R Blincoe                     R                 BLINCOE                    U              <span class="fl">50.0</span></span>
-<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="dv">5</span> HAFER JR EDMUND L AIA        AIA     EDMUND           L       HAFER     JR             M               <span class="dv">100</span></span>
-<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="dv">6</span>       Dr Leslie Smith         DR     LESLIE                   SMITH                    F              <span class="fl">66.8</span></span>
-<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="dv">7</span>  THOMAS H VON KAMECKE                THOMAS           H VON<span class="sc">-</span>KAMECKE                    M              <span class="fl">99.8</span></span>
-<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a></span>
-<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a></span>
-<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a><span class="co"># census data table used for name position assignment and gender </span></span>
-<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a><span class="fu">head</span>( census.names )</span>
-<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>      name male_value female_value first_name_value last_name_value</span>
-<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a><span class="dv">1</span><span class="sc">:</span>     AAB          <span class="dv">0</span>            <span class="dv">0</span>                <span class="dv">0</span>             <span class="dv">133</span></span>
-<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a><span class="dv">2</span><span class="sc">:</span>  AABERG          <span class="dv">0</span>            <span class="dv">0</span>                <span class="dv">0</span>             <span class="dv">469</span></span>
-<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a><span class="dv">3</span><span class="sc">:</span>    AABY          <span class="dv">0</span>            <span class="dv">0</span>                <span class="dv">0</span>             <span class="dv">220</span></span>
-<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a><span class="dv">4</span><span class="sc">:</span> AADLAND          <span class="dv">0</span>            <span class="dv">0</span>                <span class="dv">0</span>             <span class="dv">374</span></span>
-<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a><span class="dv">5</span><span class="sc">:</span>  AAFEDT          <span class="dv">0</span>            <span class="dv">0</span>                <span class="dv">0</span>             <span class="dv">138</span></span>
-<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a><span class="dv">6</span><span class="sc">:</span> AAGAARD          <span class="dv">0</span>            <span class="dv">0</span>                <span class="dv">0</span>             <span class="dv">300</span></span></code></pre></div>
-<p><strong>parse_names()</strong> parses about 1,500 names a second in the current R session, so 100,000 names take about a minute. It starts no background processes unless you ask for them:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_example_names.html">get_example_names</a></span><span class="op">(</span> n<span class="op">=</span><span class="fl">1000</span> <span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span> <span class="va">pn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parse_names.html">parse_names</a></span><span class="op">(</span> <span class="va">x</span> <span class="op">)</span> <span class="op">)</span>        <span class="co"># sequential</span></span>
+</div>
+<div class="section level2">
+<h2 id="speed-and-parallel-workers">Speed and parallel workers<a class="anchor" aria-label="anchor" href="#speed-and-parallel-workers"></a>
+</h2>
+<p><code><a href="reference/parse_names.html">parse_names()</a></code> runs in the current R session and starts no background processes unless you ask for them. For large inputs, use workers:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_example_names.html">get_example_names</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">pn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parse_names.html">parse_names</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>           <span class="co"># sequential</span></span>
 <span></span>
-<span><span class="va">pn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parse_names.html">parse_names</a></span><span class="op">(</span> <span class="va">big_vector</span>, workers <span class="op">=</span> <span class="fl">4</span> <span class="op">)</span> <span class="co"># 4 workers for this call</span></span>
+<span><span class="va">pn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parse_names.html">parse_names</a></span><span class="op">(</span><span class="va">big_vector</span>, workers <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>  <span class="co"># 4 workers for this call</span></span>
 <span></span>
-<span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span> <span class="fu">future</span><span class="fu">::</span><span class="va"><a href="https://future.futureverse.org/reference/multisession.html" class="external-link">multisession</a></span>, workers <span class="op">=</span> <span class="fl">4</span> <span class="op">)</span>  <span class="co"># or reuse workers</span></span>
-<span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parse_names.html">parse_names</a></span><span class="op">(</span> <span class="va">batch_1</span> <span class="op">)</span>                        <span class="co"># across calls</span></span>
-<span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parse_names.html">parse_names</a></span><span class="op">(</span> <span class="va">batch_2</span> <span class="op">)</span></span>
-<span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span> <span class="fu">future</span><span class="fu">::</span><span class="va"><a href="https://future.futureverse.org/reference/sequential.html" class="external-link">sequential</a></span> <span class="op">)</span></span></code></pre></div>
+<span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="va"><a href="https://future.futureverse.org/reference/multisession.html" class="external-link">multisession</a></span>, workers <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>  <span class="co"># or reuse workers</span></span>
+<span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parse_names.html">parse_names</a></span><span class="op">(</span><span class="va">batch_1</span><span class="op">)</span>                        <span class="co"># across calls</span></span>
+<span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parse_names.html">parse_names</a></span><span class="op">(</span><span class="va">batch_2</span><span class="op">)</span></span>
+<span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span><span class="fu">future</span><span class="fu">::</span><span class="va"><a href="https://future.futureverse.org/reference/sequential.html" class="external-link">sequential</a></span><span class="op">)</span></span></code></pre></div>
 <p>Starting workers takes a few seconds, so they help only on large inputs.</p>
 </div>
 <div class="section level2">
-<h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
+<h2 id="the-steps-on-their-own">The steps on their own<a class="anchor" aria-label="anchor" href="#the-steps-on-their-own"></a>
 </h2>
-<p>To parse a name:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># returns a one-row data frame:</span></span>
-<span><span class="co"># salutation | first_name | middle_name | last_name | suffix | status | gender | gender_confidence</span></span>
-<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="st">'livingston III,  Mr. MICHAEL JOHN9'</span></span>
-<span><span class="fu"><a href="reference/parse_name.html">parse_name</a></span><span class="op">(</span> <span class="va">x</span>, sanitize <span class="op">=</span> <span class="cn">TRUE</span> <span class="op">)</span></span>
-<span><span class="co"># or, for a vector of names returned as a data frame</span></span>
-<span><span class="fu"><a href="reference/parse_names.html">parse_names</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div>
-<p>To ‘prepare’ a name:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="st">'livingston III,  Mr. MICHAEL JOHN9'</span></span>
-<span><span class="fu"><a href="reference/prep_name.html">prep_name</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>  </span></code></pre></div>
-<p>To get the census data:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="st">'livingston III,  Mr. MICHAEL JOHN9'</span></span>
-<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/prep_name.html">prep_name</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/strsplit.html" class="external-link">strsplit</a></span><span class="op">(</span><span class="va">x</span>,<span class="st">' '</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="fu"><a href="reference/get_census_data.html">get_census_data</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></code></pre></div>
-<p>To determine surname (last name) ordinal:</p>
+<p>The parser’s steps are exported, which helps when a name parses in a surprising way:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="st">'livingston III,  Mr. MICHAEL JOHN9'</span></span>
-<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/prep_name.html">prep_name</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/strsplit.html" class="external-link">strsplit</a></span><span class="op">(</span><span class="va">x</span>,<span class="st">' '</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_census_data.html">get_census_data</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/determine_surname.html">determine_surname</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span></span></code></pre></div>
-<p>To determine gender:</p>
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/prep_name.html">prep_name</a></span><span class="op">(</span><span class="st">"livingston III,  Mr. MICHAEL JOHN9"</span><span class="op">)</span>   <span class="co"># clean the string</span></span>
+<span><span class="va">x</span></span>
+<span><span class="co">#&gt; [1] "LIVINGSTON III MR MICHAEL JOHN"</span></span>
+<span><span class="va">tokens</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/strsplit.html" class="external-link">strsplit</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">" "</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_census_data.html">get_census_data</a></span><span class="op">(</span><span class="va">tokens</span><span class="op">)</span>                          <span class="co"># census counts per word</span></span>
+<span><span class="va">cd</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="14%">
+<col width="10%">
+<col width="14%">
+<col width="17%">
+<col width="21%">
+<col width="20%">
+</colgroup>
+<thead><tr>
+<th align="left">name</th>
+<th align="right">ordinal</th>
+<th align="right">male_value</th>
+<th align="right">female_value</th>
+<th align="right">first_name_value</th>
+<th align="right">last_name_value</th>
+</tr></thead>
+<tbody>
+<tr>
+<td align="left">LIVINGSTON</td>
+<td align="right">1</td>
+<td align="right">653</td>
+<td align="right">102</td>
+<td align="right">755</td>
+<td align="right">40605</td>
+</tr>
+<tr>
+<td align="left">III</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr>
+<td align="left">MR</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr>
+<td align="left">MICHAEL</td>
+<td align="right">4</td>
+<td align="right">3469434</td>
+<td align="right">7287</td>
+<td align="right">3476721</td>
+<td align="right">37760</td>
+</tr>
+<tr>
+<td align="left">JOHN</td>
+<td align="right">5</td>
+<td align="right">3118620</td>
+<td align="right">6503</td>
+<td align="right">3125123</td>
+<td align="right">37363</td>
+</tr>
+</tbody>
+</table>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="st">'livingston III,  Mr. MICHAEL JOHN9'</span></span>
-<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/prep_name.html">prep_name</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/strsplit.html" class="external-link">strsplit</a></span><span class="op">(</span><span class="va">x</span>,<span class="st">' '</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_census_data.html">get_census_data</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/determine_gender.html">determine_gender</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/determine_surname.html">determine_surname</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span>                                  <span class="co"># position of the surname</span></span>
+<span><span class="co">#&gt; [1] 1</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="contributors">Contributors<a class="anchor" aria-label="anchor" href="#contributors"></a>
 </h2>
-<p>This package was adapted by Jesse Lecy.</p>
-<p>The original package by Michael Flanigan was called <strong>Name-Parser</strong>.</p>
-<p>available at: <a href="https://github.com/mjfii/Name-Parser" class="external-link uri">https://github.com/mjfii/Name-Parser</a></p>
+<p>This package was adapted by Jesse Lecy from <strong>Name-Parser</strong> by Michael Flanigan (<a href="https://github.com/mjfii/Name-Parser" class="external-link uri">https://github.com/mjfii/Name-Parser</a>).</p>
 </div>
 <div class="section level2">
 <h2 id="versioning">Versioning<a class="anchor" aria-label="anchor" href="#versioning"></a>
 </h2>
-<p>Version 0.1.0 (2026-11-23) is the first tagged release; see <code>NEWS.md</code>. Development began 2020-08-01.</p>
+<p>Development began 2020-08-01; version 0.1.0 (2026-11-23) was the first tagged release. See the <a href="https://nonprofit-open-data-collective.github.io/peopleparser/news/index.html">changelog</a> for each release.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

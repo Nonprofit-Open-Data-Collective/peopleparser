@@ -10,14 +10,6 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 options(width = 100)
-library(peopleparser)
-
-# parse a few raw names and show the columns that matter here
-show <- function(x, cols = c("salutation", "first_name", "middle_name",
-                             "last_name", "suffix", "status")) {
-  out <- do.call(rbind, lapply(sanitize_input(x), parse_name))
-  cbind(raw = x, out[cols])
-}
 ```
 
 Names in administrative records rarely arrive clean. A Form 990 Part VII
@@ -26,6 +18,18 @@ list holds entries like `livingston III,  Mr. MICHAEL JOHN9`,
 peopleparser can decide which token is the first name and which the surname
 (see `vignette("name-order")`), it has to strip everything that is not a
 name. This article walks through those cleaning steps in the order they run.
+
+The examples parse a few names with `parse_names()` and show the columns
+that matter here as a table:
+
+```{r}
+library(peopleparser)
+
+show <- function(x, cols = c("salutation", "first_name", "middle_name",
+                             "last_name", "suffix", "status")) {
+  parse_names(x)[c("name", cols)] |> knitr::kable()
+}
+```
 
 ## The pipeline at a glance
 
@@ -40,6 +44,7 @@ raw string
 tokens (split on spaces)
   |  parse_name()
   |    5. deglue_tokens()       MRWILLIAM -> MR WILLIAM, JRMD -> JR MD
+  |       employer words        JOHN HEISER INSURANCE -> JOHN HEISER
   |    6. positional rules      which titles may be stripped *here*
   |    7. strip prefixes        -> salutation
   |    8. strip suffixes        -> suffix
@@ -70,15 +75,31 @@ x <- c("ROBERT NAGLE - SMFA BOARD OF",
        "JOHN SMITH SEE SCHEDULE O",
        "ANN LEE THROUGH 6/30",
        "MR AND MRS PATRICK VETERS")
-data.frame(raw = x, cleaned = de_clutter(x))
+data.frame(raw = x, cleaned = de_clutter(x)) |> knitr::kable()
 ```
 
 A few markers are kept as a single word so that they can be reported in the
-`status` column later instead of being lost: `AS OF ...` becomes `ASOF`, and
-`PAST`, `FORMER` and `OUTGOING` keep their own word.
+`status` column later instead of being lost: `AS OF ...` becomes `ASOF`;
+`PAST`, `FORMER` and `OUTGOING` keep their own word; and `STARTING`,
+`APPOINTED` and `ELECTED` keep their word but lose the date after it.
 
 ```{r}
-de_clutter(c("JOHN SMITH AS OF 6/2019", "ANN LEE FORMER PRESIDENT"))
+x <- c("JOHN SMITH AS OF 6/2019", "ANN LEE FORMER PRESIDENT",
+       "DUANE LARSON STARTING 6-2022")
+data.frame(raw = x, cleaned = de_clutter(x)) |> knitr::kable()
+```
+
+A dash at the end of a word, followed by a space, is either half of a double
+surname or the start of a note. When one word follows and it is not a title
+or a note word, the two are joined as a double surname
+(`KARA JAMES- JOHNSON` becomes `JAMES-JOHNSON`); the same holds after a
+single word (`ADKINS- RICEHOUSE PAULA`).
+Otherwise the dash starts a note and the rest is cut, as for ` - `.
+
+```{r}
+x <- c("KARA JAMES- JOHNSON", "ADKINS- RICEHOUSE PAULA",
+       "JASON FRENN- MANAGING DIRECTOR", "RICK DIETZ- JAN THRU JUNE")
+data.frame(raw = x, cleaned = de_clutter(x)) |> knitr::kable()
 ```
 
 ## Step 4: normalizing with `prep_name()`
@@ -125,7 +146,23 @@ only when census evidence says the pieces are real:
 
 ```{r}
 show(c("MRWILLIAM JONES", "JOHN SMITH JRMD", "DREW CAREY"))
-parse_name("JOHN CWOOLFOLK", split_initials = TRUE)
+parse_name("JOHN CWOOLFOLK", split_initials = TRUE) |> knitr::kable()
+```
+
+### An employer after the name
+
+Insurance agents and company officers are often listed with their employer:
+`JOHN HEISER INSURANCE`, `LISA PIERCE ALLSTATE INSURANCE CO`. When an
+employer word (`INSURANCE`, `ASSURANCE`, `COMPANY`, `COMPANIES`, `AGENCY`,
+`CORPORATION`, `CORP`, `INC`, `LLC`) is the third word or later, the name
+keeps its given name and surname, plus any title or suffix right after them,
+and the rest is dropped. A name that starts with the organisation
+(`PRUDENTIAL INSURANCE - KYLE SMITH`) is not repaired; `classify_names()`
+flags most of these (see `vignette("name-types")`).
+
+```{r}
+show(c("JOHN HEISER INSURANCE", "LISA PIERCE ALLSTATE INSURANCE CO",
+       "RANDY DENNIS DENNIS COMPANY", "DR JOHN SMITH JR STATE FARM INSURANCE"))
 ```
 
 ## Steps 6-9: stripping titles, credentials, suffixes and status
@@ -159,7 +196,7 @@ you want to keep the credentials rather than throw them away:
 ```{r}
 titles <- known_titles()
 table(titles$type)
-subset(titles, abbr %in% c("RSM", "FACHE", "CFRE", "USNRET"))
+subset(titles, abbr %in% c("RSM", "FACHE", "CFRE", "USNRET")) |> knitr::kable()
 ```
 
 ### Tokens that are both a title and a name
@@ -172,15 +209,17 @@ would destroy real names, so their removal depends on where they sit.
 | Rule | Tokens (examples) | Removed only when |
 |------|-------------------|-------------------|
 | Leading-only titles | `BISHOP`, `SHERIFF`, `CANTOR`, `DEACON`, `CAPTAIN`, `MOTHER`, `BROTHER`, `IMAM`, `MOST`, `SIR`, `DAME`, `CHIEF`, `COUNCILMAN`, `CORPORAL`, `REP`, `CHAPLAIN` | they are the first token and two or more tokens follow |
-| Trailing-only titles | `SJ`, `CISA`, `OP`, `SC`, `DD`, and role words: `PRESIDENT`, `CHAIR`, `SECRETARY`, `TREASURER`, `TRUSTEE`, `VICECHAIR` | they sit in the run of known tokens at the end of the name, with at least two tokens before them |
+| Trailing-only titles | `SJ`, `CISA`, `OP`, `SC`, `DD`, and role words: `PRESIDENT`, `CHAIR`, `SECRETARY`, `TREASURER`, `TRUSTEE`, `VICECHAIR`, `MANAGER`, `FOUNDER`, `CONTROLLER`, `MANAGING`, `DIR` | they sit in the run of known tokens at the end of the name, with at least two tokens before them |
 | Ambiguous credentials | `MA`, `BA`, `AB`, `NP`, `PT`, `DC`, `ND`, `RM`, `PM`, `APR`, ... | they sit in that trailing run **and** the run also holds an unambiguous credential; or, alone at the end after two name words, they are not census names (`CAROL RUSSELL NP`) or follow a strong surname (`JOHN BURKE MA`); or they lead the name before a strong given name and are not census names (`DC DAVID BEER`) |
-| Tenure words | `TERM`, `ENDED`, `JOINED`, `SINCE`, `EMERITUS`, `NONVOTING`, ... | they sit in that trailing run; they go to `status` |
+| Tenure words | `TERM`, `ENDED`, `JOINED`, `SINCE`, `EMERITUS`, `NONVOTING`, `STARTING`, `APPOINTED`, ... | they sit in that trailing run; they go to `status` |
+| Unknown trailing credentials | `NMF`, `FAAFP`, `NEA-BC`, `UHC`, and over a thousand more learned from Part VII names | they end the name after a census surname or another credential, are not census names, and are on the learned list or look like a code (2-5 letters, at most one vowel); at least two name words stay |
 
 ```{r}
 show(c("BISHOP JOHN SMITH", "JOHN BISHOP",
        "JANE DOE RN MA", "MA LIN",
        "LARRY BLACK SECRETARY",
-       "KENT CASHELL TERM ENDED"))
+       "KENT CASHELL TERM ENDED",
+       "ANDREA M GORDON NMF", "ANTHONY F CHONG MD FAAFP"))
 ```
 
 `JOHN BISHOP` keeps its surname because `BISHOP` is not leading. `MA LIN`
@@ -193,7 +232,8 @@ so `status` is empty. The tenure-word rule matters for input that skips
 sanitizing:
 
 ```{r}
-parse_name("KENT CASHELL TERM ENDED")[c("first_name", "last_name", "status")]
+parse_name("KENT CASHELL TERM ENDED")[c("first_name", "last_name", "status")] |>
+  knitr::kable()
 ```
 
 ### Putting back a name that was stripped
@@ -218,8 +258,9 @@ still removed:
 
 ```{r}
 x <- "JANE DOE CFRE BOARDCHAIR"
-parse_name(x)[c("salutation", "last_name")]
-parse_name(x, prefixes = c(prx, "BOARDCHAIR"))[c("salutation", "last_name")]
+rbind(default  = parse_name(x)[c("salutation", "last_name")],
+      extended = parse_name(x, prefixes = c(prx, "BOARDCHAIR"))[c("salutation", "last_name")]) |>
+  knitr::kable()
 ```
 
 The position rules (leading-only, trailing-only, ambiguous) use fixed internal
@@ -231,7 +272,8 @@ lists and apply on top of whatever you pass.
   (`SECRETARY`). Use `known_titles()` to sort them by type.
 * `de_clutter()` cuts at the first marker it finds, so a surname that is also
   a marker word in the middle of a name (`JOHN FROM SMITH`) loses what follows.
-* A credential not in `prx` survives into the name, often as the last name.
-  The lists were extended from the tokens that leaked on 410,071 Form 990
-  Part VII names (`data-raw/SUFFIX-GAPS-PART7.md`), so they fit that source
-  best.
+* A credential that is not in `prx`, not on the learned list and does not
+  look like a code can still survive into the name, often as the last name.
+  The lists were built from the tokens that leaked on Form 990 Part VII names
+  (`data-raw/SUFFIX-GAPS-PART7.md`, `data-raw/trailing_credentials.R`), so
+  they fit that source best.

@@ -81,6 +81,34 @@ test_that("a leading ambiguous credential before a given name is a title", {
   expect_equal(pn("AB SKIP CONLEY")$first_name, "AB")            # AB is a census name
 })
 
+test_that("role words, tenure words and employers do not become the surname", {
+  expect_equal(pn("CRAIG WILSON MANAGING DIR")$last_name, "WILSON")
+  expect_equal(pn("ARASH DIBA MANAGING")$last_name, "DIBA")
+  expect_equal(pn("BISI OYEDELE MANAGING PARTNER")$last_name, "OYEDELE")
+  r <- pn("DUANE LARSON STARTING 6-2022")
+  expect_equal(c(r$last_name, r$status), c("LARSON", "STARTING"))
+  expect_equal(pn("RANDY FRISK STARTING JUNE 2019")$last_name, "FRISK")
+  expect_equal(pn("RYAN SCHLABAUGH APPOINTED 122021")$last_name, "SCHLABAUGH")
+  expect_equal(pn("JOHN HEISER INSURANCE")$last_name, "HEISER")
+  expect_equal(pn("LISA PIERCE ALLSTATE INSURANCE CO")$last_name, "PIERCE")
+  expect_equal(pn("RANDY DENNIS DENNIS COMPANY")$last_name, "DENNIS")
+  r <- pn("DR JOHN SMITH JR STATE FARM INSURANCE")
+  expect_equal(c(r$salutation, r$last_name, r$suffix), c("DR", "SMITH", "JR"))
+  expect_equal(pn("LINDA K COMPANY")$last_name, "COMPANY")   # a surname
+  expect_equal(classify_names("NOT APPOINTED")$name_type, "placeholder")
+})
+
+test_that("a dash at the end of a word joins a double surname or cuts a note", {
+  expect_equal(pn("DEADERIA MORRIS- BOWMAN")$last_name, "MORRIS-BOWMAN")
+  expect_equal(pn("HANA BEN- SHABAT")$last_name, "BEN-SHABAT")
+  r <- pn("ADKINS- RICEHOUSE PAULA")
+  expect_equal(c(r$first_name, r$last_name), c("PAULA", "ADKINS-RICEHOUSE"))
+  expect_equal(pn("JASON FRENN- MANAGING DIRECTOR")$last_name, "FRENN")
+  expect_equal(pn("RICK DIETZ- JAN THRU JUNE")$last_name, "DIETZ")
+  expect_equal(pn("JOHN EVANS- PAST")$last_name, "EVANS")
+  expect_equal(pn("TRICIA BRUNING- ABRAMSON CANCER CTR")$last_name, "BRUNING")
+})
+
 test_that("inner particles, titles and ranks", {
   expect_equal(pn("KATRINA VANDEN HEUVEL")$last_name, "VANDEN-HEUVEL")
   expect_equal(pn("PATRICIA SAN PEDRO")$last_name, "SAN-PEDRO")

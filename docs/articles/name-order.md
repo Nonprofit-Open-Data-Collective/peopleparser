@@ -11,6 +11,18 @@ The rules run after cleaning, on the tokens that are left once titles,
 credentials and suffixes are gone (see
 [`vignette("name-cleaning")`](https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-cleaning.md)).
 
+The examples parse a few names with
+[`parse_names()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/parse_names.md)
+and show the name columns as a table:
+
+``` r
+library(peopleparser)
+
+show <- function(x, cols = c("first_name", "middle_name", "last_name")) {
+  parse_names(x)[c("name", cols)] |> knitr::kable()
+}
+```
+
 ## The evidence: first-name and surname counts
 
 `census.names` counts how often each name is a first name and how often
@@ -21,17 +33,17 @@ for where the table comes from).
 looks up each token:
 
 ``` r
-get_census_data(c("JOHN", "SMITH", "JORDAN", "TAYLOR", "LESLIE", "TSHEPO"))
-#> Key: <ordinal>
-#>      name ordinal male_value female_value first_name_value last_name_value
-#>    <char>   <int>      <num>        <num>            <num>           <num>
-#> 1:   JOHN       1    3118620         6503          3125123           37363
-#> 2:  SMITH       2       4102          897             4999         2369644
-#> 3: JORDAN       3     329734       122596           452330          200984
-#> 4: TAYLOR       4      95501       293715           389216          723758
-#> 5: LESLIE       5      52838       237654           290492           24015
-#> 6: TSHEPO       6          0            0                0               0
+get_census_data(c("JOHN", "SMITH", "JORDAN", "TAYLOR", "LESLIE", "TSHEPO")) |> knitr::kable()
 ```
+
+| name   | ordinal | male_value | female_value | first_name_value | last_name_value |
+|:-------|--------:|-----------:|-------------:|-----------------:|----------------:|
+| JOHN   |       1 |    3118620 |         6503 |          3125123 |           37363 |
+| SMITH  |       2 |       4102 |          897 |             4999 |         2369644 |
+| JORDAN |       3 |     329734 |       122596 |           452330 |          200984 |
+| TAYLOR |       4 |      95501 |       293715 |           389216 |          723758 |
+| LESLIE |       5 |      52838 |       237654 |           290492 |           24015 |
+| TSHEPO |       6 |          0 |            0 |                0 |               0 |
 
 Some tokens are clearly one or the other (`JOHN`, `SMITH`), although in
 the 2020 lists even `SMITH` is a rare given name. Others are both:
@@ -85,10 +97,12 @@ A lone token is treated as the surname.
 
 ``` r
 show(c("SMITH", "MADONNA"))
-#>       raw first_name middle_name last_name
-#> 1   SMITH                            SMITH
-#> 2 MADONNA                          MADONNA
 ```
+
+| name    | first_name | middle_name | last_name |
+|:--------|:-----------|:------------|:----------|
+| SMITH   |            |             | SMITH     |
+| MADONNA |            |             | MADONNA   |
 
 ### Two tokens
 
@@ -118,16 +132,18 @@ token of one or two letters is initials (`HM CHERRY`, `DC ALLEN`).
 ``` r
 show(c("JOHN SMITH", "SMITH JOHN", "JORDAN TAYLOR", "TAYLOR JORDAN",
        "LESLIE JAMES", "HARRIS MORRISON", "RICHARD RUVIN", "R BLINCOE"))
-#>               raw first_name middle_name last_name
-#> 1      JOHN SMITH       JOHN                 SMITH
-#> 2      SMITH JOHN       JOHN                 SMITH
-#> 3   JORDAN TAYLOR     JORDAN                TAYLOR
-#> 4   TAYLOR JORDAN     TAYLOR                JORDAN
-#> 5    LESLIE JAMES     LESLIE                 JAMES
-#> 6 HARRIS MORRISON     HARRIS              MORRISON
-#> 7   RICHARD RUVIN    RICHARD                 RUVIN
-#> 8       R BLINCOE          R               BLINCOE
 ```
+
+| name            | first_name | middle_name | last_name |
+|:----------------|:-----------|:------------|:----------|
+| JOHN SMITH      | JOHN       |             | SMITH     |
+| SMITH JOHN      | JOHN       |             | SMITH     |
+| JORDAN TAYLOR   | JORDAN     |             | TAYLOR    |
+| TAYLOR JORDAN   | TAYLOR     |             | JORDAN    |
+| LESLIE JAMES    | LESLIE     |             | JAMES     |
+| HARRIS MORRISON | HARRIS     |             | MORRISON  |
+| RICHARD RUVIN   | RICHARD    |             | RUVIN     |
+| R BLINCOE       | R          |             | BLINCOE   |
 
 Before version 0.2.0 the token with the higher surname share was the
 surname, wherever it stood. That turned `HARRIS MORRISON` into
@@ -152,13 +168,15 @@ mostly a given name. `BISHOP JOHN` is left alone, because it may be
 ``` r
 show(c("HM CHERRY", "NICKHATH SHERIFF", "HOWARD SITRON", "SHERIFF MASRY",
        "BISHOP JOHN"))
-#>                raw first_name middle_name last_name
-#> 1        HM CHERRY         HM                CHERRY
-#> 2 NICKHATH SHERIFF   NICKHATH               SHERIFF
-#> 3    HOWARD SITRON     HOWARD                SITRON
-#> 4    SHERIFF MASRY                            MASRY
-#> 5      BISHOP JOHN       JOHN                BISHOP
 ```
+
+| name             | first_name | middle_name | last_name |
+|:-----------------|:-----------|:------------|:----------|
+| HM CHERRY        | HM         |             | CHERRY    |
+| NICKHATH SHERIFF | NICKHATH   |             | SHERIFF   |
+| HOWARD SITRON    | HOWARD     |             | SITRON    |
+| SHERIFF MASRY    |            |             | MASRY     |
+| BISHOP JOHN      | JOHN       |             | BISHOP    |
 
 ### Three tokens with two initials
 
@@ -179,12 +197,14 @@ rules assume two orders, `FIRST M LAST` and `LAST FIRST M`:
 
 ``` r
 show(c("JOHN A SMITH", "SMITH JOHN A", "SMITH J ALAN", "J ALAN SMITH"))
-#>            raw first_name middle_name last_name
-#> 1 JOHN A SMITH       JOHN           A     SMITH
-#> 2 SMITH JOHN A       JOHN           A     SMITH
-#> 3 SMITH J ALAN          J        ALAN     SMITH
-#> 4 J ALAN SMITH          J        ALAN     SMITH
 ```
+
+| name         | first_name | middle_name | last_name |
+|:-------------|:-----------|:------------|:----------|
+| JOHN A SMITH | JOHN       | A           | SMITH     |
+| SMITH JOHN A | JOHN       | A           | SMITH     |
+| SMITH J ALAN | J          | ALAN        | SMITH     |
+| J ALAN SMITH | J          | ALAN        | SMITH     |
 
 The trailing-initial rule cannot tell `JOHN SMITH A` (given name first,
 stray initial at the end) from `SMITH JOHN A`, and reads both as surname
@@ -207,12 +227,14 @@ wrongly 1,210 times by that rule and 53 times by the written-order test
 
 ``` r
 show(c("JOHN ALAN SMITH", "SMITH JOHN ALAN", "DONG JOON YI", "TOKS MALIK ASHIRU"))
-#>                 raw first_name middle_name last_name
-#> 1   JOHN ALAN SMITH       JOHN        ALAN     SMITH
-#> 2   SMITH JOHN ALAN       JOHN        ALAN     SMITH
-#> 3      DONG JOON YI       DONG        JOON        YI
-#> 4 TOKS MALIK ASHIRU       TOKS       MALIK    ASHIRU
 ```
+
+| name              | first_name | middle_name | last_name |
+|:------------------|:-----------|:------------|:----------|
+| JOHN ALAN SMITH   | JOHN       | ALAN        | SMITH     |
+| SMITH JOHN ALAN   | JOHN       | ALAN        | SMITH     |
+| DONG JOON YI      | DONG       | JOON        | YI        |
+| TOKS MALIK ASHIRU | TOKS       | MALIK       | ASHIRU    |
 
 ### Four or more tokens
 
@@ -226,10 +248,12 @@ initials. If the name opens with two surnames followed by a given name
 
 ``` r
 show(c("JOHN PAUL GEORGE RINGO", "SMITH JONES MARY ANN"))
-#>                      raw first_name middle_name   last_name
-#> 1 JOHN PAUL GEORGE RINGO       JOHN PAUL GEORGE       RINGO
-#> 2   SMITH JONES MARY ANN       MARY         ANN SMITH-JONES
 ```
+
+| name                   | first_name | middle_name | last_name   |
+|:-----------------------|:-----------|:------------|:------------|
+| JOHN PAUL GEORGE RINGO | JOHN       | PAUL GEORGE | RINGO       |
+| SMITH JONES MARY ANN   | MARY       | ANN         | SMITH-JONES |
 
 ## Compound surnames
 
@@ -264,15 +288,17 @@ fix_locative_surnames(c("Jane Van Dyke", "Carlos De La Rosa", "Dylan Van"))
 show(c("THOMAS H VON KAMECKE", "SEAN ST CLAIR", "JULIA DI BUSSOLO",
        "JUAN CARLOS DE LA ROSA", "MARY VAN DER BERG", "PATRICIA SAN PEDRO",
        "ESTELLA DE LOS RIOS"))
-#>                      raw first_name middle_name    last_name
-#> 1   THOMAS H VON KAMECKE     THOMAS           H  VON-KAMECKE
-#> 2          SEAN ST CLAIR       SEAN                 ST-CLAIR
-#> 3       JULIA DI BUSSOLO      JULIA               DI-BUSSOLO
-#> 4 JUAN CARLOS DE LA ROSA       JUAN      CARLOS   DE-LA-ROSA
-#> 5      MARY VAN DER BERG       MARY             VAN-DER-BERG
-#> 6     PATRICIA SAN PEDRO   PATRICIA                SAN-PEDRO
-#> 7    ESTELLA DE LOS RIOS    ESTELLA              DE-LOS-RIOS
 ```
+
+| name                   | first_name | middle_name | last_name    |
+|:-----------------------|:-----------|:------------|:-------------|
+| THOMAS H VON KAMECKE   | THOMAS     | H           | VON-KAMECKE  |
+| SEAN ST CLAIR          | SEAN       |             | ST-CLAIR     |
+| JULIA DI BUSSOLO       | JULIA      |             | DI-BUSSOLO   |
+| JUAN CARLOS DE LA ROSA | JUAN       | CARLOS      | DE-LA-ROSA   |
+| MARY VAN DER BERG      | MARY       |             | VAN-DER-BERG |
+| PATRICIA SAN PEDRO     | PATRICIA   |             | SAN-PEDRO    |
+| ESTELLA DE LOS RIOS    | ESTELLA    |             | DE-LOS-RIOS  |
 
 A particle at the end of a name (`Dylan Van`) has nothing to join and is
 left alone. `ST` at the start of a name is not joined, because there it
@@ -302,14 +328,16 @@ When they are not next to each other, the middle part goes first.
 ``` r
 show(c("MARIA GARCIA LOPEZ", "JOHN LEE SMITH", "ELIZABETH ANNE WALKER SMITH",
        "JOHN Q PUBLIC SMITH", "MARY ANN SMITH JONES", "JEAN A DU PONT"))
-#>                           raw first_name middle_name    last_name
-#> 1          MARIA GARCIA LOPEZ      MARIA             GARCIA-LOPEZ
-#> 2              JOHN LEE SMITH       JOHN         LEE        SMITH
-#> 3 ELIZABETH ANNE WALKER SMITH  ELIZABETH        ANNE WALKER-SMITH
-#> 4         JOHN Q PUBLIC SMITH       JOHN           Q PUBLIC-SMITH
-#> 5        MARY ANN SMITH JONES       MARY         ANN  SMITH-JONES
-#> 6              JEAN A DU PONT       JEAN           A      DU-PONT
 ```
+
+| name                        | first_name | middle_name | last_name    |
+|:----------------------------|:-----------|:------------|:-------------|
+| MARIA GARCIA LOPEZ          | MARIA      |             | GARCIA-LOPEZ |
+| JOHN LEE SMITH              | JOHN       | LEE         | SMITH        |
+| ELIZABETH ANNE WALKER SMITH | ELIZABETH  | ANNE        | WALKER-SMITH |
+| JOHN Q PUBLIC SMITH         | JOHN       | Q           | PUBLIC-SMITH |
+| MARY ANN SMITH JONES        | MARY       | ANN         | SMITH-JONES  |
+| JEAN A DU PONT              | JEAN       | A           | DU-PONT      |
 
 One exception: `MAY` is a common middle name and a surname. If it ends
 up at the front of a compound surname, it is moved back to the middle
@@ -317,10 +345,12 @@ name.
 
 ``` r
 show(c("SARAH MAY WILSON", "MARY MAY"))
-#>                raw first_name middle_name last_name
-#> 1 SARAH MAY WILSON      SARAH         MAY    WILSON
-#> 2         MARY MAY       MARY                   MAY
 ```
+
+| name             | first_name | middle_name | last_name |
+|:-----------------|:-----------|:------------|:----------|
+| SARAH MAY WILSON | SARAH      | MAY         | WILSON    |
+| MARY MAY         | MARY       |             | MAY       |
 
 ### Titles that turned out to be names
 

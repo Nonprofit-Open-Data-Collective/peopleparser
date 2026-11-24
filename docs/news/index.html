@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">peopleparser</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,6 +47,28 @@
       <small>Source: <a href="https://github.com/Nonprofit-Open-Data-Collective/peopleparser/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.6" id="peopleparser-026">peopleparser 0.2.6<a class="anchor" aria-label="anchor" href="#peopleparser-026"></a></h2>
+<div class="section level3">
+<h3 id="role-words-tenure-notes-and-employers-no-longer-become-the-surname-0-2-6">Role words, tenure notes and employers no longer become the surname<a class="anchor" aria-label="anchor" href="#role-words-tenure-notes-and-employers-no-longer-become-the-surname-0-2-6"></a></h3>
+<p>npmerger’s rebuild on 0.2.4 left a few role words among the most common surname parts: <code>INSURANCE</code>, <code>STARTING</code>, <code>APPOINTED</code>, <code>MANAGING-DIR</code>.</p>
+<ul><li>
+<strong>Tenure words.</strong> <code>STARTING</code>, <code>STARTED</code>, <code>APPOINTED</code> and <code>ELECTED</code> at the end of a name go to <code>status</code>, and the date after them is dropped: <code>DUANE LARSON STARTING 6-2022</code> gives <code>LARSON</code> with status <code>STARTING</code>. <code>NOT APPOINTED</code> is a placeholder in <code><a href="../reference/classify_names.html">classify_names()</a></code>.</li>
+<li>
+<strong>Role words.</strong> <code>MANAGING</code>, <code>DIR</code> and <code>MGMT</code> are trailing-only titles, and <code>MANAGING</code> followed by another word (<code>MANAGING PARTNER</code>, <code>MANAGING EDITOR</code>) is cut by <code><a href="../reference/de_clutter.html">de_clutter()</a></code>: <code>CRAIG WILSON MANAGING DIR</code> gives <code>WILSON</code>.</li>
+<li>
+<strong>Employers after the name.</strong> From an employer word (<code>INSURANCE</code>, <code>ASSURANCE</code>, <code>COMPANY</code>, <code>COMPANIES</code>, <code>AGENCY</code>, <code>CORPORATION</code>, <code>CORP</code>, <code>INC</code>, <code>LLC</code>) at the third word or later, the name keeps its given name and surname, plus any title or suffix right after them: <code>LISA PIERCE ALLSTATE INSURANCE CO</code> gives <code>PIERCE</code>, where before it gave <code>PIERCE-ALLSTATE-INSURANCE</code>.</li>
+<li>
+<strong>A dash at the end of a word</strong> (<code>KARA JAMES- JOHNSON</code>, <code>JASON FRENN- MANAGING DIRECTOR</code>) used to glue the two words (<code>JAMESJOHNSON</code>, <code>FRENNMANAGING</code>). A last word that is not a title or note is now joined as a double surname (<code>JAMES-JOHNSON</code>), as is the word after a single word (<code>ADKINS- RICEHOUSE PAULA</code>); otherwise the dash starts a note and the rest is cut, as for <code>-</code>.</li>
+<li>On 200,000 distinct national Part VII names, 103 (0.05%) parse differently from 0.2.5. Most are double surnames written with a dangling dash (<code>STETSON-COMPTON</code>, <code>JEAN-BAPTISTE</code>) and tenure words now in <code>status</code>; the rest are organisation names.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-0-2-6">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-2-6"></a></h3>
+<ul><li>The README is now built from <code>README.Rmd</code>, with live examples of nicknames, name types and run-together names.</li>
+<li>Examples in the README and the guides print their results as tables (<code><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">knitr::kable()</a></code>) instead of wide console output, and the helper the guides use is shown.</li>
+<li>The name-cleaning guide covers the rules added since 0.2.3: unknown trailing credentials, the dangling dash, employers and the new tenure and role words.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.5" id="peopleparser-025">peopleparser 0.2.5<a class="anchor" aria-label="anchor" href="#peopleparser-025"></a></h2>
 <ul><li>A leading ambiguous credential that is not a census name, before a strong given name and at least one more word, is now a title: <code>DC David Beer</code> gives first name <code>DAVID</code>, where before it gave <code>DC</code>. Also <code>PT RISHI MISIR</code> (Pandit) and <code>RM THAD WARREN</code>. <code>MA</code>, <code>BA</code>, <code>AB</code> and <code>AUD</code> are census names and stay where they are: a leading <code>MA</code> is usually Maria (<code>MA BERNADETTE SALGARINO</code>), and <code>AB SKIP CONLEY</code> keeps <code>AB</code>. About 30 national Part VII names are affected; none in the 10,000-name sample.</li>

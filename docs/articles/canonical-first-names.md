@@ -44,21 +44,21 @@ of each form’s records that are female (`f_short`, `f_long`).
 
 ``` r
 subset(first_name_pairs, name_short %in% c("PAT", "KATE") & lexicon,
-       c(name_short, name_long, type, n_emp_ids, f_short, f_long, formal))
-#> Key: <name_short>
-#>     name_short name_long     type n_emp_ids f_short f_long formal
-#>         <char>    <char>   <char>     <int>   <num>  <num> <char>
-#>  1:       KATE KATHERINE nickname       456   0.997  0.999   long
-#>  2:       KATE     KATIE nickname       246   0.997  0.999  short
-#>  3:       KATE  KATHLEEN nickname       203   0.997  1.000   long
-#>  4:       KATE CATHERINE nickname        92   0.997  0.999   long
-#>  5:       KATE   KATHRYN nickname        63   0.997  0.999   long
-#>  6:        PAT  PATRICIA nickname      2191   0.998  1.000   long
-#>  7:        PAT   PATRICK nickname      1939   0.998  0.000   long
-#>  8:        PAT     PATSY nickname        30   0.998  1.000   long
-#>  9:        PAT     PATTY nickname        30   0.998  0.998  short
-#> 10:        PAT      PATT spelling        26   0.998  0.000   <NA>
+       c(name_short, name_long, type, n_emp_ids, f_short, f_long, formal)) |> knitr::kable()
 ```
+
+| name_short | name_long | type     | n_emp_ids | f_short | f_long | formal |
+|:-----------|:----------|:---------|----------:|--------:|-------:|:-------|
+| KATE       | KATHERINE | nickname |       456 |   0.997 |  0.999 | long   |
+| KATE       | KATIE     | nickname |       246 |   0.997 |  0.999 | short  |
+| KATE       | KATHLEEN  | nickname |       203 |   0.997 |  1.000 | long   |
+| KATE       | CATHERINE | nickname |        92 |   0.997 |  0.999 | long   |
+| KATE       | KATHRYN   | nickname |        63 |   0.997 |  0.999 | long   |
+| PAT        | PATRICIA  | nickname |      2191 |   0.998 |  1.000 | long   |
+| PAT        | PATRICK   | nickname |      1939 |   0.998 |  0.000 | long   |
+| PAT        | PATSY     | nickname |        30 |   0.998 |  1.000 | long   |
+| PAT        | PATTY     | nickname |        30 |   0.998 |  0.998 | short  |
+| PAT        | PATT      | spelling |        26 |   0.998 |  0.000 | NA     |
 
 Pairs are stored with the shorter form first. That is not always the
 formal name (JOHN/JOHNNY, DEBRA/DEBBIE), so the `formal` column says
@@ -98,14 +98,16 @@ ends. Its end is the **spelling root**:
 
 ``` r
 nickname_lookup(c("KATHRYN", "KATHERINE", "STEVEN", "JEFFERY", "KATHRINE"))[
-  , c("first_name_canonical", "canonical_rule")]
-#>   first_name_canonical canonical_rule
-#> 1            CATHERINE       spelling
-#> 2            CATHERINE       spelling
-#> 3              STEPHEN       spelling
-#> 4              JEFFREY       spelling
-#> 5            CATHERINE       spelling
+  , c("first_name_canonical", "canonical_rule")] |> knitr::kable()
 ```
+
+| first_name_canonical | canonical_rule |
+|:---------------------|:---------------|
+| CATHERINE            | spelling       |
+| CATHERINE            | spelling       |
+| STEPHEN              | spelling       |
+| JEFFREY              | spelling       |
+| CATHERINE            | spelling       |
 
 KATHRYN moves to KATHERINE (more common), and KATHERINE to CATHERINE
 (more common still). The 1,000-record cap keeps distinct names out:
@@ -151,16 +153,18 @@ the KATHERINE spellings. Applied to the KATHERINE chain:
 ``` r
 x <- c("KATE", "KATIE", "KITTY", "KATHY", "CATHY", "KATHLEEN", "CATHLEEN")
 cbind(name = x, nickname_lookup(x, gender = "F", gender_confidence = 99)[
-  , c("first_name_type", "first_name_canonical", "canonical_rule")])
-#>       name first_name_type first_name_canonical canonical_rule
-#> 1     KATE            both            CATHERINE       nickname
-#> 2    KATIE        nickname            CATHERINE       nickname
-#> 3    KITTY        nickname            CATHERINE       nickname
-#> 4    KATHY        nickname                KATHY      ambiguous
-#> 5    CATHY        nickname                KATHY      ambiguous
-#> 6 KATHLEEN          formal             KATHLEEN           self
-#> 7 CATHLEEN          formal             CATHLEEN           self
+  , c("first_name_type", "first_name_canonical", "canonical_rule")]) |> knitr::kable()
 ```
+
+| name     | first_name_type | first_name_canonical | canonical_rule |
+|:---------|:----------------|:---------------------|:---------------|
+| KATE     | both            | CATHERINE            | nickname       |
+| KATIE    | nickname        | CATHERINE            | nickname       |
+| KITTY    | nickname        | CATHERINE            | nickname       |
+| KATHY    | nickname        | KATHY                | ambiguous      |
+| CATHY    | nickname        | KATHY                | ambiguous      |
+| KATHLEEN | formal          | KATHLEEN             | self           |
+| CATHLEEN | formal          | CATHLEEN             | self           |
 
 `canonical_rule` records how each canonical name was reached:
 
@@ -192,12 +196,14 @@ remain:
 ``` r
 nickname_lookup(c("PAT", "PAT", "PAT"), gender = c("F", "M", "U"),
                 gender_confidence = c(95, 95, 50))[
-  , c("first_name_formal", "first_name_canonical", "canonical_rule")]
-#>            first_name_formal first_name_canonical canonical_rule
-#> 1           PATRICIA;; PATSY             PATRICIA       nickname
-#> 2                    PATRICK              PATRICK       nickname
-#> 3 PATRICIA;; PATRICK;; PATSY                  PAT      ambiguous
+  , c("first_name_formal", "first_name_canonical", "canonical_rule")] |> knitr::kable()
 ```
+
+| first_name_formal          | first_name_canonical | canonical_rule |
+|:---------------------------|:---------------------|:---------------|
+| PATRICIA;; PATSY           | PATRICIA             | nickname       |
+| PATRICK                    | PATRICK              | nickname       |
+| PATRICIA;; PATRICK;; PATSY | PAT                  | ambiguous      |
 
 If gender rules out **every** candidate, the name keeps its own form
 (`self`). The table has no female formal name for CHRIS, so a female
@@ -205,10 +211,12 @@ CHRIS stays CHRIS and is not sent to CHRISTOPHER:
 
 ``` r
 nickname_lookup("CHRIS", gender = "F", gender_confidence = 95)[
-  , c("first_name_formal", "first_name_canonical", "canonical_rule")]
-#>         first_name_formal first_name_canonical canonical_rule
-#> 1 CHRISTOPHER;; CHRISTIAN                CHRIS           self
+  , c("first_name_formal", "first_name_canonical", "canonical_rule")] |> knitr::kable()
 ```
+
+| first_name_formal       | first_name_canonical | canonical_rule |
+|:------------------------|:---------------------|:---------------|
+| CHRISTOPHER;; CHRISTIAN | CHRIS                | self           |
 
 **A caution about gender.** The `gender` field in a parse is itself
 inferred from the first name (census name frequencies), and so is the
@@ -221,12 +229,14 @@ reads F there); the nickname step does:
 
 ``` r
 parse_names(c("PAT SMITH", "MR PAT SMITH", "MRS PAT SMITH"), add_nicknames = TRUE)[
-  , c("name", "gender", "gender_confidence", "first_name_canonical", "canonical_rule")]
-#>            name gender gender_confidence first_name_canonical canonical_rule
-#> 1     PAT SMITH      F              59.5                  PAT      ambiguous
-#> 2  MR PAT SMITH      F              59.5              PATRICK       nickname
-#> 3 MRS PAT SMITH      F              59.5             PATRICIA       nickname
+  , c("name", "gender", "gender_confidence", "first_name_canonical", "canonical_rule")] |> knitr::kable()
 ```
+
+| name          | gender | gender_confidence | first_name_canonical | canonical_rule |
+|:--------------|:-------|:------------------|:---------------------|:---------------|
+| PAT SMITH     | F      | 59.5              | PAT                  | ambiguous      |
+| MR PAT SMITH  | F      | 59.5              | PATRICK              | nickname       |
+| MRS PAT SMITH | F      | 59.5              | PATRICIA             | nickname       |
 
 ## A name’s whole family: `first_name_variants()`
 
@@ -240,29 +250,31 @@ gets there. `via` is the name it connects through. Rows with
 - nicknames that are ambiguous between this name and another.
 
 ``` r
-first_name_variants("kate", min_freq = 1000)
-#>         name canonical           relation       via in_canonical   freq share_female
-#> 1  CATHERINE CATHERINE          canonical                   TRUE  80652        0.999
-#> 2  KATHERINE CATHERINE           spelling CATHERINE         TRUE  68778        0.999
-#> 3    KATHRYN CATHERINE           spelling KATHERINE         TRUE  56874        0.999
-#> 4  KATHARINE CATHERINE           spelling KATHERINE         TRUE   6640        0.990
-#> 5       KATI CATHERINE           spelling     KATIE         TRUE   1936        0.998
-#> 6  CATHARINE CATHERINE           spelling CATHERINE         TRUE   1624        0.978
-#> 7   KATHERYN CATHERINE           spelling   KATHRYN         TRUE   1529        0.991
-#> 8      KATIE CATHERINE           nickname KATHERINE         TRUE  83422        0.999
-#> 9       KATE CATHERINE           nickname KATHERINE         TRUE  60703        0.997
-#> 10     KITTY CATHERINE           nickname KATHERINE         TRUE   4930        0.997
-#> 11       KAT CATHERINE           nickname KATHERINE         TRUE   2510        0.750
-#> 12   KATRINA CATHERINE        sound_alike KATHERINE        FALSE  13742        0.999
-#> 13     KATHI CATHERINE        sound_alike      KATE        FALSE   6391        0.990
-#> 14   CATHRYN CATHERINE        sound_alike   CATHRIN        FALSE   2059        1.000
-#> 15   CATRINA CATHERINE        sound_alike  CATERINA        FALSE   1067        1.000
-#> 16     KATHY CATHERINE ambiguous nickname     KATHY        FALSE 170348        1.000
-#> 17     CATHY CATHERINE ambiguous nickname     KATHY        FALSE  77965        0.999
-#> 18      KATY CATHERINE ambiguous nickname     KATHY        FALSE  11867        0.993
-#> 19    KATHIE CATHERINE ambiguous nickname     KATHY        FALSE   7323        0.997
-#> 20    CATHIE CATHERINE ambiguous nickname     KATHY        FALSE   3165        0.996
+first_name_variants("kate", min_freq = 1000) |> knitr::kable()
 ```
+
+| name | canonical | relation | via | in_canonical | freq | share_female |
+|:---|:---|:---|:---|:---|---:|---:|
+| CATHERINE | CATHERINE | canonical |  | TRUE | 80652 | 0.999 |
+| KATHERINE | CATHERINE | spelling | CATHERINE | TRUE | 68778 | 0.999 |
+| KATHRYN | CATHERINE | spelling | KATHERINE | TRUE | 56874 | 0.999 |
+| KATHARINE | CATHERINE | spelling | KATHERINE | TRUE | 6640 | 0.990 |
+| KATI | CATHERINE | spelling | KATIE | TRUE | 1936 | 0.998 |
+| CATHARINE | CATHERINE | spelling | CATHERINE | TRUE | 1624 | 0.978 |
+| KATHERYN | CATHERINE | spelling | KATHRYN | TRUE | 1529 | 0.991 |
+| KATIE | CATHERINE | nickname | KATHERINE | TRUE | 83422 | 0.999 |
+| KATE | CATHERINE | nickname | KATHERINE | TRUE | 60703 | 0.997 |
+| KITTY | CATHERINE | nickname | KATHERINE | TRUE | 4930 | 0.997 |
+| KAT | CATHERINE | nickname | KATHERINE | TRUE | 2510 | 0.750 |
+| KATRINA | CATHERINE | sound_alike | KATHERINE | FALSE | 13742 | 0.999 |
+| KATHI | CATHERINE | sound_alike | KATE | FALSE | 6391 | 0.990 |
+| CATHRYN | CATHERINE | sound_alike | CATHRIN | FALSE | 2059 | 1.000 |
+| CATRINA | CATHERINE | sound_alike | CATERINA | FALSE | 1067 | 1.000 |
+| KATHY | CATHERINE | ambiguous nickname | KATHY | FALSE | 170348 | 1.000 |
+| CATHY | CATHERINE | ambiguous nickname | KATHY | FALSE | 77965 | 0.999 |
+| KATY | CATHERINE | ambiguous nickname | KATHY | FALSE | 11867 | 0.993 |
+| KATHIE | CATHERINE | ambiguous nickname | KATHY | FALSE | 7323 | 0.997 |
+| CATHIE | CATHERINE | ambiguous nickname | KATHY | FALSE | 3165 | 0.996 |
 
 KATE resolves to CATHERINE. The family holds CATHERINE’s spellings, the
 misspellings that lead to them, and its nicknames. KATHY and CATHY
@@ -272,38 +284,47 @@ they are not merged into it.
 Without the related rows and the rare forms:
 
 ``` r
-first_name_variants("steve", related = FALSE, min_freq = 100)
-#>       name canonical    relation     via in_canonical   freq share_female
-#> 1  STEPHEN   STEPHEN   canonical                 TRUE 218193        0.000
-#> 2   STEVEN   STEPHEN    spelling STEPHEN         TRUE 204799        0.000
-#> 3  STEPHAN   STEPHEN    spelling STEPHEN         TRUE   6925        0.000
-#> 4 STEPHANE   STEPHEN misspelling STEPHEN         TRUE    806        0.998
-#> 5   STEVAN   STEPHEN misspelling  STEVEN         TRUE    714        0.000
-#> 6  STEPHON   STEPHEN misspelling STEPHEN         TRUE    237        0.000
-#> 7    STEVI   STEPHEN misspelling   STEVE         TRUE    184        0.000
-#> 8    STEVE   STEPHEN    nickname  STEVEN         TRUE 419562        0.000
+first_name_variants("steve", related = FALSE, min_freq = 100) |> knitr::kable()
 ```
+
+| name     | canonical | relation    | via     | in_canonical |   freq | share_female |
+|:---------|:----------|:------------|:--------|:-------------|-------:|-------------:|
+| STEPHEN  | STEPHEN   | canonical   |         | TRUE         | 218193 |        0.000 |
+| STEVEN   | STEPHEN   | spelling    | STEPHEN | TRUE         | 204799 |        0.000 |
+| STEPHAN  | STEPHEN   | spelling    | STEPHEN | TRUE         |   6925 |        0.000 |
+| STEPHANE | STEPHEN   | misspelling | STEPHEN | TRUE         |    806 |        0.998 |
+| STEVAN   | STEPHEN   | misspelling | STEVEN  | TRUE         |    714 |        0.000 |
+| STEPHON  | STEPHEN   | misspelling | STEPHEN | TRUE         |    237 |        0.000 |
+| STEVI    | STEPHEN   | misspelling | STEVE   | TRUE         |    184 |        0.000 |
+| STEVE    | STEPHEN   | nickname    | STEVEN  | TRUE         | 419562 |        0.000 |
 
 Gender can change the family. For a female PAT the family is PATRICIA.
 With no gender PAT is ambiguous, so its family is just PAT:
 
 ``` r
-first_name_variants("pat", gender = "F", min_freq = 1000)
-#>       name canonical  relation      via in_canonical   freq share_female
-#> 1 PATRICIA  PATRICIA canonical                  TRUE 175659        1.000
-#> 2    PATTI  PATRICIA  spelling    PATTY         TRUE  29761        0.998
-#> 3   TRISHA  PATRICIA  spelling   TRICIA         TRUE   8246        0.997
-#> 4   PATTIE  PATRICIA  spelling    PATTY         TRUE   2411        0.983
-#> 5      PAT  PATRICIA  nickname PATRICIA         TRUE 110517        0.998
-#> 6    PATTY  PATRICIA  nickname PATRICIA         TRUE  35193        0.998
-#> 7   TRICIA  PATRICIA  nickname PATRICIA         TRUE  17703        0.996
-#> 8  PATRICE  PATRICIA   cognate PATRICIA        FALSE   8788        0.998
-first_name_variants("pat", min_freq = 1000)
-#>     name canonical    relation via in_canonical   freq share_female
-#> 1    PAT       PAT   canonical             TRUE 110517        0.998
-#> 2  PATTI       PAT sound_alike PAT        FALSE  29761        0.998
-#> 3 PATTIE       PAT sound_alike PAT        FALSE   2411        0.983
+first_name_variants("pat", gender = "F", min_freq = 1000) |> knitr::kable()
 ```
+
+| name     | canonical | relation  | via      | in_canonical |   freq | share_female |
+|:---------|:----------|:----------|:---------|:-------------|-------:|-------------:|
+| PATRICIA | PATRICIA  | canonical |          | TRUE         | 175659 |        1.000 |
+| PATTI    | PATRICIA  | spelling  | PATTY    | TRUE         |  29761 |        0.998 |
+| TRISHA   | PATRICIA  | spelling  | TRICIA   | TRUE         |   8246 |        0.997 |
+| PATTIE   | PATRICIA  | spelling  | PATTY    | TRUE         |   2411 |        0.983 |
+| PAT      | PATRICIA  | nickname  | PATRICIA | TRUE         | 110517 |        0.998 |
+| PATTY    | PATRICIA  | nickname  | PATRICIA | TRUE         |  35193 |        0.998 |
+| TRICIA   | PATRICIA  | nickname  | PATRICIA | TRUE         |  17703 |        0.996 |
+| PATRICE  | PATRICIA  | cognate   | PATRICIA | FALSE        |   8788 |        0.998 |
+
+``` r
+first_name_variants("pat", min_freq = 1000) |> knitr::kable()
+```
+
+| name   | canonical | relation    | via | in_canonical |   freq | share_female |
+|:-------|:----------|:------------|:----|:-------------|-------:|-------------:|
+| PAT    | PAT       | canonical   |     | TRUE         | 110517 |        0.998 |
+| PATTI  | PAT       | sound_alike | PAT | FALSE        |  29761 |        0.998 |
+| PATTIE | PAT       | sound_alike | PAT | FALSE        |   2411 |        0.983 |
 
 ## Using it when parsing
 
@@ -318,20 +339,16 @@ take `add_nicknames = TRUE`, which adds the columns `first_name_type`,
 x <- c("Bob Jones", "MRS PAT LEE", "Kathy Ruiz", "STEVEN H PARK", "Mark Webb")
 parse_names(x, add_nicknames = TRUE)[
   , c("name", "first_name", "gender", "first_name_formal", "first_name_canonical",
-      "canonical_rule")]
-#>            name first_name gender                          first_name_formal first_name_canonical
-#> 1     Bob Jones        BOB      M                                     ROBERT               ROBERT
-#> 2   MRS PAT LEE        PAT      F                           PATRICIA;; PATSY             PATRICIA
-#> 3    Kathy Ruiz      KATHY      F KATHLEEN;; KATHRYN;; KATHERINE;; KATHARINE                KATHY
-#> 4 STEVEN H PARK     STEVEN      M                                                         STEPHEN
-#> 5     Mark Webb       MARK      M                                                            MARK
-#>   canonical_rule
-#> 1       nickname
-#> 2       nickname
-#> 3      ambiguous
-#> 4       spelling
-#> 5           self
+      "canonical_rule")] |> knitr::kable()
 ```
+
+| name | first_name | gender | first_name_formal | first_name_canonical | canonical_rule |
+|:---|:---|:---|:---|:---|:---|
+| Bob Jones | BOB | M | ROBERT | ROBERT | nickname |
+| MRS PAT LEE | PAT | F | PATRICIA;; PATSY | PATRICIA | nickname |
+| Kathy Ruiz | KATHY | F | KATHLEEN;; KATHRYN;; KATHERINE;; KATHARINE | KATHY | ambiguous |
+| STEVEN H PARK | STEVEN | M |  | STEPHEN | spelling |
+| Mark Webb | MARK | M |  | MARK | self |
 
 The helpers
 [`canonical_first_name()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/canonical_first_name.md),

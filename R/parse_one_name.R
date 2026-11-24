@@ -390,7 +390,9 @@ deglue_tokens <- function( name_vec, split_initials = FALSE ) {
 .trailing_status_words <- c(
   "TERM", "ENDED", "EXIT", "EXITED", "JOINED", "BEGAN", "BEGIN", "ENTERED",
   "ENTRY", "TERMINATED", "RESIGN", "SINCE", "TIL", "THR", "EFFECTIVE",
-  "INCOMING", "EMERITUS", "DECD", "NONVOTING", "PART", "PARTIAL", "YEAR")
+  "INCOMING", "EMERITUS", "DECD", "NONVOTING", "PART", "PARTIAL", "YEAR",
+  # 0.2.6 (npmerger): DUANE LARSON STARTING 6-2022, RYAN SCHLABAUGH APPOINTED 122021
+  "STARTING", "STARTED", "APPOINTED", "ELECTED")
 
 # Titles stripped only from the trailing run, with at least two name tokens
 # before it: SJ and CISA begin some names as initials or a given name, IHM and
@@ -414,7 +416,33 @@ deglue_tokens <- function( name_vec, split_initials = FALSE ) {
   "VICEPRESIDENT", "VICEPRES",
   # 0.2.3 (npmerger): MARGARET RUSSELL SR MANAGER, ROBERT J SLOAN CO-CHAIR
   "MANAGER", "FOUNDER", "COFOUNDER", "CO-FOUNDER", "COCHAIR", "CO-CHAIR",
-  "CONTROLLER")
+  "CONTROLLER",
+  # 0.2.6 (npmerger): CRAIG WILSON MANAGING DIR, ARASH DIBA MANAGING (DIR is
+  # a census surname, so it is stripped only here)
+  "MANAGING", "DIR", "MGMT")
+
+# Words that end a person's name and start an employer's (0.2.6, npmerger):
+# "JOHN HEISER INSURANCE", "LISA PIERCE ALLSTATE INSURANCE CO", "RANDY DENNIS
+# DENNIS COMPANY". From the first of these at the third word or later, the
+# name keeps its given name and surname (and any title or suffix right after
+# them) and drops the rest. None is a census given name; COMPANY is a rare
+# surname, so it is never cut from the first two words.
+.employer_words <- c( "INSURANCE", "ASSURANCE", "COMPANY", "COMPANIES", "AGENCY",
+                      "CORPORATION", "CORP", "INC", "LLC" )
+
+drop_employer_tail <- function( name_vec, prefixes = prx, suffixes = sfx ) {
+  n <- length( name_vec )
+  k <- which( name_vec %in% .employer_words & seq_len( n ) >= 3 )
+  if ( !length( k ) ) return( name_vec )
+  k <- k[1]
+  head <- name_vec[ seq_len( k - 1 ) ]
+  known <- c( prefixes, suffixes )
+  full <- which( nchar( head ) > 1 & !head %in% known )
+  if ( length( full ) < 2 ) return( name_vec )
+  j <- full[2]
+  while ( j + 1 < k && name_vec[ j + 1 ] %in% known ) j <- j + 1
+  name_vec[ seq_len( j ) ]
+}
 
 # Titles that are also common surnames (BISHOP 116,618 census records; SHERIFF,
 # CANTOR, DEACON, CAPTAIN, MOST, IMAM, BROTHER): stripped only as the first
@@ -640,7 +668,8 @@ parse_name <- function( x, prefixes = prx, suffixes = sfx, sanitize = FALSE,
   # PARSE-FAIL-NOTES.md), e.g. "MRWILLIAM" -> "MR" "WILLIAM"; optionally also
   # split a stray initial glued to a surname (Defect 3).
   Lx <- deglue_tokens( Lx, split_initials = split_initials )
-  orig.tokens <- Lx                      # original order, for salutation recovery
+  Lx <- drop_employer_tail( Lx, prefixes, suffixes )   # JOHN HEISER INSURANCE
+  orig.tokens <- Lx                     # original order, for salutation recovery
 
   # Ambiguous short credentials (e.g. RM) strip only from a trailing credential
   # run (Defect 1 follow-up); fold the eligible ones into the prefix set here.

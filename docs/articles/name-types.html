@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">peopleparser</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -166,18 +166,66 @@ waiting to happen.</p>
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN A SMITH"</span>, <span class="st">"PNC BANK NA"</span>, <span class="st">"TEAMSTERS LOCAL NO 338"</span>, <span class="st">"BNY MELLON"</span>,</span>
 <span>       <span class="st">"SEE SCHEDULE O"</span>, <span class="st">"VACANT"</span>, <span class="st">"MICHAEL AND ASHLEY SMITH"</span>,</span>
 <span>       <span class="st">"MARY SHURTS - LHS INC"</span>, <span class="st">"LARRY CHURCH"</span>, <span class="st">"SEE MOUA"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/classify_names.html">classify_names</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                        name               name_type org_score</span></span>
-<span><span class="co">#&gt; 1              JOHN A SMITH                  person    0.0012</span></span>
-<span><span class="co">#&gt; 2               PNC BANK NA            organisation    0.9999</span></span>
-<span><span class="co">#&gt; 3    TEAMSTERS LOCAL NO 338            organisation    0.9998</span></span>
-<span><span class="co">#&gt; 4                BNY MELLON            organisation    0.0412</span></span>
-<span><span class="co">#&gt; 5            SEE SCHEDULE O             placeholder    0.0074</span></span>
-<span><span class="co">#&gt; 6                    VACANT             placeholder    0.0193</span></span>
-<span><span class="co">#&gt; 7  MICHAEL AND ASHLEY SMITH          several people    0.0227</span></span>
-<span><span class="co">#&gt; 8     MARY SHURTS - LHS INC person and organisation    0.9802</span></span>
-<span><span class="co">#&gt; 9              LARRY CHURCH                  person    0.0146</span></span>
-<span><span class="co">#&gt; 10                 SEE MOUA                  person    0.0004</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/classify_names.html">classify_names</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">name_type</th>
+<th align="right">org_score</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">JOHN A SMITH</td>
+<td align="left">person</td>
+<td align="right">0.0012</td>
+</tr>
+<tr class="even">
+<td align="left">PNC BANK NA</td>
+<td align="left">organisation</td>
+<td align="right">0.9999</td>
+</tr>
+<tr class="odd">
+<td align="left">TEAMSTERS LOCAL NO 338</td>
+<td align="left">organisation</td>
+<td align="right">0.9998</td>
+</tr>
+<tr class="even">
+<td align="left">BNY MELLON</td>
+<td align="left">organisation</td>
+<td align="right">0.0412</td>
+</tr>
+<tr class="odd">
+<td align="left">SEE SCHEDULE O</td>
+<td align="left">placeholder</td>
+<td align="right">0.0074</td>
+</tr>
+<tr class="even">
+<td align="left">VACANT</td>
+<td align="left">placeholder</td>
+<td align="right">0.0193</td>
+</tr>
+<tr class="odd">
+<td align="left">MICHAEL AND ASHLEY SMITH</td>
+<td align="left">several people</td>
+<td align="right">0.0227</td>
+</tr>
+<tr class="even">
+<td align="left">MARY SHURTS - LHS INC</td>
+<td align="left">person and organisation</td>
+<td align="right">0.9802</td>
+</tr>
+<tr class="odd">
+<td align="left">LARRY CHURCH</td>
+<td align="left">person</td>
+<td align="right">0.0146</td>
+</tr>
+<tr class="even">
+<td align="left">SEE MOUA</td>
+<td align="left">person</td>
+<td align="right">0.0004</td>
+</tr>
+</tbody>
+</table>
 <ul>
 <li>
 <strong>Placeholders</strong> are found by rules: notes such as
@@ -203,25 +251,95 @@ whose first two words are a given name and a surname
 (<code>MARY SHURTS - LHS INC</code>, an employer after the name).
 Organisations named after a person
 (<code>KURT SUZUKI FAMILY   FOUNDATION</code>) stay organisations,
-unless a dash separates the parts.</li>
+unless a dash separates the parts. <code><a href="../reference/parse_names.html">parse_names()</a></code> still
+finds the person in most of these: the part after a dash is cut, and
+from an employer word such as <code>INSURANCE</code> or
+<code>COMPANY</code> on, the rest is dropped
+(<code>JOHN HEISER INSURANCE</code> gives <code>JOHN HEISER</code>; see
+<code><a href="../articles/name-cleaning.html">vignette("name-cleaning")</a></code>).</li>
 </ul>
 <p><code>parse_names(x, classify = TRUE)</code> adds the
 <code>name_type</code> and <code>org_score</code> columns to the parsed
 names, so the non-people can be set aside:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parse_names.html">parse_names</a></span><span class="op">(</span><span class="va">x</span>, classify <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">p</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"first_name"</span>, <span class="st">"last_name"</span>, <span class="st">"name_type"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt;                        name first_name last_name               name_type</span></span>
-<span><span class="co">#&gt; 1              JOHN A SMITH       JOHN     SMITH                  person</span></span>
-<span><span class="co">#&gt; 2               PNC BANK NA        PNC   BANK-NA            organisation</span></span>
-<span><span class="co">#&gt; 3    TEAMSTERS LOCAL NO 338  TEAMSTERS  LOCAL-NO            organisation</span></span>
-<span><span class="co">#&gt; 4                BNY MELLON        BNY    MELLON            organisation</span></span>
-<span><span class="co">#&gt; 5            SEE SCHEDULE O                                  placeholder</span></span>
-<span><span class="co">#&gt; 6                    VACANT               VACANT             placeholder</span></span>
-<span><span class="co">#&gt; 7  MICHAEL AND ASHLEY SMITH    MICHAEL     SMITH          several people</span></span>
-<span><span class="co">#&gt; 8     MARY SHURTS - LHS INC       MARY    SHURTS person and organisation</span></span>
-<span><span class="co">#&gt; 9              LARRY CHURCH      LARRY    CHURCH                  person</span></span>
-<span><span class="co">#&gt; 10                 SEE MOUA        SEE      MOUA                  person</span></span></code></pre></div>
+<span><span class="va">p</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"first_name"</span>, <span class="st">"last_name"</span>, <span class="st">"name_type"</span><span class="op">)</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="35%">
+<col width="15%">
+<col width="14%">
+<col width="34%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">first_name</th>
+<th align="left">last_name</th>
+<th align="left">name_type</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">JOHN A SMITH</td>
+<td align="left">JOHN</td>
+<td align="left">SMITH</td>
+<td align="left">person</td>
+</tr>
+<tr class="even">
+<td align="left">PNC BANK NA</td>
+<td align="left">PNC</td>
+<td align="left">BANK-NA</td>
+<td align="left">organisation</td>
+</tr>
+<tr class="odd">
+<td align="left">TEAMSTERS LOCAL NO 338</td>
+<td align="left">TEAMSTERS</td>
+<td align="left">LOCAL-NO</td>
+<td align="left">organisation</td>
+</tr>
+<tr class="even">
+<td align="left">BNY MELLON</td>
+<td align="left">BNY</td>
+<td align="left">MELLON</td>
+<td align="left">organisation</td>
+</tr>
+<tr class="odd">
+<td align="left">SEE SCHEDULE O</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">placeholder</td>
+</tr>
+<tr class="even">
+<td align="left">VACANT</td>
+<td align="left"></td>
+<td align="left">VACANT</td>
+<td align="left">placeholder</td>
+</tr>
+<tr class="odd">
+<td align="left">MICHAEL AND ASHLEY SMITH</td>
+<td align="left">MICHAEL</td>
+<td align="left">SMITH</td>
+<td align="left">several people</td>
+</tr>
+<tr class="even">
+<td align="left">MARY SHURTS - LHS INC</td>
+<td align="left">MARY</td>
+<td align="left">SHURTS</td>
+<td align="left">person and organisation</td>
+</tr>
+<tr class="odd">
+<td align="left">LARRY CHURCH</td>
+<td align="left">LARRY</td>
+<td align="left">CHURCH</td>
+<td align="left">person</td>
+</tr>
+<tr class="even">
+<td align="left">SEE MOUA</td>
+<td align="left">SEE</td>
+<td align="left">MOUA</td>
+<td align="left">person</td>
+</tr>
+</tbody>
+</table>
 <div class="section level3">
 <h3 id="the-organisation-model">The organisation model<a class="anchor" aria-label="anchor" href="#the-organisation-model"></a>
 </h3>
@@ -339,11 +457,35 @@ split.</li>
 <p>The parser’s order rules then decide which part is the surname:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/parse_names.html">parse_names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"LedbetterJennifer A"</span>, <span class="st">"KramerKenneth"</span>, <span class="st">"MURPHYSANDRA"</span><span class="op">)</span>,</span>
-<span>            split_run_together <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"first_name"</span>, <span class="st">"middle_name"</span>, <span class="st">"last_name"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt;                  name first_name middle_name last_name</span></span>
-<span><span class="co">#&gt; 1 LedbetterJennifer A   JENNIFER           A LEDBETTER</span></span>
-<span><span class="co">#&gt; 2       KramerKenneth    KENNETH                KRAMER</span></span>
-<span><span class="co">#&gt; 3        MURPHYSANDRA     SANDRA                MURPHY</span></span></code></pre></div>
+<span>            split_run_together <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"first_name"</span>, <span class="st">"middle_name"</span>, <span class="st">"last_name"</span><span class="op">)</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">first_name</th>
+<th align="left">middle_name</th>
+<th align="left">last_name</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">LedbetterJennifer A</td>
+<td align="left">JENNIFER</td>
+<td align="left">A</td>
+<td align="left">LEDBETTER</td>
+</tr>
+<tr class="even">
+<td align="left">KramerKenneth</td>
+<td align="left">KENNETH</td>
+<td align="left"></td>
+<td align="left">KRAMER</td>
+</tr>
+<tr class="odd">
+<td align="left">MURPHYSANDRA</td>
+<td align="left">SANDRA</td>
+<td align="left"></td>
+<td align="left">MURPHY</td>
+</tr>
+</tbody>
+</table>
 <p>On the Part VII names, the capital-letter rule splits 2,014 distinct
 words (4,524 rows) and the all-capitals rule 1,093 (2,131 rows). In
 random samples of 40, about 37 and 39 splits were right. The errors are

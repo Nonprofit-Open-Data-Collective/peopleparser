@@ -10,12 +10,6 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 options(width = 100)
-library(peopleparser)
-
-show <- function(x, cols = c("first_name", "middle_name", "last_name")) {
-  out <- do.call(rbind, lapply(sanitize_input(x), parse_name))
-  cbind(raw = x, out[cols])
-}
 ```
 
 Records list names in different orders: `JOHN A SMITH`, `SMITH JOHN A`,
@@ -28,6 +22,16 @@ surnames (`VON KAMECKE`, `GARCIA LOPEZ`) together.
 The rules run after cleaning, on the tokens that are left once titles,
 credentials and suffixes are gone (see `vignette("name-cleaning")`).
 
+The examples parse a few names with `parse_names()` and show the name columns as a table:
+
+```{r}
+library(peopleparser)
+
+show <- function(x, cols = c("first_name", "middle_name", "last_name")) {
+  parse_names(x)[c("name", cols)] |> knitr::kable()
+}
+```
+
 ## The evidence: first-name and surname counts
 
 `census.names` counts how often each name is a first name and how often a
@@ -35,7 +39,7 @@ surname in U.S. Census Bureau name files (see `vignette("gender-scoring")` for
 where the table comes from). `get_census_data()` looks up each token:
 
 ```{r}
-get_census_data(c("JOHN", "SMITH", "JORDAN", "TAYLOR", "LESLIE", "TSHEPO"))
+get_census_data(c("JOHN", "SMITH", "JORDAN", "TAYLOR", "LESLIE", "TSHEPO")) |> knitr::kable()
 ```
 
 Some tokens are clearly one or the other (`JOHN`, `SMITH`), although in the

@@ -26,6 +26,35 @@ check_if_surname <- function( x )
    return( surname )
 }
 
+# A dash at the end of a word, then a space ("KARA JAMES- JOHNSON", "JASON
+# FRENN- MANAGING DIRECTOR"). Before 0.2.6 the dash was dropped and the two
+# words glued (FRENNMANAGING, MORRISBOWMAN). Now the dash joins a last word
+# that is not a title or note as a double surname (JAMES-JOHNSON), and also
+# joins after a single word (ADKINS- RICEHOUSE PAULA); otherwise, after two or
+# more words, it starts a note and is cut like " - ".
+.dash_note_words <- c( "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUNE", "JUL",
+  "JULY", "AUG", "SEP", "SEPT", "OCT", "NOV", "DEC", "EFF", "AS", "SEE", "TO",
+  "FROM", "START", "END", "LEFT", "RETIRED", "RESIGNED", "THRU", "THROUGH",
+  "RETROACTIVE", "ENTERPRISES", "UNTIL", "TIL" )
+
+fix_dangling_dash <- function( x ) {
+  hit <- which( !is.na( x ) & grepl( "[A-Z]- +[A-Z]", x ) )
+  for ( i in hit ) {
+    m <- regexpr( "[A-Z]- +[A-Z]", x[ i ] )
+    before <- substr( x[ i ], 1, m )
+    after  <- trimws( substr( x[ i ], m + 2, nchar( x[ i ] ) ) )
+    w <- strsplit( after, " +" )[[1]]
+    known <- c( prx, sfx, .status_words, .trailing_status_words,
+                .trailing_only_titles, .ambiguous_suffix_credentials,
+                trailing_credentials, .dash_note_words )
+    n_before <- length( strsplit( trimws( before ), " +" )[[1]] )
+    join <- n_before == 1 ||
+      ( length( w ) == 1 && nchar( w ) >= 3 && !w %in% known )
+    x[ i ] <- if ( join ) paste0( before, "-", after ) else paste0( before, " - ", after )
+  }
+  x
+}
+
 #' Remove Nuisance Text From a Name
 #'
 #' Strips common noise strings from raw name records — trailing titles, tenure
@@ -43,6 +72,7 @@ de_clutter <- function( x )
   # convert to de_clutter() function: 
   # remove common noise strings
   
+  x <- fix_dangling_dash( x )       # JASON FRENN- MANAGING DIRECTOR (0.2.6)
   x <- gsub( "MR .* MRS", "", x )   # MR AND MRS PATRICK VETERS
   x <- gsub( "\\bSEE STMT\\b", "", x )
   x <- gsub( " - [A-Z]{1,}.*$", "", x )  # ROBERT NAGLE - SMFA BOARD OF
@@ -62,6 +92,7 @@ de_clutter <- function( x )
   x <- gsub( " EXECUTIV .*$", "", x )
   x <- gsub( " EXEC .*$", "", x )
   x <- gsub( " DIRECTOR .*$", "", x )  # DIRECTOR OF ...
+  x <- gsub( " MANAGING [A-Z].*$", "", x )  # MANAGING PARTNER, MANAGING EDITOR (0.2.6)
   x <- gsub( "EXECDIR.*$", "", x )
   x <- gsub( "-ED .*$", "", x )  # ED AS OF ...
   x <- gsub( " ED AS OF.*$", "", x ) 
@@ -91,6 +122,8 @@ de_clutter <- function( x )
   x <- gsub( " HIRED .*$", "", x )
   x <- gsub( " START .*$", "", x )
   x <- gsub( " STARTED .*$", "", x )
+  # 0.2.6: keep the tenure word (it goes to status), drop the date after it
+  x <- gsub( " (STARTING|APPOINTED|ELECTED) .*$", " \\1", x )
   x <- gsub( " BEG .+$", "", x )
   x <- gsub( " BEGINNING .+$", "", x ) 
   x <- gsub( " ENDED .*$", "", x )

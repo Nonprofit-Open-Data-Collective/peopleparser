@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">peopleparser</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -90,6 +90,15 @@ which token is the first name and which the surname (see
 <code><a href="../articles/name-order.html">vignette("name-order")</a></code>), it has to strip everything that is
 not a name. This article walks through those cleaning steps in the order
 they run.</p>
+<p>The examples parse a few names with <code><a href="../reference/parse_names.html">parse_names()</a></code> and
+show the columns that matter here as a table:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://nonprofit-open-data-collective.github.io/peopleparser/">peopleparser</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">show</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">cols</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"salutation"</span>, <span class="st">"first_name"</span>, <span class="st">"middle_name"</span>,</span>
+<span>                             <span class="st">"last_name"</span>, <span class="st">"suffix"</span>, <span class="st">"status"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="../reference/parse_names.html">parse_names</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="va">cols</span><span class="op">)</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="the-pipeline-at-a-glance">The pipeline at a glance<a class="anchor" aria-label="anchor" href="#the-pipeline-at-a-glance"></a>
 </h2>
@@ -103,20 +112,66 @@ they run.</p>
 tokens (split on spaces)
   |  parse_name()
   |    5. deglue_tokens()       MRWILLIAM -&gt; MR WILLIAM, JRMD -&gt; JR MD
+  |       employer words        JOHN HEISER INSURANCE -&gt; JOHN HEISER
   |    6. positional rules      which titles may be stripped *here*
   |    7. strip prefixes        -&gt; salutation
   |    8. strip suffixes        -&gt; suffix
   |    9. strip status words    -&gt; status
   v
 name tokens -&gt; name order and gender</code></pre>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"livingston III,  Mr. MICHAEL JOHN9"</span>,</span>
 <span>       <span class="st">"ROBERT NAGLE - SMFA BOARD OF"</span>,</span>
-<span>       <span class="st">"JANE DOE RN MA TERM ENDED"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                                  raw salutation first_name middle_name  last_name suffix status</span></span>
-<span><span class="co">#&gt; 1 livingston III,  Mr. MICHAEL JOHN9         MR    MICHAEL        JOHN LIVINGSTON    III       </span></span>
-<span><span class="co">#&gt; 2       ROBERT NAGLE - SMFA BOARD OF                ROBERT                  NAGLE              </span></span>
-<span><span class="co">#&gt; 3          JANE DOE RN MA TERM ENDED      RN_MA       JANE                    DOE</span></span></code></pre></div>
+<span>       <span class="st">"JANE DOE RN MA TERM ENDED"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="37%">
+<col width="11%">
+<col width="11%">
+<col width="12%">
+<col width="11%">
+<col width="7%">
+<col width="7%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">salutation</th>
+<th align="left">first_name</th>
+<th align="left">middle_name</th>
+<th align="left">last_name</th>
+<th align="left">suffix</th>
+<th align="left">status</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">livingston III, Mr. MICHAEL JOHN9</td>
+<td align="left">MR</td>
+<td align="left">MICHAEL</td>
+<td align="left">JOHN</td>
+<td align="left">LIVINGSTON</td>
+<td align="left">III</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">ROBERT NAGLE - SMFA BOARD OF</td>
+<td align="left"></td>
+<td align="left">ROBERT</td>
+<td align="left"></td>
+<td align="left">NAGLE</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">JANE DOE RN MA TERM ENDED</td>
+<td align="left">RN_MA</td>
+<td align="left">JANE</td>
+<td align="left"></td>
+<td align="left">DOE</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
 <p><code><a href="../reference/parse_names.html">parse_names()</a></code> sanitizes the whole vector once.
 <code><a href="../reference/parse_name.html">parse_name()</a></code> assumes its input is already sanitized; pass
 <code>sanitize = TRUE</code> for raw text.</p>
@@ -128,26 +183,106 @@ name tokens -&gt; name order and gender</code></pre>
 that shows up after the name: tenure notes, role descriptions, schedule
 references and date ranges. Most patterns delete everything from the
 marker to the end of the string.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ROBERT NAGLE - SMFA BOARD OF"</span>,</span>
 <span>       <span class="st">"MARY JONES EXECUTIVE DIRECTOR"</span>,</span>
 <span>       <span class="st">"JOHN SMITH SEE SCHEDULE O"</span>,</span>
 <span>       <span class="st">"ANN LEE THROUGH 6/30"</span>,</span>
 <span>       <span class="st">"MR AND MRS PATRICK VETERS"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>raw <span class="op">=</span> <span class="va">x</span>, cleaned <span class="op">=</span> <span class="fu"><a href="../reference/de_clutter.html">de_clutter</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                             raw         cleaned</span></span>
-<span><span class="co">#&gt; 1  ROBERT NAGLE - SMFA BOARD OF    ROBERT NAGLE</span></span>
-<span><span class="co">#&gt; 2 MARY JONES EXECUTIVE DIRECTOR      MARY JONES</span></span>
-<span><span class="co">#&gt; 3     JOHN SMITH SEE SCHEDULE O     JOHN SMITH </span></span>
-<span><span class="co">#&gt; 4          ANN LEE THROUGH 6/30         ANN LEE</span></span>
-<span><span class="co">#&gt; 5     MR AND MRS PATRICK VETERS  PATRICK VETERS</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>raw <span class="op">=</span> <span class="va">x</span>, cleaned <span class="op">=</span> <span class="fu"><a href="../reference/de_clutter.html">de_clutter</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">raw</th>
+<th align="left">cleaned</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">ROBERT NAGLE - SMFA BOARD OF</td>
+<td align="left">ROBERT NAGLE</td>
+</tr>
+<tr class="even">
+<td align="left">MARY JONES EXECUTIVE DIRECTOR</td>
+<td align="left">MARY JONES</td>
+</tr>
+<tr class="odd">
+<td align="left">JOHN SMITH SEE SCHEDULE O</td>
+<td align="left">JOHN SMITH</td>
+</tr>
+<tr class="even">
+<td align="left">ANN LEE THROUGH 6/30</td>
+<td align="left">ANN LEE</td>
+</tr>
+<tr class="odd">
+<td align="left">MR AND MRS PATRICK VETERS</td>
+<td align="left">PATRICK VETERS</td>
+</tr>
+</tbody>
+</table>
 <p>A few markers are kept as a single word so that they can be reported
 in the <code>status</code> column later instead of being lost:
-<code>AS OF ...</code> becomes <code>ASOF</code>, and <code>PAST</code>,
-<code>FORMER</code> and <code>OUTGOING</code> keep their own word.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/de_clutter.html">de_clutter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN SMITH AS OF 6/2019"</span>, <span class="st">"ANN LEE FORMER PRESIDENT"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "JOHN SMITH ASOF" "ANN LEE FORMER"</span></span></code></pre></div>
+<code>AS OF ...</code> becomes <code>ASOF</code>; <code>PAST</code>,
+<code>FORMER</code> and <code>OUTGOING</code> keep their own word; and
+<code>STARTING</code>, <code>APPOINTED</code> and <code>ELECTED</code>
+keep their word but lose the date after it.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN SMITH AS OF 6/2019"</span>, <span class="st">"ANN LEE FORMER PRESIDENT"</span>,</span>
+<span>       <span class="st">"DUANE LARSON STARTING 6-2022"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>raw <span class="op">=</span> <span class="va">x</span>, cleaned <span class="op">=</span> <span class="fu"><a href="../reference/de_clutter.html">de_clutter</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">raw</th>
+<th align="left">cleaned</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">JOHN SMITH AS OF 6/2019</td>
+<td align="left">JOHN SMITH ASOF</td>
+</tr>
+<tr class="even">
+<td align="left">ANN LEE FORMER PRESIDENT</td>
+<td align="left">ANN LEE FORMER</td>
+</tr>
+<tr class="odd">
+<td align="left">DUANE LARSON STARTING 6-2022</td>
+<td align="left">DUANE LARSON STARTING</td>
+</tr>
+</tbody>
+</table>
+<p>A dash at the end of a word, followed by a space, is either half of a
+double surname or the start of a note. When one word follows and it is
+not a title or a note word, the two are joined as a double surname
+(<code>KARA JAMES- JOHNSON</code> becomes <code>JAMES-JOHNSON</code>);
+the same holds after a single word
+(<code>ADKINS- RICEHOUSE PAULA</code>). Otherwise the dash starts a note
+and the rest is cut, as for <code>-</code>.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"KARA JAMES- JOHNSON"</span>, <span class="st">"ADKINS- RICEHOUSE PAULA"</span>,</span>
+<span>       <span class="st">"JASON FRENN- MANAGING DIRECTOR"</span>, <span class="st">"RICK DIETZ- JAN THRU JUNE"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>raw <span class="op">=</span> <span class="va">x</span>, cleaned <span class="op">=</span> <span class="fu"><a href="../reference/de_clutter.html">de_clutter</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">raw</th>
+<th align="left">cleaned</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">KARA JAMES- JOHNSON</td>
+<td align="left">KARA JAMES-JOHNSON</td>
+</tr>
+<tr class="even">
+<td align="left">ADKINS- RICEHOUSE PAULA</td>
+<td align="left">ADKINS-RICEHOUSE PAULA</td>
+</tr>
+<tr class="odd">
+<td align="left">JASON FRENN- MANAGING DIRECTOR</td>
+<td align="left">JASON FRENN</td>
+</tr>
+<tr class="even">
+<td align="left">RICK DIETZ- JAN THRU JUNE</td>
+<td align="left">RICK DIETZ</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level2">
 <h2 id="step-4-normalizing-with-prep_name">Step 4: normalizing with <code>prep_name()</code><a class="anchor" aria-label="anchor" href="#step-4-normalizing-with-prep_name"></a>
@@ -170,7 +305,7 @@ compound surnames;</li>
 <code>ST CLAIR</code> to <code>ST-CLAIR</code>). Those rules are covered
 in <code><a href="../articles/name-order.html">vignette("name-order")</a></code>.</li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/prep_name.html">prep_name</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"livingston III,  Mr. MICHAEL JOHN9"</span>,</span>
 <span>            <span class="st">"Jane O'Brien-Smith, Ph.D."</span>,</span>
 <span>            <span class="st">"THOMAS H VON KAMECKE"</span>,</span>
@@ -208,15 +343,167 @@ be told apart from a given name missing from the census
 <code>split_initials = TRUE</code> when you can check the results
 another way, for example against the same person in other years.</li>
 </ul>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MRWILLIAM JONES"</span>, <span class="st">"JOHN SMITH JRMD"</span>, <span class="st">"DREW CAREY"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;               raw salutation first_name middle_name last_name suffix status</span></span>
-<span><span class="co">#&gt; 1 MRWILLIAM JONES         MR    WILLIAM                 JONES              </span></span>
-<span><span class="co">#&gt; 2 JOHN SMITH JRMD         MD       JOHN                 SMITH     JR       </span></span>
-<span><span class="co">#&gt; 3      DREW CAREY                  DREW                 CAREY</span></span>
-<span><span class="fu"><a href="../reference/parse_name.html">parse_name</a></span><span class="op">(</span><span class="st">"JOHN CWOOLFOLK"</span>, split_initials <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   salutation first_name middle_name last_name suffix status gender gender_confidence</span></span>
-<span><span class="co">#&gt; 1                  JOHN           C  WOOLFOLK                    M              99.8</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MRWILLIAM JONES"</span>, <span class="st">"JOHN SMITH JRMD"</span>, <span class="st">"DREW CAREY"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="21%">
+<col width="14%">
+<col width="14%">
+<col width="16%">
+<col width="13%">
+<col width="9%">
+<col width="9%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">salutation</th>
+<th align="left">first_name</th>
+<th align="left">middle_name</th>
+<th align="left">last_name</th>
+<th align="left">suffix</th>
+<th align="left">status</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">MRWILLIAM JONES</td>
+<td align="left">MR</td>
+<td align="left">WILLIAM</td>
+<td align="left"></td>
+<td align="left">JONES</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">JOHN SMITH JRMD</td>
+<td align="left">MD</td>
+<td align="left">JOHN</td>
+<td align="left"></td>
+<td align="left">SMITH</td>
+<td align="left">JR</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">DREW CAREY</td>
+<td align="left"></td>
+<td align="left">DREW</td>
+<td align="left"></td>
+<td align="left">CAREY</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/parse_name.html">parse_name</a></span><span class="op">(</span><span class="st">"JOHN CWOOLFOLK"</span>, split_initials <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="13%">
+<col width="13%">
+<col width="14%">
+<col width="12%">
+<col width="8%">
+<col width="8%">
+<col width="8%">
+<col width="21%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">salutation</th>
+<th align="left">first_name</th>
+<th align="left">middle_name</th>
+<th align="left">last_name</th>
+<th align="left">suffix</th>
+<th align="left">status</th>
+<th align="left">gender</th>
+<th align="left">gender_confidence</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="left"></td>
+<td align="left">JOHN</td>
+<td align="left">C</td>
+<td align="left">WOOLFOLK</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">M</td>
+<td align="left">99.8</td>
+</tr></tbody>
+</table>
+<div class="section level3">
+<h3 id="an-employer-after-the-name">An employer after the name<a class="anchor" aria-label="anchor" href="#an-employer-after-the-name"></a>
+</h3>
+<p>Insurance agents and company officers are often listed with their
+employer: <code>JOHN HEISER INSURANCE</code>,
+<code>LISA PIERCE ALLSTATE INSURANCE CO</code>. When an employer word
+(<code>INSURANCE</code>, <code>ASSURANCE</code>, <code>COMPANY</code>,
+<code>COMPANIES</code>, <code>AGENCY</code>, <code>CORPORATION</code>,
+<code>CORP</code>, <code>INC</code>, <code>LLC</code>) is the third word
+or later, the name keeps its given name and surname, plus any title or
+suffix right after them, and the rest is dropped. A name that starts
+with the organisation (<code>PRUDENTIAL INSURANCE - KYLE SMITH</code>)
+is not repaired; <code><a href="../reference/classify_names.html">classify_names()</a></code> flags most of these (see
+<code><a href="../articles/name-types.html">vignette("name-types")</a></code>).</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN HEISER INSURANCE"</span>, <span class="st">"LISA PIERCE ALLSTATE INSURANCE CO"</span>,</span>
+<span>       <span class="st">"RANDY DENNIS DENNIS COMPANY"</span>, <span class="st">"DR JOHN SMITH JR STATE FARM INSURANCE"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="39%">
+<col width="11%">
+<col width="11%">
+<col width="12%">
+<col width="10%">
+<col width="7%">
+<col width="7%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">salutation</th>
+<th align="left">first_name</th>
+<th align="left">middle_name</th>
+<th align="left">last_name</th>
+<th align="left">suffix</th>
+<th align="left">status</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">JOHN HEISER INSURANCE</td>
+<td align="left"></td>
+<td align="left">JOHN</td>
+<td align="left"></td>
+<td align="left">HEISER</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">LISA PIERCE ALLSTATE INSURANCE CO</td>
+<td align="left"></td>
+<td align="left">LISA</td>
+<td align="left"></td>
+<td align="left">PIERCE</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">RANDY DENNIS DENNIS COMPANY</td>
+<td align="left"></td>
+<td align="left">RANDY</td>
+<td align="left"></td>
+<td align="left">DENNIS</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">DR JOHN SMITH JR STATE FARM INSURANCE</td>
+<td align="left">DR</td>
+<td align="left">JOHN</td>
+<td align="left"></td>
+<td align="left">SMITH</td>
+<td align="left">JR</td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 <div class="section level2">
 <h2 id="steps-6-9-stripping-titles-credentials-suffixes-and-status">Steps 6-9: stripping titles, credentials, suffixes and status<a class="anchor" aria-label="anchor" href="#steps-6-9-stripping-titles-credentials-suffixes-and-status"></a>
@@ -239,7 +526,7 @@ to <code>salutation</code>.</li>
 <code>FORMER</code>, <code>PAST</code>, <code>DECEASED</code> and
 <code>ASOF</code>. Removed tokens go to <code>status</code>.</li>
 </ul>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">prx</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 266</span></span>
 <span><span class="va">sfx</span></span>
@@ -247,15 +534,52 @@ to <code>salutation</code>.</li>
 <p>A token is removed wherever it sits in the name, not only at the
 front or the end. When several tokens match, they are all removed and
 joined with <code>_</code>:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DR JOHN SMITH MD PHD"</span>, <span class="st">"REV JANE DOE JR"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                    raw salutation first_name middle_name last_name suffix status</span></span>
-<span><span class="co">#&gt; 1 DR JOHN SMITH MD PHD  DR_MD_PHD       JOHN                 SMITH              </span></span>
-<span><span class="co">#&gt; 2      REV JANE DOE JR        REV       JANE                   DOE     JR</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DR JOHN SMITH MD PHD"</span>, <span class="st">"REV JANE DOE JR"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="26%">
+<col width="13%">
+<col width="13%">
+<col width="15%">
+<col width="12%">
+<col width="8%">
+<col width="8%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">salutation</th>
+<th align="left">first_name</th>
+<th align="left">middle_name</th>
+<th align="left">last_name</th>
+<th align="left">suffix</th>
+<th align="left">status</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">DR JOHN SMITH MD PHD</td>
+<td align="left">DR_MD_PHD</td>
+<td align="left">JOHN</td>
+<td align="left"></td>
+<td align="left">SMITH</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">REV JANE DOE JR</td>
+<td align="left">REV</td>
+<td align="left">JANE</td>
+<td align="left"></td>
+<td align="left">DOE</td>
+<td align="left">JR</td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
 <p><code><a href="../reference/known_titles.html">known_titles()</a></code> gives a label and a type for each token,
 which helps when you want to keep the credentials rather than throw them
 away:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">titles</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/known_titles.html">known_titles</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">titles</span><span class="op">$</span><span class="va">type</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -271,14 +595,41 @@ away:</p>
 <span><span class="co">#&gt;                         84                          1                         22 </span></span>
 <span><span class="co">#&gt;            Religious Title </span></span>
 <span><span class="co">#&gt;                         24</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">titles</span>, <span class="va">abbr</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RSM"</span>, <span class="st">"FACHE"</span>, <span class="st">"CFRE"</span>, <span class="st">"USNRET"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 3</span></span></span>
-<span><span class="co">#&gt;   abbr   label                                             type                   </span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> RSM    Religious Sisters of Mercy                        Religious Order        </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> FACHE  Fellow, American College of Healthcare Executives Professional Credential</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> CFRE   Certified Fund Raising Executive                  Professional Credential</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> USNRET U.S. Navy, retired                                Military Status</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">titles</span>, <span class="va">abbr</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"RSM"</span>, <span class="st">"FACHE"</span>, <span class="st">"CFRE"</span>, <span class="st">"USNRET"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="8%">
+<col width="61%">
+<col width="29%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">abbr</th>
+<th align="left">label</th>
+<th align="left">type</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">RSM</td>
+<td align="left">Religious Sisters of Mercy</td>
+<td align="left">Religious Order</td>
+</tr>
+<tr class="even">
+<td align="left">FACHE</td>
+<td align="left">Fellow, American College of Healthcare Executives</td>
+<td align="left">Professional Credential</td>
+</tr>
+<tr class="odd">
+<td align="left">CFRE</td>
+<td align="left">Certified Fund Raising Executive</td>
+<td align="left">Professional Credential</td>
+</tr>
+<tr class="even">
+<td align="left">USNRET</td>
+<td align="left">U.S. Navy, retired</td>
+<td align="left">Military Status</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level3">
 <h3 id="tokens-that-are-both-a-title-and-a-name">Tokens that are both a title and a name<a class="anchor" aria-label="anchor" href="#tokens-that-are-both-a-title-and-a-name"></a>
@@ -319,8 +670,9 @@ they sit.</p>
 <code>SJ</code>, <code>CISA</code>, <code>OP</code>,
 <code>SC</code>, <code>DD</code>, and role words:
 <code>PRESIDENT</code>, <code>CHAIR</code>, <code>SECRETARY</code>,
-<code>TREASURER</code>, <code>TRUSTEE</code>,
-<code>VICECHAIR</code>
+<code>TREASURER</code>, <code>TRUSTEE</code>, <code>VICECHAIR</code>,
+<code>MANAGER</code>, <code>FOUNDER</code>, <code>CONTROLLER</code>,
+<code>MANAGING</code>, <code>DIR</code>
 </td>
 <td>they sit in the run of known tokens at the end of the name, with at
 least two tokens before them</td>
@@ -343,24 +695,122 @@ name before a strong given name and are not census names
 <td>
 <code>TERM</code>, <code>ENDED</code>, <code>JOINED</code>,
 <code>SINCE</code>, <code>EMERITUS</code>, <code>NONVOTING</code>,
-…</td>
+<code>STARTING</code>, <code>APPOINTED</code>, …</td>
 <td>they sit in that trailing run; they go to <code>status</code>
 </td>
 </tr>
+<tr class="odd">
+<td>Unknown trailing credentials</td>
+<td>
+<code>NMF</code>, <code>FAAFP</code>, <code>NEA-BC</code>,
+<code>UHC</code>, and over a thousand more learned from Part VII
+names</td>
+<td>they end the name after a census surname or another credential, are
+not census names, and are on the learned list or look like a code (2-5
+letters, at most one vowel); at least two name words stay</td>
+</tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BISHOP JOHN SMITH"</span>, <span class="st">"JOHN BISHOP"</span>,</span>
 <span>       <span class="st">"JANE DOE RN MA"</span>, <span class="st">"MA LIN"</span>,</span>
 <span>       <span class="st">"LARRY BLACK SECRETARY"</span>,</span>
-<span>       <span class="st">"KENT CASHELL TERM ENDED"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                       raw salutation first_name middle_name last_name suffix status</span></span>
-<span><span class="co">#&gt; 1       BISHOP JOHN SMITH     BISHOP       JOHN                 SMITH              </span></span>
-<span><span class="co">#&gt; 2             JOHN BISHOP                  JOHN                BISHOP              </span></span>
-<span><span class="co">#&gt; 3          JANE DOE RN MA      RN_MA       JANE                   DOE              </span></span>
-<span><span class="co">#&gt; 4                  MA LIN                    MA                   LIN              </span></span>
-<span><span class="co">#&gt; 5   LARRY BLACK SECRETARY  SECRETARY      LARRY                 BLACK              </span></span>
-<span><span class="co">#&gt; 6 KENT CASHELL TERM ENDED                  KENT               CASHELL</span></span></code></pre></div>
+<span>       <span class="st">"KENT CASHELL TERM ENDED"</span>,</span>
+<span>       <span class="st">"ANDREA M GORDON NMF"</span>, <span class="st">"ANTHONY F CHONG MD FAAFP"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="30%">
+<col width="13%">
+<col width="13%">
+<col width="14%">
+<col width="12%">
+<col width="8%">
+<col width="8%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">salutation</th>
+<th align="left">first_name</th>
+<th align="left">middle_name</th>
+<th align="left">last_name</th>
+<th align="left">suffix</th>
+<th align="left">status</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">BISHOP JOHN SMITH</td>
+<td align="left">BISHOP</td>
+<td align="left">JOHN</td>
+<td align="left"></td>
+<td align="left">SMITH</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">JOHN BISHOP</td>
+<td align="left"></td>
+<td align="left">JOHN</td>
+<td align="left"></td>
+<td align="left">BISHOP</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">JANE DOE RN MA</td>
+<td align="left">RN_MA</td>
+<td align="left">JANE</td>
+<td align="left"></td>
+<td align="left">DOE</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">MA LIN</td>
+<td align="left"></td>
+<td align="left">MA</td>
+<td align="left"></td>
+<td align="left">LIN</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">LARRY BLACK SECRETARY</td>
+<td align="left">SECRETARY</td>
+<td align="left">LARRY</td>
+<td align="left"></td>
+<td align="left">BLACK</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">KENT CASHELL TERM ENDED</td>
+<td align="left"></td>
+<td align="left">KENT</td>
+<td align="left"></td>
+<td align="left">CASHELL</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">ANDREA M GORDON NMF</td>
+<td align="left">NMF</td>
+<td align="left">ANDREA</td>
+<td align="left">M</td>
+<td align="left">GORDON</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">ANTHONY F CHONG MD FAAFP</td>
+<td align="left">MD_FAAFP</td>
+<td align="left">ANTHONY</td>
+<td align="left">F</td>
+<td align="left">CHONG</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
 <p><code>JOHN BISHOP</code> keeps its surname because
 <code>BISHOP</code> is not leading. <code>MA LIN</code> keeps
 <code>MA</code> because it is not in a trailing run with a real
@@ -371,10 +821,21 @@ input (as above, and always in <code><a href="../reference/parse_names.html">par
 <code><a href="../reference/de_clutter.html">de_clutter()</a></code> has already cut <code>TERM ENDED</code>, so
 <code>status</code> is empty. The tenure-word rule matters for input
 that skips sanitizing:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/parse_name.html">parse_name</a></span><span class="op">(</span><span class="st">"KENT CASHELL TERM ENDED"</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"first_name"</span>, <span class="st">"last_name"</span>, <span class="st">"status"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt;   first_name last_name     status</span></span>
-<span><span class="co">#&gt; 1       KENT   CASHELL TERM_ENDED</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/parse_name.html">parse_name</a></span><span class="op">(</span><span class="st">"KENT CASHELL TERM ENDED"</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"first_name"</span>, <span class="st">"last_name"</span>, <span class="st">"status"</span><span class="op">)</span><span class="op">]</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">first_name</th>
+<th align="left">last_name</th>
+<th align="left">status</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="left">KENT</td>
+<td align="left">CASHELL</td>
+<td align="left">TERM_ENDED</td>
+</tr></tbody>
+</table>
 </div>
 <div class="section level3">
 <h3 id="putting-back-a-name-that-was-stripped">Putting back a name that was stripped<a class="anchor" aria-label="anchor" href="#putting-back-a-name-that-was-stripped"></a>
@@ -389,13 +850,66 @@ name, a trailing one the surname. Ranks and offices (<code>GEN</code>,
 are never restored, although some are rare given names in the 2020
 census, so <code>GEN PERRIN</code> keeps <code>GEN</code> as the
 title.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"EARL FAHNESTOCK"</span>, <span class="st">"TOM MAJOR"</span>, <span class="st">"GEN PERRIN"</span>, <span class="st">"COL RET CLARENCE MAXWELL"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                        raw salutation first_name middle_name  last_name suffix status</span></span>
-<span><span class="co">#&gt; 1          EARL FAHNESTOCK                  EARL             FAHNESTOCK              </span></span>
-<span><span class="co">#&gt; 2                TOM MAJOR                   TOM                  MAJOR              </span></span>
-<span><span class="co">#&gt; 3               GEN PERRIN        GEN                            PERRIN              </span></span>
-<span><span class="co">#&gt; 4 COL RET CLARENCE MAXWELL        COL   CLARENCE                MAXWELL</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"EARL FAHNESTOCK"</span>, <span class="st">"TOM MAJOR"</span>, <span class="st">"GEN PERRIN"</span>, <span class="st">"COL RET CLARENCE MAXWELL"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="29%">
+<col width="13%">
+<col width="13%">
+<col width="14%">
+<col width="13%">
+<col width="8%">
+<col width="8%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">salutation</th>
+<th align="left">first_name</th>
+<th align="left">middle_name</th>
+<th align="left">last_name</th>
+<th align="left">suffix</th>
+<th align="left">status</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">EARL FAHNESTOCK</td>
+<td align="left"></td>
+<td align="left">EARL</td>
+<td align="left"></td>
+<td align="left">FAHNESTOCK</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">TOM MAJOR</td>
+<td align="left"></td>
+<td align="left">TOM</td>
+<td align="left"></td>
+<td align="left">MAJOR</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">GEN PERRIN</td>
+<td align="left">GEN</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">PERRIN</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">COL RET CLARENCE MAXWELL</td>
+<td align="left">COL</td>
+<td align="left">CLARENCE</td>
+<td align="left"></td>
+<td align="left">MAXWELL</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="section level2">
@@ -405,14 +919,30 @@ title.</p>
 <code>prefixes</code> and <code>suffixes</code> arguments. Extend the
 defaults rather than replace them, so the built-in credentials are still
 removed:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="st">"JANE DOE CFRE BOARDCHAIR"</span></span>
-<span><span class="fu"><a href="../reference/parse_name.html">parse_name</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"salutation"</span>, <span class="st">"last_name"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt;        salutation last_name</span></span>
-<span><span class="co">#&gt; 1 CFRE_BOARDCHAIR       DOE</span></span>
-<span><span class="fu"><a href="../reference/parse_name.html">parse_name</a></span><span class="op">(</span><span class="va">x</span>, prefixes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">prx</span>, <span class="st">"BOARDCHAIR"</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"salutation"</span>, <span class="st">"last_name"</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt;        salutation last_name</span></span>
-<span><span class="co">#&gt; 1 CFRE_BOARDCHAIR       DOE</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span>default  <span class="op">=</span> <span class="fu"><a href="../reference/parse_name.html">parse_name</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"salutation"</span>, <span class="st">"last_name"</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>      extended <span class="op">=</span> <span class="fu"><a href="../reference/parse_name.html">parse_name</a></span><span class="op">(</span><span class="va">x</span>, prefixes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">prx</span>, <span class="st">"BOARDCHAIR"</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"salutation"</span>, <span class="st">"last_name"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left"></th>
+<th align="left">salutation</th>
+<th align="left">last_name</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">default</td>
+<td align="left">CFRE_BOARDCHAIR</td>
+<td align="left">DOE</td>
+</tr>
+<tr class="even">
+<td align="left">extended</td>
+<td align="left">CFRE_BOARDCHAIR</td>
+<td align="left">DOE</td>
+</tr>
+</tbody>
+</table>
 <p>The position rules (leading-only, trailing-only, ambiguous) use fixed
 internal lists and apply on top of whatever you pass.</p>
 </div>
@@ -428,10 +958,11 @@ by type.</li>
 <code><a href="../reference/de_clutter.html">de_clutter()</a></code> cuts at the first marker it finds, so a
 surname that is also a marker word in the middle of a name
 (<code>JOHN FROM SMITH</code>) loses what follows.</li>
-<li>A credential not in <code>prx</code> survives into the name, often
-as the last name. The lists were extended from the tokens that leaked on
-410,071 Form 990 Part VII names
-(<code>data-raw/SUFFIX-GAPS-PART7.md</code>), so they fit that source
+<li>A credential that is not in <code>prx</code>, not on the learned
+list and does not look like a code can still survive into the name,
+often as the last name. The lists were built from the tokens that leaked
+on Form 990 Part VII names (<code>data-raw/SUFFIX-GAPS-PART7.md</code>,
+<code>data-raw/trailing_credentials.R</code>), so they fit that source
 best.</li>
 </ul>
 </div>

@@ -10,13 +10,6 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 options(width = 100)
-library(peopleparser)
-
-show <- function(x, cols = c("salutation", "first_name", "middle_name",
-                             "suffix", "gender", "gender_confidence")) {
-  out <- do.call(rbind, lapply(sanitize_input(x), parse_name))
-  cbind(raw = x, out[cols])
-}
 ```
 
 Every parse returns a `gender` code (`M`, `F` or `U`) and a
@@ -24,6 +17,17 @@ Every parse returns a `gender` code (`M`, `F` or `U`) and a
 recorded for men and for women in U.S. Census name lists. This article shows
 how the score is computed, what the confidence means, when the parser falls
 back to a default, and where the census table comes from.
+
+The examples parse a few names with `parse_names()` and show the columns that matter here as a table:
+
+```{r}
+library(peopleparser)
+
+show <- function(x, cols = c("salutation", "first_name", "middle_name",
+                             "suffix", "gender", "gender_confidence")) {
+  parse_names(x)[c("name", cols)] |> knitr::kable()
+}
+```
 
 ## The score
 
@@ -39,7 +43,7 @@ rounded to one decimal place.
 
 ```{r}
 cd <- get_census_data(c("LESLIE"))
-cd[, c("name", "male_value", "female_value")]
+cd[, c("name", "male_value", "female_value")] |> knitr::kable()
 determine_gender(cd)
 ```
 
@@ -100,10 +104,10 @@ scored from `PAT` alone. If you need a salutation to override the census
 score, do it after parsing:
 
 ```{r}
-d <- show(c("MR PAT SMITH", "MRS PAT SMITH", "DR PAT SMITH"))
+d <- parse_names(c("MR PAT SMITH", "MRS PAT SMITH", "DR PAT SMITH"))
 d$gender_sal <- ifelse(d$salutation == "MR", "M",
                 ifelse(d$salutation %in% c("MRS", "MS", "MISS"), "F", d$gender))
-d
+d[c("name", "salutation", "gender", "gender_confidence", "gender_sal")] |> knitr::kable()
 ```
 
 The nickname functions do this already: in `nickname_lookup()` a gendered
@@ -118,7 +122,7 @@ salutation (`MR`, `MRS`, `MS`, `MISS`) beats the census score. See
 d <- parse_names(c("JOHN SMITH", "PAT SMITH", "J SMITH", "CHRIS JONES"))
 d$gender_confidence <- as.numeric(d$gender_confidence)
 d$gender_80 <- ifelse(d$gender_confidence >= 80, d$gender, "U")
-d[c("name", "gender", "gender_confidence", "gender_80")]
+d[c("name", "gender", "gender_confidence", "gender_80")] |> knitr::kable()
 ```
 
 A threshold of 80 (what `nickname_lookup()` uses) keeps most names and drops
@@ -152,7 +156,7 @@ c(rows           = nrow(cn),
   female_names   = sum(cn$female_value > 0),
   first_names    = sum(cn$first_name_value > 0),
   surnames       = sum(cn$last_name_value > 0))
-cn[cn$name %in% c("SMITH", "ALL OTHER NAMES"), ]
+cn[cn$name %in% c("SMITH", "ALL OTHER NAMES"), ] |> knitr::kable()
 ```
 
 * **Given names and gender:** every first name held by 91 or more people in

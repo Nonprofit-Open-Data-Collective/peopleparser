@@ -7,6 +7,19 @@ article shows how the score is computed, what the confidence means, when
 the parser falls back to a default, and where the census table comes
 from.
 
+The examples parse a few names with
+[`parse_names()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/parse_names.md)
+and show the columns that matter here as a table:
+
+``` r
+library(peopleparser)
+
+show <- function(x, cols = c("salutation", "first_name", "middle_name",
+                             "suffix", "gender", "gender_confidence")) {
+  parse_names(x)[c("name", cols)] |> knitr::kable()
+}
+```
+
 ## The score
 
 [`determine_gender()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/determine_gender.md)
@@ -23,10 +36,14 @@ rounded to one decimal place.
 
 ``` r
 cd <- get_census_data(c("LESLIE"))
-cd[, c("name", "male_value", "female_value")]
-#>      name male_value female_value
-#>    <char>      <num>        <num>
-#> 1: LESLIE      52838       237654
+cd[, c("name", "male_value", "female_value")] |> knitr::kable()
+```
+
+| name   | male_value | female_value |
+|:-------|-----------:|-------------:|
+| LESLIE |      52838 |       237654 |
+
+``` r
 determine_gender(cd)
 #> [1] "F"    "81.8"
 ```
@@ -40,14 +57,16 @@ record comes from.
 ``` r
 show(c("JOHN SMITH", "MARY SMITH", "LESLIE SMITH", "PAT SMITH",
        "CHRIS JONES", "TAYLOR SWIFT"))
-#>            raw salutation first_name middle_name suffix gender gender_confidence
-#> 1   JOHN SMITH                  JOHN                         M              99.8
-#> 2   MARY SMITH                  MARY                         F              99.8
-#> 3 LESLIE SMITH                LESLIE                         F              81.8
-#> 4    PAT SMITH                   PAT                         F              59.5
-#> 5  CHRIS JONES                 CHRIS                         M              94.4
-#> 6 TAYLOR SWIFT                TAYLOR                         F              75.5
 ```
+
+| name         | salutation | first_name | middle_name | suffix | gender | gender_confidence |
+|:-------------|:-----------|:-----------|:------------|:-------|:-------|:------------------|
+| JOHN SMITH   |            | JOHN       |             |        | M      | 99.8              |
+| MARY SMITH   |            | MARY       |             |        | F      | 99.8              |
+| LESLIE SMITH |            | LESLIE     |             |        | F      | 81.8              |
+| PAT SMITH    |            | PAT        |             |        | F      | 59.5              |
+| CHRIS JONES  |            | CHRIS      |             |        | M      | 94.4              |
+| TAYLOR SWIFT |            | TAYLOR     |             |        | F      | 75.5              |
 
 Most first names in the table are strongly gendered. Of the 53616 first
 names, the majority gender holds 95% or more of the count for most of
@@ -72,11 +91,13 @@ give a weak score whatever their order:
 
 ``` r
 show(c("SARAH MAY WILSON", "JOHN MARY SMITH", "MARY JOHN SMITH"))
-#>                raw salutation first_name middle_name suffix gender gender_confidence
-#> 1 SARAH MAY WILSON                 SARAH         MAY             F              99.8
-#> 2  JOHN MARY SMITH                  JOHN        MARY             M              63.8
-#> 3  MARY JOHN SMITH                  MARY        JOHN             M              63.8
 ```
+
+| name | salutation | first_name | middle_name | suffix | gender | gender_confidence |
+|:---|:---|:---|:---|:---|:---|:---|
+| SARAH MAY WILSON |  | SARAH | MAY |  | F | 99.8 |
+| JOHN MARY SMITH |  | JOHN | MARY |  | M | 63.8 |
+| MARY JOHN SMITH |  | MARY | JOHN |  | M | 63.8 |
 
 ## When there is no evidence
 
@@ -94,13 +115,15 @@ used by men. The 50.0 says that the call is a default, not evidence.
 
 ``` r
 show(c("J SMITH", "J SMITH JR", "A J SMITH", "TSHEPO CHO", "SMITH JR"))
-#>          raw salutation first_name middle_name suffix gender gender_confidence
-#> 1    J SMITH                     J                         U              50.0
-#> 2 J SMITH JR                     J                 JR      M              50.0
-#> 3  A J SMITH                     A           J             U              50.0
-#> 4 TSHEPO CHO                TSHEPO                         U              50.0
-#> 5   SMITH JR                                       JR      M              50.0
 ```
+
+| name       | salutation | first_name | middle_name | suffix | gender | gender_confidence |
+|:-----------|:-----------|:-----------|:------------|:-------|:-------|:------------------|
+| J SMITH    |            | J          |             |        | U      | 50.0              |
+| J SMITH JR |            | J          |             | JR     | M      | 50.0              |
+| A J SMITH  |            | A          | J           |        | U      | 50.0              |
+| TSHEPO CHO |            | TSHEPO     |             |        | U      | 50.0              |
+| SMITH JR   |            |            |             | JR     | M      | 50.0              |
 
 ## Salutations
 
@@ -110,15 +133,17 @@ does not use the salutation for gender: `MR PAT SMITH` is scored from
 it after parsing:
 
 ``` r
-d <- show(c("MR PAT SMITH", "MRS PAT SMITH", "DR PAT SMITH"))
+d <- parse_names(c("MR PAT SMITH", "MRS PAT SMITH", "DR PAT SMITH"))
 d$gender_sal <- ifelse(d$salutation == "MR", "M",
                 ifelse(d$salutation %in% c("MRS", "MS", "MISS"), "F", d$gender))
-d
-#>             raw salutation first_name middle_name suffix gender gender_confidence gender_sal
-#> 1  MR PAT SMITH         MR        PAT                         F              59.5          M
-#> 2 MRS PAT SMITH        MRS        PAT                         F              59.5          F
-#> 3  DR PAT SMITH         DR        PAT                         F              59.5          F
+d[c("name", "salutation", "gender", "gender_confidence", "gender_sal")] |> knitr::kable()
 ```
+
+| name          | salutation | gender | gender_confidence | gender_sal |
+|:--------------|:-----------|:-------|:------------------|:-----------|
+| MR PAT SMITH  | MR         | F      | 59.5              | M          |
+| MRS PAT SMITH | MRS        | F      | 59.5              | F          |
+| DR PAT SMITH  | DR         | F      | 59.5              | F          |
 
 The nickname functions do this already: in
 [`nickname_lookup()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/nickname_lookup.md)
@@ -134,13 +159,15 @@ score. See
 d <- parse_names(c("JOHN SMITH", "PAT SMITH", "J SMITH", "CHRIS JONES"))
 d$gender_confidence <- as.numeric(d$gender_confidence)
 d$gender_80 <- ifelse(d$gender_confidence >= 80, d$gender, "U")
-d[c("name", "gender", "gender_confidence", "gender_80")]
-#>          name gender gender_confidence gender_80
-#> 1  JOHN SMITH      M              99.8         M
-#> 2   PAT SMITH      F              59.5         U
-#> 3     J SMITH      U              50.0         U
-#> 4 CHRIS JONES      M              94.4         M
+d[c("name", "gender", "gender_confidence", "gender_80")] |> knitr::kable()
 ```
+
+| name        | gender | gender_confidence | gender_80 |
+|:------------|:-------|------------------:|:----------|
+| JOHN SMITH  | M      |              99.8 | M         |
+| PAT SMITH   | F      |              59.5 | U         |
+| J SMITH     | U      |              50.0 | U         |
+| CHRIS JONES | M      |              94.4 | M         |
 
 A threshold of 80 (what
 [`nickname_lookup()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/nickname_lookup.md)
@@ -177,13 +204,13 @@ c(rows           = nrow(cn),
   surnames       = sum(cn$last_name_value > 0))
 #>         rows   male_names female_names  first_names     surnames 
 #>       195311        47089        51475        53616       156622
-cn[cn$name %in% c("SMITH", "ALL OTHER NAMES"), ]
-#> Key: <name>
-#>               name male_value female_value first_name_value last_name_value
-#>             <fctr>      <num>        <num>            <num>           <num>
-#> 1: ALL OTHER NAMES    7768920     11025786         18794706        36257637
-#> 2:           SMITH       4102          897             4999         2369644
+cn[cn$name %in% c("SMITH", "ALL OTHER NAMES"), ] |> knitr::kable()
 ```
+
+| name            | male_value | female_value | first_name_value | last_name_value |
+|:----------------|-----------:|-------------:|-----------------:|----------------:|
+| ALL OTHER NAMES |    7768920 |     11025786 |         18794706 |        36257637 |
+| SMITH           |       4102 |          897 |             4999 |         2369644 |
 
 - **Given names and gender:** every first name held by 91 or more people
   in the 2020 Census, with the count of people recorded male and female.

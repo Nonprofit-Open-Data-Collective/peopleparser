@@ -41,19 +41,21 @@ false match waiting to happen.
 x <- c("JOHN A SMITH", "PNC BANK NA", "TEAMSTERS LOCAL NO 338", "BNY MELLON",
        "SEE SCHEDULE O", "VACANT", "MICHAEL AND ASHLEY SMITH",
        "MARY SHURTS - LHS INC", "LARRY CHURCH", "SEE MOUA")
-classify_names(x)
-#>                        name               name_type org_score
-#> 1              JOHN A SMITH                  person    0.0012
-#> 2               PNC BANK NA            organisation    0.9999
-#> 3    TEAMSTERS LOCAL NO 338            organisation    0.9998
-#> 4                BNY MELLON            organisation    0.0412
-#> 5            SEE SCHEDULE O             placeholder    0.0074
-#> 6                    VACANT             placeholder    0.0193
-#> 7  MICHAEL AND ASHLEY SMITH          several people    0.0227
-#> 8     MARY SHURTS - LHS INC person and organisation    0.9802
-#> 9              LARRY CHURCH                  person    0.0146
-#> 10                 SEE MOUA                  person    0.0004
+classify_names(x) |> knitr::kable()
 ```
+
+| name                     | name_type               | org_score |
+|:-------------------------|:------------------------|----------:|
+| JOHN A SMITH             | person                  |    0.0012 |
+| PNC BANK NA              | organisation            |    0.9999 |
+| TEAMSTERS LOCAL NO 338   | organisation            |    0.9998 |
+| BNY MELLON               | organisation            |    0.0412 |
+| SEE SCHEDULE O           | placeholder             |    0.0074 |
+| VACANT                   | placeholder             |    0.0193 |
+| MICHAEL AND ASHLEY SMITH | several people          |    0.0227 |
+| MARY SHURTS - LHS INC    | person and organisation |    0.9802 |
+| LARRY CHURCH             | person                  |    0.0146 |
+| SEE MOUA                 | person                  |    0.0004 |
 
 - **Placeholders** are found by rules: notes such as `SEE SCHEDULE O`,
   `NONE`, `VACANT`, `NO COMPENSATED OFFICERS`, or nothing left after
@@ -72,25 +74,32 @@ classify_names(x)
   employer after the name). Organisations named after a person
   (`KURT SUZUKI FAMILY FOUNDATION`) stay organisations, unless a dash
   separates the parts.
+  [`parse_names()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/parse_names.md)
+  still finds the person in most of these: the part after a dash is cut,
+  and from an employer word such as `INSURANCE` or `COMPANY` on, the
+  rest is dropped (`JOHN HEISER INSURANCE` gives `JOHN HEISER`; see
+  [`vignette("name-cleaning")`](https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-cleaning.md)).
 
 `parse_names(x, classify = TRUE)` adds the `name_type` and `org_score`
 columns to the parsed names, so the non-people can be set aside:
 
 ``` r
 p <- parse_names(x, classify = TRUE)
-p[, c("name", "first_name", "last_name", "name_type")]
-#>                        name first_name last_name               name_type
-#> 1              JOHN A SMITH       JOHN     SMITH                  person
-#> 2               PNC BANK NA        PNC   BANK-NA            organisation
-#> 3    TEAMSTERS LOCAL NO 338  TEAMSTERS  LOCAL-NO            organisation
-#> 4                BNY MELLON        BNY    MELLON            organisation
-#> 5            SEE SCHEDULE O                                  placeholder
-#> 6                    VACANT               VACANT             placeholder
-#> 7  MICHAEL AND ASHLEY SMITH    MICHAEL     SMITH          several people
-#> 8     MARY SHURTS - LHS INC       MARY    SHURTS person and organisation
-#> 9              LARRY CHURCH      LARRY    CHURCH                  person
-#> 10                 SEE MOUA        SEE      MOUA                  person
+p[, c("name", "first_name", "last_name", "name_type")] |> knitr::kable()
 ```
+
+| name                     | first_name | last_name | name_type               |
+|:-------------------------|:-----------|:----------|:------------------------|
+| JOHN A SMITH             | JOHN       | SMITH     | person                  |
+| PNC BANK NA              | PNC        | BANK-NA   | organisation            |
+| TEAMSTERS LOCAL NO 338   | TEAMSTERS  | LOCAL-NO  | organisation            |
+| BNY MELLON               | BNY        | MELLON    | organisation            |
+| SEE SCHEDULE O           |            |           | placeholder             |
+| VACANT                   |            | VACANT    | placeholder             |
+| MICHAEL AND ASHLEY SMITH | MICHAEL    | SMITH     | several people          |
+| MARY SHURTS - LHS INC    | MARY       | SHURTS    | person and organisation |
+| LARRY CHURCH             | LARRY      | CHURCH    | person                  |
+| SEE MOUA                 | SEE        | MOUA      | person                  |
 
 ### The organisation model
 
@@ -172,12 +181,14 @@ The parser’s order rules then decide which part is the surname:
 
 ``` r
 parse_names(c("LedbetterJennifer A", "KramerKenneth", "MURPHYSANDRA"),
-            split_run_together = TRUE)[, c("name", "first_name", "middle_name", "last_name")]
-#>                  name first_name middle_name last_name
-#> 1 LedbetterJennifer A   JENNIFER           A LEDBETTER
-#> 2       KramerKenneth    KENNETH                KRAMER
-#> 3        MURPHYSANDRA     SANDRA                MURPHY
+            split_run_together = TRUE)[, c("name", "first_name", "middle_name", "last_name")] |> knitr::kable()
 ```
+
+| name                | first_name | middle_name | last_name |
+|:--------------------|:-----------|:------------|:----------|
+| LedbetterJennifer A | JENNIFER   | A           | LEDBETTER |
+| KramerKenneth       | KENNETH    |             | KRAMER    |
+| MURPHYSANDRA        | SANDRA     |             | MURPHY    |
 
 On the Part VII names, the capital-letter rule splits 2,014 distinct
 words (4,524 rows) and the all-capitals rule 1,093 (2,131 rows). In

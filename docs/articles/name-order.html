@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">peopleparser</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.6</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -91,6 +91,14 @@ and more tokens, and the rules that keep compound surnames
 <p>The rules run after cleaning, on the tokens that are left once
 titles, credentials and suffixes are gone (see
 <code><a href="../articles/name-cleaning.html">vignette("name-cleaning")</a></code>).</p>
+<p>The examples parse a few names with <code><a href="../reference/parse_names.html">parse_names()</a></code> and
+show the name columns as a table:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://nonprofit-open-data-collective.github.io/peopleparser/">peopleparser</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">show</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">cols</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"first_name"</span>, <span class="st">"middle_name"</span>, <span class="st">"last_name"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="../reference/parse_names.html">parse_names</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="va">cols</span><span class="op">)</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="the-evidence-first-name-and-surname-counts">The evidence: first-name and surname counts<a class="anchor" aria-label="anchor" href="#the-evidence-first-name-and-surname-counts"></a>
 </h2>
@@ -98,17 +106,76 @@ titles, credentials and suffixes are gone (see
 and how often a surname in U.S. Census Bureau name files (see
 <code><a href="../articles/gender-scoring.html">vignette("gender-scoring")</a></code> for where the table comes from).
 <code><a href="../reference/get_census_data.html">get_census_data()</a></code> looks up each token:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/get_census_data.html">get_census_data</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN"</span>, <span class="st">"SMITH"</span>, <span class="st">"JORDAN"</span>, <span class="st">"TAYLOR"</span>, <span class="st">"LESLIE"</span>, <span class="st">"TSHEPO"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Key: &lt;ordinal&gt;</span></span>
-<span><span class="co">#&gt;      name ordinal male_value female_value first_name_value last_name_value</span></span>
-<span><span class="co">#&gt;    &lt;char&gt;   &lt;int&gt;      &lt;num&gt;        &lt;num&gt;            &lt;num&gt;           &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:   JOHN       1    3118620         6503          3125123           37363</span></span>
-<span><span class="co">#&gt; 2:  SMITH       2       4102          897             4999         2369644</span></span>
-<span><span class="co">#&gt; 3: JORDAN       3     329734       122596           452330          200984</span></span>
-<span><span class="co">#&gt; 4: TAYLOR       4      95501       293715           389216          723758</span></span>
-<span><span class="co">#&gt; 5: LESLIE       5      52838       237654           290492           24015</span></span>
-<span><span class="co">#&gt; 6: TSHEPO       6          0            0                0               0</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/get_census_data.html">get_census_data</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN"</span>, <span class="st">"SMITH"</span>, <span class="st">"JORDAN"</span>, <span class="st">"TAYLOR"</span>, <span class="st">"LESLIE"</span>, <span class="st">"TSHEPO"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table style="width:100%;" class="table">
+<colgroup>
+<col width="9%">
+<col width="11%">
+<col width="15%">
+<col width="18%">
+<col width="23%">
+<col width="22%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="right">ordinal</th>
+<th align="right">male_value</th>
+<th align="right">female_value</th>
+<th align="right">first_name_value</th>
+<th align="right">last_name_value</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">JOHN</td>
+<td align="right">1</td>
+<td align="right">3118620</td>
+<td align="right">6503</td>
+<td align="right">3125123</td>
+<td align="right">37363</td>
+</tr>
+<tr class="even">
+<td align="left">SMITH</td>
+<td align="right">2</td>
+<td align="right">4102</td>
+<td align="right">897</td>
+<td align="right">4999</td>
+<td align="right">2369644</td>
+</tr>
+<tr class="odd">
+<td align="left">JORDAN</td>
+<td align="right">3</td>
+<td align="right">329734</td>
+<td align="right">122596</td>
+<td align="right">452330</td>
+<td align="right">200984</td>
+</tr>
+<tr class="even">
+<td align="left">TAYLOR</td>
+<td align="right">4</td>
+<td align="right">95501</td>
+<td align="right">293715</td>
+<td align="right">389216</td>
+<td align="right">723758</td>
+</tr>
+<tr class="odd">
+<td align="left">LESLIE</td>
+<td align="right">5</td>
+<td align="right">52838</td>
+<td align="right">237654</td>
+<td align="right">290492</td>
+<td align="right">24015</td>
+</tr>
+<tr class="even">
+<td align="left">TSHEPO</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
 <p>Some tokens are clearly one or the other (<code>JOHN</code>,
 <code>SMITH</code>), although in the 2020 lists even <code>SMITH</code>
 is a rare given name. Others are both: <code>JORDAN</code> and
@@ -118,7 +185,7 @@ neither list.</p>
 <p><code><a href="../reference/check_if_surname.html">check_if_surname()</a></code> turns the counts into a yes/no: a
 token reads as a surname when more than half of its count is in the
 surname position. A token found in neither list reads as a surname.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN"</span>, <span class="st">"SMITH"</span>, <span class="st">"JORDAN"</span>, <span class="st">"TAYLOR"</span>, <span class="st">"LESLIE"</span>, <span class="st">"TSHEPO"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="../reference/check_if_surname.html">check_if_surname</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="va">x</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   JOHN  SMITH JORDAN TAYLOR LESLIE TSHEPO </span></span>
@@ -142,7 +209,7 @@ the more common first;</li>
 <code>SMITH</code> has a few thousand given-name uses in the 2020 lists,
 so its share is just under 1, while an unlisted token’s share is exactly
 1.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_census_data.html">get_census_data</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TAYLOR"</span>, <span class="st">"JORDAN"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/determine_surname.html">determine_surname</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span>   <span class="co"># position of the surname: JORDAN is first, TAYLOR the surname</span></span>
 <span><span class="co">#&gt; [1] 1</span></span></code></pre></div>
@@ -154,11 +221,30 @@ so its share is just under 1, while an unlisted token’s share is exactly
 <h3 id="one-token">One token<a class="anchor" aria-label="anchor" href="#one-token"></a>
 </h3>
 <p>A lone token is treated as the surname.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SMITH"</span>, <span class="st">"MADONNA"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;       raw first_name middle_name last_name</span></span>
-<span><span class="co">#&gt; 1   SMITH                            SMITH</span></span>
-<span><span class="co">#&gt; 2 MADONNA                          MADONNA</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SMITH"</span>, <span class="st">"MADONNA"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">first_name</th>
+<th align="left">middle_name</th>
+<th align="left">last_name</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">SMITH</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">SMITH</td>
+</tr>
+<tr class="even">
+<td align="left">MADONNA</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">MADONNA</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level3">
 <h3 id="two-tokens">Two tokens<a class="anchor" aria-label="anchor" href="#two-tokens"></a>
@@ -177,18 +263,67 @@ written surname first are</p>
 <p>and the tokens are swapped when these odds exceed 30. An unlisted
 first token of one or two letters is initials (<code>HM CHERRY</code>,
 <code>DC ALLEN</code>).</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN SMITH"</span>, <span class="st">"SMITH JOHN"</span>, <span class="st">"JORDAN TAYLOR"</span>, <span class="st">"TAYLOR JORDAN"</span>,</span>
-<span>       <span class="st">"LESLIE JAMES"</span>, <span class="st">"HARRIS MORRISON"</span>, <span class="st">"RICHARD RUVIN"</span>, <span class="st">"R BLINCOE"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;               raw first_name middle_name last_name</span></span>
-<span><span class="co">#&gt; 1      JOHN SMITH       JOHN                 SMITH</span></span>
-<span><span class="co">#&gt; 2      SMITH JOHN       JOHN                 SMITH</span></span>
-<span><span class="co">#&gt; 3   JORDAN TAYLOR     JORDAN                TAYLOR</span></span>
-<span><span class="co">#&gt; 4   TAYLOR JORDAN     TAYLOR                JORDAN</span></span>
-<span><span class="co">#&gt; 5    LESLIE JAMES     LESLIE                 JAMES</span></span>
-<span><span class="co">#&gt; 6 HARRIS MORRISON     HARRIS              MORRISON</span></span>
-<span><span class="co">#&gt; 7   RICHARD RUVIN    RICHARD                 RUVIN</span></span>
-<span><span class="co">#&gt; 8       R BLINCOE          R               BLINCOE</span></span></code></pre></div>
+<span>       <span class="st">"LESLIE JAMES"</span>, <span class="st">"HARRIS MORRISON"</span>, <span class="st">"RICHARD RUVIN"</span>, <span class="st">"R BLINCOE"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">first_name</th>
+<th align="left">middle_name</th>
+<th align="left">last_name</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">JOHN SMITH</td>
+<td align="left">JOHN</td>
+<td align="left"></td>
+<td align="left">SMITH</td>
+</tr>
+<tr class="even">
+<td align="left">SMITH JOHN</td>
+<td align="left">JOHN</td>
+<td align="left"></td>
+<td align="left">SMITH</td>
+</tr>
+<tr class="odd">
+<td align="left">JORDAN TAYLOR</td>
+<td align="left">JORDAN</td>
+<td align="left"></td>
+<td align="left">TAYLOR</td>
+</tr>
+<tr class="even">
+<td align="left">TAYLOR JORDAN</td>
+<td align="left">TAYLOR</td>
+<td align="left"></td>
+<td align="left">JORDAN</td>
+</tr>
+<tr class="odd">
+<td align="left">LESLIE JAMES</td>
+<td align="left">LESLIE</td>
+<td align="left"></td>
+<td align="left">JAMES</td>
+</tr>
+<tr class="even">
+<td align="left">HARRIS MORRISON</td>
+<td align="left">HARRIS</td>
+<td align="left"></td>
+<td align="left">MORRISON</td>
+</tr>
+<tr class="odd">
+<td align="left">RICHARD RUVIN</td>
+<td align="left">RICHARD</td>
+<td align="left"></td>
+<td align="left">RUVIN</td>
+</tr>
+<tr class="even">
+<td align="left">R BLINCOE</td>
+<td align="left">R</td>
+<td align="left"></td>
+<td align="left">BLINCOE</td>
+</tr>
+</tbody>
+</table>
 <p>Before version 0.2.0 the token with the higher surname share was the
 surname, wherever it stood. That turned <code>HARRIS MORRISON</code>
 into <code>MORRISON HARRIS</code> and, because <code>RUVIN</code> has a
@@ -209,15 +344,49 @@ alone.</p>
 treated as a title when the other token is not mostly a given name.
 <code>BISHOP JOHN</code> is left alone, because it may be
 <code>JOHN BISHOP</code> written surname first.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HM CHERRY"</span>, <span class="st">"NICKHATH SHERIFF"</span>, <span class="st">"HOWARD SITRON"</span>, <span class="st">"SHERIFF MASRY"</span>,</span>
-<span>       <span class="st">"BISHOP JOHN"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                raw first_name middle_name last_name</span></span>
-<span><span class="co">#&gt; 1        HM CHERRY         HM                CHERRY</span></span>
-<span><span class="co">#&gt; 2 NICKHATH SHERIFF   NICKHATH               SHERIFF</span></span>
-<span><span class="co">#&gt; 3    HOWARD SITRON     HOWARD                SITRON</span></span>
-<span><span class="co">#&gt; 4    SHERIFF MASRY                            MASRY</span></span>
-<span><span class="co">#&gt; 5      BISHOP JOHN       JOHN                BISHOP</span></span></code></pre></div>
+<span>       <span class="st">"BISHOP JOHN"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">first_name</th>
+<th align="left">middle_name</th>
+<th align="left">last_name</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">HM CHERRY</td>
+<td align="left">HM</td>
+<td align="left"></td>
+<td align="left">CHERRY</td>
+</tr>
+<tr class="even">
+<td align="left">NICKHATH SHERIFF</td>
+<td align="left">NICKHATH</td>
+<td align="left"></td>
+<td align="left">SHERIFF</td>
+</tr>
+<tr class="odd">
+<td align="left">HOWARD SITRON</td>
+<td align="left">HOWARD</td>
+<td align="left"></td>
+<td align="left">SITRON</td>
+</tr>
+<tr class="even">
+<td align="left">SHERIFF MASRY</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">MASRY</td>
+</tr>
+<tr class="odd">
+<td align="left">BISHOP JOHN</td>
+<td align="left">JOHN</td>
+<td align="left"></td>
+<td align="left">BISHOP</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level3">
 <h3 id="three-tokens-with-two-initials">Three tokens with two initials<a class="anchor" aria-label="anchor" href="#three-tokens-with-two-initials"></a>
@@ -240,13 +409,42 @@ pass the two-word written-order test above (<code>SMITH J ALAN</code>
 becomes <code>J ALAN SMITH</code>);</li>
 <li>otherwise the order is kept.</li>
 </ul>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN A SMITH"</span>, <span class="st">"SMITH JOHN A"</span>, <span class="st">"SMITH J ALAN"</span>, <span class="st">"J ALAN SMITH"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;            raw first_name middle_name last_name</span></span>
-<span><span class="co">#&gt; 1 JOHN A SMITH       JOHN           A     SMITH</span></span>
-<span><span class="co">#&gt; 2 SMITH JOHN A       JOHN           A     SMITH</span></span>
-<span><span class="co">#&gt; 3 SMITH J ALAN          J        ALAN     SMITH</span></span>
-<span><span class="co">#&gt; 4 J ALAN SMITH          J        ALAN     SMITH</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN A SMITH"</span>, <span class="st">"SMITH JOHN A"</span>, <span class="st">"SMITH J ALAN"</span>, <span class="st">"J ALAN SMITH"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">first_name</th>
+<th align="left">middle_name</th>
+<th align="left">last_name</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">JOHN A SMITH</td>
+<td align="left">JOHN</td>
+<td align="left">A</td>
+<td align="left">SMITH</td>
+</tr>
+<tr class="even">
+<td align="left">SMITH JOHN A</td>
+<td align="left">JOHN</td>
+<td align="left">A</td>
+<td align="left">SMITH</td>
+</tr>
+<tr class="odd">
+<td align="left">SMITH J ALAN</td>
+<td align="left">J</td>
+<td align="left">ALAN</td>
+<td align="left">SMITH</td>
+</tr>
+<tr class="even">
+<td align="left">J ALAN SMITH</td>
+<td align="left">J</td>
+<td align="left">ALAN</td>
+<td align="left">SMITH</td>
+</tr>
+</tbody>
+</table>
 <p>The trailing-initial rule cannot tell <code>JOHN SMITH A</code>
 (given name first, stray initial at the end) from
 <code>SMITH JOHN A</code>, and reads both as surname first.</p>
@@ -266,13 +464,42 @@ from the census as a surname. Labelled by the convention of the other
 names on the same return, 28,811 three-word Part VII names were
 reordered wrongly 1,210 times by that rule and 53 times by the
 written-order test (<code>data-raw/name_order_eval3.R</code>).</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN ALAN SMITH"</span>, <span class="st">"SMITH JOHN ALAN"</span>, <span class="st">"DONG JOON YI"</span>, <span class="st">"TOKS MALIK ASHIRU"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                 raw first_name middle_name last_name</span></span>
-<span><span class="co">#&gt; 1   JOHN ALAN SMITH       JOHN        ALAN     SMITH</span></span>
-<span><span class="co">#&gt; 2   SMITH JOHN ALAN       JOHN        ALAN     SMITH</span></span>
-<span><span class="co">#&gt; 3      DONG JOON YI       DONG        JOON        YI</span></span>
-<span><span class="co">#&gt; 4 TOKS MALIK ASHIRU       TOKS       MALIK    ASHIRU</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN ALAN SMITH"</span>, <span class="st">"SMITH JOHN ALAN"</span>, <span class="st">"DONG JOON YI"</span>, <span class="st">"TOKS MALIK ASHIRU"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">first_name</th>
+<th align="left">middle_name</th>
+<th align="left">last_name</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">JOHN ALAN SMITH</td>
+<td align="left">JOHN</td>
+<td align="left">ALAN</td>
+<td align="left">SMITH</td>
+</tr>
+<tr class="even">
+<td align="left">SMITH JOHN ALAN</td>
+<td align="left">JOHN</td>
+<td align="left">ALAN</td>
+<td align="left">SMITH</td>
+</tr>
+<tr class="odd">
+<td align="left">DONG JOON YI</td>
+<td align="left">DONG</td>
+<td align="left">JOON</td>
+<td align="left">YI</td>
+</tr>
+<tr class="even">
+<td align="left">TOKS MALIK ASHIRU</td>
+<td align="left">TOKS</td>
+<td align="left">MALIK</td>
+<td align="left">ASHIRU</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level3">
 <h3 id="four-or-more-tokens">Four or more tokens<a class="anchor" aria-label="anchor" href="#four-or-more-tokens"></a>
@@ -285,11 +512,30 @@ name. A word, two or more initials and a word
 initials. If the name opens with two surnames followed by a given name
 (<code>SMITH JONES MARY ANN</code>), the two surnames are joined into
 one.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN PAUL GEORGE RINGO"</span>, <span class="st">"SMITH JONES MARY ANN"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                      raw first_name middle_name   last_name</span></span>
-<span><span class="co">#&gt; 1 JOHN PAUL GEORGE RINGO       JOHN PAUL GEORGE       RINGO</span></span>
-<span><span class="co">#&gt; 2   SMITH JONES MARY ANN       MARY         ANN SMITH-JONES</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN PAUL GEORGE RINGO"</span>, <span class="st">"SMITH JONES MARY ANN"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">first_name</th>
+<th align="left">middle_name</th>
+<th align="left">last_name</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">JOHN PAUL GEORGE RINGO</td>
+<td align="left">JOHN</td>
+<td align="left">PAUL GEORGE</td>
+<td align="left">RINGO</td>
+</tr>
+<tr class="even">
+<td align="left">SMITH JONES MARY ANN</td>
+<td align="left">MARY</td>
+<td align="left">ANN</td>
+<td align="left">SMITH-JONES</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="section level2">
@@ -324,20 +570,64 @@ dash, the way the census and most records spell it:
 trailing one as a credential (Navy Medical Corps).</p>
 <p>Particles chain, so <code>DE LA ROSA</code> and
 <code>VAN DER BERG</code> become one token.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/fix_locative_surnames.html">fix_locative_surnames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Jane Van Dyke"</span>, <span class="st">"Carlos De La Rosa"</span>, <span class="st">"Dylan Van"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "Jane Van-Dyke"     "Carlos De-La-Rosa" "Dylan Van"</span></span>
 <span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"THOMAS H VON KAMECKE"</span>, <span class="st">"SEAN ST CLAIR"</span>, <span class="st">"JULIA DI BUSSOLO"</span>,</span>
 <span>       <span class="st">"JUAN CARLOS DE LA ROSA"</span>, <span class="st">"MARY VAN DER BERG"</span>, <span class="st">"PATRICIA SAN PEDRO"</span>,</span>
-<span>       <span class="st">"ESTELLA DE LOS RIOS"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                      raw first_name middle_name    last_name</span></span>
-<span><span class="co">#&gt; 1   THOMAS H VON KAMECKE     THOMAS           H  VON-KAMECKE</span></span>
-<span><span class="co">#&gt; 2          SEAN ST CLAIR       SEAN                 ST-CLAIR</span></span>
-<span><span class="co">#&gt; 3       JULIA DI BUSSOLO      JULIA               DI-BUSSOLO</span></span>
-<span><span class="co">#&gt; 4 JUAN CARLOS DE LA ROSA       JUAN      CARLOS   DE-LA-ROSA</span></span>
-<span><span class="co">#&gt; 5      MARY VAN DER BERG       MARY             VAN-DER-BERG</span></span>
-<span><span class="co">#&gt; 6     PATRICIA SAN PEDRO   PATRICIA                SAN-PEDRO</span></span>
-<span><span class="co">#&gt; 7    ESTELLA DE LOS RIOS    ESTELLA              DE-LOS-RIOS</span></span></code></pre></div>
+<span>       <span class="st">"ESTELLA DE LOS RIOS"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">first_name</th>
+<th align="left">middle_name</th>
+<th align="left">last_name</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">THOMAS H VON KAMECKE</td>
+<td align="left">THOMAS</td>
+<td align="left">H</td>
+<td align="left">VON-KAMECKE</td>
+</tr>
+<tr class="even">
+<td align="left">SEAN ST CLAIR</td>
+<td align="left">SEAN</td>
+<td align="left"></td>
+<td align="left">ST-CLAIR</td>
+</tr>
+<tr class="odd">
+<td align="left">JULIA DI BUSSOLO</td>
+<td align="left">JULIA</td>
+<td align="left"></td>
+<td align="left">DI-BUSSOLO</td>
+</tr>
+<tr class="even">
+<td align="left">JUAN CARLOS DE LA ROSA</td>
+<td align="left">JUAN</td>
+<td align="left">CARLOS</td>
+<td align="left">DE-LA-ROSA</td>
+</tr>
+<tr class="odd">
+<td align="left">MARY VAN DER BERG</td>
+<td align="left">MARY</td>
+<td align="left"></td>
+<td align="left">VAN-DER-BERG</td>
+</tr>
+<tr class="even">
+<td align="left">PATRICIA SAN PEDRO</td>
+<td align="left">PATRICIA</td>
+<td align="left"></td>
+<td align="left">SAN-PEDRO</td>
+</tr>
+<tr class="odd">
+<td align="left">ESTELLA DE LOS RIOS</td>
+<td align="left">ESTELLA</td>
+<td align="left"></td>
+<td align="left">DE-LOS-RIOS</td>
+</tr>
+</tbody>
+</table>
 <p>A particle at the end of a name (<code>Dylan Van</code>) has nothing
 to join and is left alone. <code>ST</code> at the start of a name is not
 joined, because there it is usually a title.</p>
@@ -367,24 +657,82 @@ they are joined in the order they were written.
 <code>MARY ANN SMITH JONES</code> gives <code>SMITH-JONES</code>, even
 though <code>SMITH</code> was picked as the main surname. When they are
 not next to each other, the middle part goes first.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MARIA GARCIA LOPEZ"</span>, <span class="st">"JOHN LEE SMITH"</span>, <span class="st">"ELIZABETH ANNE WALKER SMITH"</span>,</span>
-<span>       <span class="st">"JOHN Q PUBLIC SMITH"</span>, <span class="st">"MARY ANN SMITH JONES"</span>, <span class="st">"JEAN A DU PONT"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                           raw first_name middle_name    last_name</span></span>
-<span><span class="co">#&gt; 1          MARIA GARCIA LOPEZ      MARIA             GARCIA-LOPEZ</span></span>
-<span><span class="co">#&gt; 2              JOHN LEE SMITH       JOHN         LEE        SMITH</span></span>
-<span><span class="co">#&gt; 3 ELIZABETH ANNE WALKER SMITH  ELIZABETH        ANNE WALKER-SMITH</span></span>
-<span><span class="co">#&gt; 4         JOHN Q PUBLIC SMITH       JOHN           Q PUBLIC-SMITH</span></span>
-<span><span class="co">#&gt; 5        MARY ANN SMITH JONES       MARY         ANN  SMITH-JONES</span></span>
-<span><span class="co">#&gt; 6              JEAN A DU PONT       JEAN           A      DU-PONT</span></span></code></pre></div>
+<span>       <span class="st">"JOHN Q PUBLIC SMITH"</span>, <span class="st">"MARY ANN SMITH JONES"</span>, <span class="st">"JEAN A DU PONT"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">first_name</th>
+<th align="left">middle_name</th>
+<th align="left">last_name</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">MARIA GARCIA LOPEZ</td>
+<td align="left">MARIA</td>
+<td align="left"></td>
+<td align="left">GARCIA-LOPEZ</td>
+</tr>
+<tr class="even">
+<td align="left">JOHN LEE SMITH</td>
+<td align="left">JOHN</td>
+<td align="left">LEE</td>
+<td align="left">SMITH</td>
+</tr>
+<tr class="odd">
+<td align="left">ELIZABETH ANNE WALKER SMITH</td>
+<td align="left">ELIZABETH</td>
+<td align="left">ANNE</td>
+<td align="left">WALKER-SMITH</td>
+</tr>
+<tr class="even">
+<td align="left">JOHN Q PUBLIC SMITH</td>
+<td align="left">JOHN</td>
+<td align="left">Q</td>
+<td align="left">PUBLIC-SMITH</td>
+</tr>
+<tr class="odd">
+<td align="left">MARY ANN SMITH JONES</td>
+<td align="left">MARY</td>
+<td align="left">ANN</td>
+<td align="left">SMITH-JONES</td>
+</tr>
+<tr class="even">
+<td align="left">JEAN A DU PONT</td>
+<td align="left">JEAN</td>
+<td align="left">A</td>
+<td align="left">DU-PONT</td>
+</tr>
+</tbody>
+</table>
 <p>One exception: <code>MAY</code> is a common middle name and a
 surname. If it ends up at the front of a compound surname, it is moved
 back to the middle name.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SARAH MAY WILSON"</span>, <span class="st">"MARY MAY"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                raw first_name middle_name last_name</span></span>
-<span><span class="co">#&gt; 1 SARAH MAY WILSON      SARAH         MAY    WILSON</span></span>
-<span><span class="co">#&gt; 2         MARY MAY       MARY                   MAY</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SARAH MAY WILSON"</span>, <span class="st">"MARY MAY"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">first_name</th>
+<th align="left">middle_name</th>
+<th align="left">last_name</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">SARAH MAY WILSON</td>
+<td align="left">SARAH</td>
+<td align="left">MAY</td>
+<td align="left">WILSON</td>
+</tr>
+<tr class="even">
+<td align="left">MARY MAY</td>
+<td align="left">MARY</td>
+<td align="left"></td>
+<td align="left">MAY</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level3">
 <h3 id="titles-that-turned-out-to-be-names">Titles that turned out to be names<a class="anchor" aria-label="anchor" href="#titles-that-turned-out-to-be-names"></a>
