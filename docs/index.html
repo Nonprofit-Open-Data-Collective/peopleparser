@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="index.html">peopleparser</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -139,16 +139,18 @@
 <span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a><span class="dv">4</span><span class="sc">:</span> AADLAND          <span class="dv">0</span>            <span class="dv">0</span>                <span class="dv">0</span>             <span class="dv">374</span></span>
 <span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a><span class="dv">5</span><span class="sc">:</span>  AAFEDT          <span class="dv">0</span>            <span class="dv">0</span>                <span class="dv">0</span>             <span class="dv">138</span></span>
 <span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a><span class="dv">6</span><span class="sc">:</span> AAGAARD          <span class="dv">0</span>            <span class="dv">0</span>                <span class="dv">0</span>             <span class="dv">300</span></span></code></pre></div>
-<p>The <strong>parse_names()</strong> function utilizes parallelization to speed up large jobs.</p>
+<p><strong>parse_names()</strong> parses about 1,500 names a second in the current R session, so 100,000 names take about a minute. It starts no background processes unless you ask for them:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_example_names.html">get_example_names</a></span><span class="op">(</span> n<span class="op">=</span><span class="fl">1000</span> <span class="op">)</span></span>
-<span> </span>
-<span><span class="va">start_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="va">pn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parse_names.html">parse_names</a></span><span class="op">(</span> <span class="va">x</span> <span class="op">)</span></span>
-<span><span class="va">end_time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span> <span class="va">pn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parse_names.html">parse_names</a></span><span class="op">(</span> <span class="va">x</span> <span class="op">)</span> <span class="op">)</span>        <span class="co"># sequential</span></span>
 <span></span>
-<span><span class="va">end_time</span> <span class="op">-</span> <span class="va">start_time</span></span>
-<span><span class="co"># Time difference of 8.7648 secs</span></span></code></pre></div>
+<span><span class="va">pn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parse_names.html">parse_names</a></span><span class="op">(</span> <span class="va">big_vector</span>, workers <span class="op">=</span> <span class="fl">4</span> <span class="op">)</span> <span class="co"># 4 workers for this call</span></span>
+<span></span>
+<span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span> <span class="fu">future</span><span class="fu">::</span><span class="va"><a href="https://future.futureverse.org/reference/multisession.html" class="external-link">multisession</a></span>, workers <span class="op">=</span> <span class="fl">4</span> <span class="op">)</span>  <span class="co"># or reuse workers</span></span>
+<span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parse_names.html">parse_names</a></span><span class="op">(</span> <span class="va">batch_1</span> <span class="op">)</span>                        <span class="co"># across calls</span></span>
+<span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/parse_names.html">parse_names</a></span><span class="op">(</span> <span class="va">batch_2</span> <span class="op">)</span></span>
+<span><span class="fu">future</span><span class="fu">::</span><span class="fu"><a href="https://future.futureverse.org/reference/plan.html" class="external-link">plan</a></span><span class="op">(</span> <span class="fu">future</span><span class="fu">::</span><span class="va"><a href="https://future.futureverse.org/reference/sequential.html" class="external-link">sequential</a></span> <span class="op">)</span></span></code></pre></div>
+<p>Starting workers takes a few seconds, so they help only on large inputs.</p>
 </div>
 <div class="section level2">
 <h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>

@@ -244,12 +244,12 @@ test_that("two-token names: leading initials, strong surnames, leading titles", 
   expect_equal(pn("HM CHERRY"), c("", "HM", "CHERRY"))
   expect_equal(pn("DC ALLEN"), c("", "DC", "ALLEN"))
   expect_equal(pn("J MARKEL"), c("", "J", "MARKEL"))
-  # a trailing initial left after stripping keeps the old ranking
+  # a trailing initial left after stripping stays the surname
   expect_equal(pn("THOMAS H LEED")[2:3], c("THOMAS", "H"))
-  # a listed token with surname share >= 0.85 beats an unlisted token
+  # an unlisted word before a clear surname is the given name
   expect_equal(pn("NICKHATH SHERIFF"), c("", "NICKHATH", "SHERIFF"))
   expect_equal(pn("SANRDA COHEN"), c("", "SANRDA", "COHEN"))
-  # names that are also common given names do not (IRWIN 0.84, HOWARD 0.65)
+  # written order kept when the first word is also a common given name
   expect_equal(pn("HOWARD SITRON"), c("", "HOWARD", "SITRON"))
   expect_equal(pn("RABBI IRWIN ZEPLOWITZ"), c("RABBI", "IRWIN", "ZEPLOWITZ"))
   # a leading title before a non-given name is a title
@@ -276,4 +276,20 @@ test_that("MC: initials at the start, a credential at the end", {
   expect_equal(pn("RADM FREDERIC G SANFORD MC USN RET")[3], "SANFORD")
   expect_equal(pn("Neil A Halpern MC MCCM FACP")[3], "HALPERN")
   expect_equal(fix_locative_surnames("JOHN MC COY"), "JOHN MC COY")   # MC is no longer a particle
+})
+
+test_that("two-word names keep the written order unless the census strongly disagrees", {
+  last <- function(x) vapply(x, function(n) parse_name(n, sanitize = TRUE)$last_name, "", USE.NAMES = FALSE)
+  # v0.1.0 swapped these (data-raw/WORKERS-AND-DATA-LOADING.md)
+  kept <- c("RICHARD RUVIN", "HARRIS MORRISON", "FOSTER MCDONALD", "HARRIS NYDICK",
+            "ARBANNAH HOLLAND", "MICHAEL FANIA", "DAN VITINA", "BILL NOAH", "JIM LANARD",
+            "MARK MICHAEL", "CLAY MORGAN", "COLEMAN LEVY", "LEE KORT", "SHENGLI YUAN",
+            "WALLIS ANNENBERG", "WARREN ORTLAND", "LEE DORILL", "REETIKA KUMAR",
+            "JONETHAN MORRIS", "MARSHALL RYAN", "BRUCE JAMES", "COBB ATKINSON")
+  expect_equal(last(kept), sub("^.* ", "", kept))
+  expect_equal(last("S KRISHNAN"), "KRISHNAN")
+  # clear surname-first names are still swapped
+  swapped <- c("SMITH JOHN", "GARCIA MARIA", "JOHNSON ROBERT", "NGUYEN THANH",
+               "BROWN DAVID", "MARTINEZ JOSE")
+  expect_equal(last(swapped), sub(" .*$", "", swapped))
 })

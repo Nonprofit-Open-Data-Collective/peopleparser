@@ -1,9 +1,8 @@
 # Parse a Vector of Names
 
 Parses a character vector of raw names into a data frame of structured
-name components. Names are sanitized once up front and then parsed in
-parallel with
-[`furrr::future_map_dfr()`](https://furrr.futureverse.org/reference/future_map.html).
+name components. Names are sanitized once up front and then parsed with
+[`parse_name()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/parse_name.md).
 
 ## Usage
 
@@ -14,6 +13,7 @@ parse_names(
   suffixes = sfx,
   split_initials = FALSE,
   add_nicknames = FALSE,
+  workers = NULL,
   ...
 )
 ```
@@ -48,6 +48,14 @@ parse_names(
   (`first_name_type`, `first_name_formal`, `first_name_nicknames`,
   `first_name_canonical`, `canonical_rule`). Defaults to `FALSE`.
 
+- workers:
+
+  `NULL` (default) to use the caller's
+  [`future::plan()`](https://future.futureverse.org/reference/plan.html)
+  (sequential unless the caller set one), `1` to run in this session
+  whatever the plan, or a number above 1 to start that many workers for
+  this call. See *Parallel parsing*.
+
 - ...:
 
   Reserved for future arguments; currently unused.
@@ -61,6 +69,29 @@ original input) plus the parsed components returned by
 `status`, `gender`, and `gender_confidence`, plus the nickname columns
 when `add_nicknames = TRUE`.
 
+## Parallel parsing
+
+By default `parse_names()` runs in the current R session and never
+starts background processes on its own. It uses parallel workers in two
+cases:
+
+- the caller has set a
+  [`future::plan()`](https://future.futureverse.org/reference/plan.html),
+  for example `future::plan(future::multisession, workers = 4)`. The
+  workers are reused across calls until the caller changes the plan;
+
+- `workers` is a number above 1. `parse_names()` starts that many
+  background R sessions for this call and shuts them down when it
+  returns, restoring the caller's plan.
+
+Workers load the installed copy of peopleparser. Each one reports its
+version and build time, and `parse_names()` stops if any differs from
+the calling session (for example after a reinstall while R was running,
+or when the session runs development code through
+[`devtools::load_all()`](https://devtools.r-lib.org/reference/load_all.html)).
+Starting workers takes a few seconds, so they pay off only for large
+inputs.
+
 ## Examples
 
 ``` r
@@ -72,4 +103,15 @@ parse_names(x)
 #>     last_name suffix status gender gender_confidence
 #> 1  LIVINGSTON    III             M              99.8
 #> 2 VON-KAMECKE                    M              99.9
+
+if (FALSE) { # \dontrun{
+# start 4 workers for one large call
+parse_names(big_vector, workers = 4)
+
+# or keep workers running across several calls
+future::plan(future::multisession, workers = 4)
+a <- parse_names(batch_1)
+b <- parse_names(batch_2)
+future::plan(future::sequential)
+} # }
 ```

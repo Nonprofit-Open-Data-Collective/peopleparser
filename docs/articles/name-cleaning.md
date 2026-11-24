@@ -153,7 +153,7 @@ Three lists of tokens are removed from the name:
 
 ``` r
 length(prx)
-#> [1] 265
+#> [1] 266
 sfx
 #> [1] "JR"     "JUNIOR" "SR"     "SENIOR" "II"     "III"    "IV"
 ```
@@ -180,13 +180,13 @@ table(titles$type)
 #>            Academic Degree    Civic / Political Title           Fraternal Office 
 #>                         57                         15                          5 
 #>         Geographic / Other      Honorific / Nobiliary       Military Affiliation 
-#>                          1                          1                          8 
+#>                          1                          1                          9 
 #>              Military Rank            Military Status        Organizational Role 
 #>                         28                          4                         32 
 #>                      Other Personal Name Abbreviation             Personal Title 
 #>                          1                          1                          9 
 #>    Professional Credential        Religious Honorific            Religious Order 
-#>                         83                          1                         22 
+#>                         84                          1                         22 
 #>            Religious Title 
 #>                         24
 subset(titles, abbr %in% c("RSM", "FACHE", "CFRE", "USNRET"))

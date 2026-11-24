@@ -1,4 +1,4 @@
-# peopleparser (development version)
+# peopleparser 0.2.0
 
 ## `parse_names()` no longer starts its own workers (breaking)
 
@@ -50,13 +50,26 @@
   Of the 60 Form 990 Part VII names with a standalone `MC`, 55 now parse
   better and 5 are unchanged.
 
-## Two-token names
+## Two-token names keep their written order (changes parses)
 
-* In a two-token name with exactly one token absent from the census, a
-  leading token of one or two letters is read as initials (`HM CHERRY`,
-  `DC ALLEN`), and a listed token whose surname share is at least 0.85 is the
-  surname (`NICKHATH SHERIFF`, `SANRDA COHEN`). Before, the unlisted token
-  always became the surname.
+* Two-word names now start from the written order (first name, then surname)
+  and are swapped only when the census makes surname-first much more likely:
+  smoothed surname shares (pseudo-count 20), odds of surname-first above 30.
+  Before, the token with the higher raw surname share was the surname wherever
+  it stood, so thin or mixed evidence flipped names: `HARRIS MORRISON`,
+  `RICHARD RUVIN` (first name `RUVIN`), `FOSTER MCDONALD`, `MARK MICHAEL`,
+  `MARSHALL RYAN`. Clear surname-first names are still swapped (`SMITH JOHN`,
+  `GARCIA MARIA`).
+* Tuned on 758,388 two-word Form 990 Part VII names, each labelled by the
+  convention of the other names on its return (`data-raw/name_order_eval.R`):
+  order errors fall from 12,463 to 2,687. Names written first name first keep
+  their order 99.8% of the time (was 98.4%); 89% of names written surname
+  first are swapped (was 97%, at the cost of many false swaps).
+* A leading token of one or two letters absent from the census is initials
+  (`HM CHERRY`, `DC ALLEN`), and a lone letter is rarely the surname
+  (`BISHOP J` -> surname `BISHOP`). This replaces the 0.85 surname-share rule
+  added earlier in this development cycle.
+* Names of three or more words are unchanged.
 * A title that is also a surname (`SHERIFF`, `BROTHER`, `BISHOP`, ...) as the
   first of two tokens is a title when the other token is not mostly a given
   name (`SHERIFF MASRY` -> salutation `SHERIFF`, last name `MASRY`).

@@ -22,15 +22,15 @@ was built* describes the build and the hand review.
 table(first_name_pairs$type, first_name_pairs$lexicon)
 #>              
 #>               FALSE  TRUE
-#>   cognate         0    32
+#>   cognate         0    29
 #>   compound        0    20
 #>   misspelling 10217     0
-#>   nickname        0   399
+#>   nickname        0   397
 #>   sound_alike 13748     0
 #>   spelling        0   556
 ```
 
-- The **lexicon** (`lexicon = TRUE`) is 1,007 pairs seen in 25 or more
+- The **lexicon** (`lexicon = TRUE`) is 1,002 pairs seen in 25 or more
   people, reviewed by hand: nicknames (BOB/ROBERT), spellings
   (STEVEN/STEPHEN), cognates (JOSE/JOSEPH) and compound names
   (MARY/MARYANN).

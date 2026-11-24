@@ -94,19 +94,23 @@ head( census.names )
 6: AAGAARD          0            0                0             300
 ```
 
-The **parse_names()** function utilizes parallelization to speed up
-large jobs.
+**parse_names()** parses about 1,500 names a second in the current R
+session, so 100,000 names take about a minute. It starts no background
+processes unless you ask for them:
 
 ``` r
 x <- get_example_names( n=1000 )
- 
-start_time <- Sys.time()
-pn <- parse_names( x )
-end_time <- Sys.time()
+system.time( pn <- parse_names( x ) )        # sequential
 
-end_time - start_time
-# Time difference of 8.7648 secs
+pn <- parse_names( big_vector, workers = 4 ) # 4 workers for this call
+
+future::plan( future::multisession, workers = 4 )  # or reuse workers
+a <- parse_names( batch_1 )                        # across calls
+b <- parse_names( batch_2 )
+future::plan( future::sequential )
 ```
+
+Starting workers takes a few seconds, so they help only on large inputs.
 
 ## Examples
 

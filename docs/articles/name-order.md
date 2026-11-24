@@ -92,26 +92,73 @@ show(c("SMITH", "MADONNA"))
 
 ### Two tokens
 
-The token that
-[`determine_surname()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/determine_surname.md)
-picks is the surname; the other is the first name. Order in the string
-does not matter.
+Most two-word names are written first name first, so the written order
+is the starting point. The tokens are swapped only when the census makes
+it much more likely that the name is written surname first.
+
+Each token gets a smoothed surname share,
+
+``` math
+s = \frac{\text{surname count} + a}{\text{first-name count} + \text{surname count} + 2a}, \quad a = 20,
+```
+
+so a token with few records moves toward 0.5 and thin evidence cannot
+decide the order on its own. A token in neither census list gets s =
+0.85 (an unlisted word is more often a rare surname than a rare given
+name), and a lone letter gets s = 0.05. The odds that the name is
+written surname first are
+
+``` math
+\frac{s_1 (1 - s_2)}{(1 - s_1)\, s_2},
+```
+
+and the tokens are swapped when these odds exceed 30. An unlisted first
+token of one or two letters is initials (`HM CHERRY`, `DC ALLEN`).
 
 ``` r
 show(c("JOHN SMITH", "SMITH JOHN", "JORDAN TAYLOR", "TAYLOR JORDAN",
-       "LESLIE JAMES", "R BLINCOE"))
-#>             raw first_name middle_name last_name
-#> 1    JOHN SMITH       JOHN                 SMITH
-#> 2    SMITH JOHN       JOHN                 SMITH
-#> 3 JORDAN TAYLOR     JORDAN                TAYLOR
-#> 4 TAYLOR JORDAN     JORDAN                TAYLOR
-#> 5  LESLIE JAMES      JAMES                LESLIE
-#> 6     R BLINCOE          R               BLINCOE
+       "LESLIE JAMES", "HARRIS MORRISON", "RICHARD RUVIN", "R BLINCOE"))
+#>               raw first_name middle_name last_name
+#> 1      JOHN SMITH       JOHN                 SMITH
+#> 2      SMITH JOHN       JOHN                 SMITH
+#> 3   JORDAN TAYLOR     JORDAN                TAYLOR
+#> 4   TAYLOR JORDAN     TAYLOR                JORDAN
+#> 5    LESLIE JAMES     LESLIE                 JAMES
+#> 6 HARRIS MORRISON     HARRIS              MORRISON
+#> 7   RICHARD RUVIN    RICHARD                 RUVIN
+#> 8       R BLINCOE          R               BLINCOE
 ```
 
-`LESLIE JAMES` shows the cost of this rule: both names are used in both
-positions, and `JAMES` is the stronger given name, so the parse comes
-out as `JAMES LESLIE`.
+Before version 0.2.0 the token with the higher surname share was the
+surname, wherever it stood. That turned `HARRIS MORRISON` into
+`MORRISON HARRIS` and, because `RUVIN` has a few first-name records and
+no surname records in the census lists, `RICHARD RUVIN` into first name
+`RUVIN`.
+
+The settings (a, the unlisted share and the odds) were tuned on 758,388
+two-word Form 990 Part VII names, each labelled by the convention of the
+other names on the same return (`LAST, FIRST`, `FIRST M LAST` and the
+like): see `data-raw/name_order_eval.R`. On those labels the order
+errors fell from 12,463 to 2,687. Names written first name first keep
+their order 99.8% of the time, and 89% of names written surname first
+are swapped. The rest of the surname-first names, such as `WALTER DALE`,
+cannot be told apart from the census counts alone.
+
+A title that is also a surname (`SHERIFF`, `BISHOP`, `BROTHER`) as the
+first of two tokens is treated as a title when the other token is not
+mostly a given name. `BISHOP JOHN` is left alone, because it may be
+`JOHN BISHOP` written surname first.
+
+``` r
+show(c("HM CHERRY", "NICKHATH SHERIFF", "HOWARD SITRON", "SHERIFF MASRY",
+       "BISHOP JOHN"))
+#>                raw first_name middle_name last_name
+#> 1        HM CHERRY         HM                CHERRY
+#> 2 NICKHATH SHERIFF   NICKHATH               SHERIFF
+#> 3    HOWARD SITRON     HOWARD                SITRON
+#> 4    SHERIFF MASRY                            MASRY
+#> 5      BISHOP JOHN       JOHN                BISHOP
+```
 
 ### Three tokens with two initials
 
@@ -188,8 +235,13 @@ names up with the dashes removed (`VON-KAMECKE` as `VONKAMECKE`).
 and
 [`fix_locative_surnames()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/fix_locative_surnames.md)
 join a particle to the word after it. The particles are `LA`, `VON`,
-`VAN`, `VANDER`, `DEL`, `DE`, `DI`, `DEN`, `DER`, `MC` and `O`, plus
-`ST` inside a name (Saint) and `LO GRANDE`.
+`VAN`, `VANDER`, `DEL`, `DE`, `DI`, `DEN`, `DER` and `O`, plus `ST`
+inside a name (Saint) and `LO GRANDE`.
+
+A split `MC` surname inside a name is joined without a dash, the way the
+census and most records spell it: `STEVE MC CORMICK` gives `MCCORMICK`.
+A leading `MC` is read as initials (`MC OLSON`), and a trailing one as a
+credential (Navy Medical Corps).
 
 Particles chain, so `DE LA ROSA` and `VAN DER BERG` become one token.
 
@@ -266,11 +318,12 @@ and a trailing one is the surname. See
   before parsing.
 - Tokens absent from the census rank above names that are mostly given
   names, so an unlisted given name (`SEOKJIN`) next to a common given
-  name can end up as the surname. Strong surnames rank above unlisted
-  tokens (`TSHEPO CHO` keeps `CHO`), but a name with a large given-name
-  share does not: in `LUDWIG VAN BEETHOVEN` the unlisted `VAN-BEETHOVEN`
-  is the surname, as it should be, because `LUDWIG` is also a given
-  name.
+  name can end up as the surname (`SEOKJIN JAMES` -\> surname
+  `SEOKJIN`). In names of three or more words, strong surnames rank
+  above unlisted tokens (`TSHEPO CHO` keeps `CHO`), but a name with a
+  large given-name share does not: in `LUDWIG VAN BEETHOVEN` the
+  unlisted `VAN-BEETHOVEN` is the surname, as it should be, because
+  `LUDWIG` is also a given name.
 - A name that is both a common given name and a common surname (`JAMES`,
   `LESLIE`, `TAYLOR`, `JORDAN`) is decided by a small margin. Treat such
   parses as uncertain.

@@ -15,16 +15,24 @@ two_token_surname(x, data)
 The position (1 or 2) of the surname.
 }
 \description{
-\code{\link[=determine_surname]{determine_surname()}} with two extra rules for a two-token name in which
-exactly one token is absent from the census (there, the unlisted token
-otherwise ranks as the likely surname):
-\itemize{
-\item an unlisted first token of one or two letters is initials, not the
-surname (\verb{HM CHERRY}, \verb{DC ALLEN}, \verb{J MARKEL});
-\item a listed token whose surname share is at least 0.85 is the surname
-(\verb{NICKHATH SHERIFF}, \verb{REETIKA KUMAR}, \verb{SANRDA COHEN}). Names that are
-also common given names stay below that (\code{IRWIN} 0.84, \code{LEE} 0.81,
-\code{HOWARD} 0.65), so \verb{HOWARD SITRON} keeps \code{SITRON} as the surname.
+Keeps the written order (first name, then surname) unless the census makes
+it much more likely that the name is written surname first.
 }
+\details{
+Each token gets a smoothed surname share, s = (last + a) / (first + last +
+2a), with pseudo-count a = \code{.order_pseudo_count}, so thin evidence moves
+toward 0.5 (RUVIN, with 106 first-name records, no longer reads as a given
+name). A token absent from the census gets s = \code{.order_unlisted_share}. The
+tokens are swapped only when the odds that the name is written surname
+first, s1 (1 - s2) / ((1 - s1) s2), exceed \code{.order_prior_odds}; two-word
+Form 990 Part VII names are written first name first about 98\% of the time.
+An unlisted first token of one or two letters is initials (\verb{HM CHERRY},
+\verb{J MARKEL}), and a lone letter elsewhere gets s = \code{.order_initial_share}
+(\verb{BISHOP J} -> surname \code{BISHOP}; \verb{THOMAS H} keeps \code{H}, a middle initial
+left after a stripped surname).
+
+The settings were tuned on 758,388 two-word Part VII names labelled by the
+convention of the other names on the same return: see
+data-raw/name_order_eval.R and NEWS.md.
 }
 \keyword{internal}

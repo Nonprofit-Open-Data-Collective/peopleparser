@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">peopleparser</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -161,21 +161,61 @@ so its share is just under 1, while an unlisted token’s share is exactly
 <div class="section level3">
 <h3 id="two-tokens">Two tokens<a class="anchor" aria-label="anchor" href="#two-tokens"></a>
 </h3>
-<p>The token that <code><a href="../reference/determine_surname.html">determine_surname()</a></code> picks is the surname;
-the other is the first name. Order in the string does not matter.</p>
+<p>Most two-word names are written first name first, so the written
+order is the starting point. The tokens are swapped only when the census
+makes it much more likely that the name is written surname first.</p>
+<p>Each token gets a smoothed surname share,</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>=</mo><mfrac><mrow><mtext mathvariant="normal">surname count</mtext><mo>+</mo><mi>a</mi></mrow><mrow><mtext mathvariant="normal">first-name count</mtext><mo>+</mo><mtext mathvariant="normal">surname count</mtext><mo>+</mo><mn>2</mn><mi>a</mi></mrow></mfrac><mo>,</mo><mspace width="1.0em"></mspace><mi>a</mi><mo>=</mo><mn>20</mn><mo>,</mo></mrow><annotation encoding="application/x-tex">s = \frac{\text{surname count} + a}{\text{first-name count} + \text{surname count} + 2a}, \quad a = 20,</annotation></semantics></math></p>
+<p>so a token with few records moves toward 0.5 and thin evidence cannot
+decide the order on its own. A token in neither census list gets s =
+0.85 (an unlisted word is more often a rare surname than a rare given
+name), and a lone letter gets s = 0.05. The odds that the name is
+written surname first are</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><msub><mi>s</mi><mn>1</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>s</mi><mn>2</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msub><mi>s</mi><mn>1</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mspace width="0.167em"></mspace><msub><mi>s</mi><mn>2</mn></msub></mrow></mfrac><mo>,</mo></mrow><annotation encoding="application/x-tex">\frac{s_1 (1 - s_2)}{(1 - s_1)\, s_2},</annotation></semantics></math></p>
+<p>and the tokens are swapped when these odds exceed 30. An unlisted
+first token of one or two letters is initials (<code>HM CHERRY</code>,
+<code>DC ALLEN</code>).</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN SMITH"</span>, <span class="st">"SMITH JOHN"</span>, <span class="st">"JORDAN TAYLOR"</span>, <span class="st">"TAYLOR JORDAN"</span>,</span>
-<span>       <span class="st">"LESLIE JAMES"</span>, <span class="st">"R BLINCOE"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;             raw first_name middle_name last_name</span></span>
-<span><span class="co">#&gt; 1    JOHN SMITH       JOHN                 SMITH</span></span>
-<span><span class="co">#&gt; 2    SMITH JOHN       JOHN                 SMITH</span></span>
-<span><span class="co">#&gt; 3 JORDAN TAYLOR     JORDAN                TAYLOR</span></span>
-<span><span class="co">#&gt; 4 TAYLOR JORDAN     JORDAN                TAYLOR</span></span>
-<span><span class="co">#&gt; 5  LESLIE JAMES      JAMES                LESLIE</span></span>
-<span><span class="co">#&gt; 6     R BLINCOE          R               BLINCOE</span></span></code></pre></div>
-<p><code>LESLIE JAMES</code> shows the cost of this rule: both names are
-used in both positions, and <code>JAMES</code> is the stronger given
-name, so the parse comes out as <code>JAMES LESLIE</code>.</p>
+<span>       <span class="st">"LESLIE JAMES"</span>, <span class="st">"HARRIS MORRISON"</span>, <span class="st">"RICHARD RUVIN"</span>, <span class="st">"R BLINCOE"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;               raw first_name middle_name last_name</span></span>
+<span><span class="co">#&gt; 1      JOHN SMITH       JOHN                 SMITH</span></span>
+<span><span class="co">#&gt; 2      SMITH JOHN       JOHN                 SMITH</span></span>
+<span><span class="co">#&gt; 3   JORDAN TAYLOR     JORDAN                TAYLOR</span></span>
+<span><span class="co">#&gt; 4   TAYLOR JORDAN     TAYLOR                JORDAN</span></span>
+<span><span class="co">#&gt; 5    LESLIE JAMES     LESLIE                 JAMES</span></span>
+<span><span class="co">#&gt; 6 HARRIS MORRISON     HARRIS              MORRISON</span></span>
+<span><span class="co">#&gt; 7   RICHARD RUVIN    RICHARD                 RUVIN</span></span>
+<span><span class="co">#&gt; 8       R BLINCOE          R               BLINCOE</span></span></code></pre></div>
+<p>Before version 0.2.0 the token with the higher surname share was the
+surname, wherever it stood. That turned <code>HARRIS MORRISON</code>
+into <code>MORRISON HARRIS</code> and, because <code>RUVIN</code> has a
+few first-name records and no surname records in the census lists,
+<code>RICHARD RUVIN</code> into first name <code>RUVIN</code>.</p>
+<p>The settings (a, the unlisted share and the odds) were tuned on
+758,388 two-word Form 990 Part VII names, each labelled by the
+convention of the other names on the same return
+(<code>LAST, FIRST</code>, <code>FIRST M LAST</code> and the like): see
+<code>data-raw/name_order_eval.R</code>. On those labels the order
+errors fell from 12,463 to 2,687. Names written first name first keep
+their order 99.8% of the time, and 89% of names written surname first
+are swapped. The rest of the surname-first names, such as
+<code>WALTER DALE</code>, cannot be told apart from the census counts
+alone.</p>
+<p>A title that is also a surname (<code>SHERIFF</code>,
+<code>BISHOP</code>, <code>BROTHER</code>) as the first of two tokens is
+treated as a title when the other token is not mostly a given name.
+<code>BISHOP JOHN</code> is left alone, because it may be
+<code>JOHN BISHOP</code> written surname first.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HM CHERRY"</span>, <span class="st">"NICKHATH SHERIFF"</span>, <span class="st">"HOWARD SITRON"</span>, <span class="st">"SHERIFF MASRY"</span>,</span>
+<span>       <span class="st">"BISHOP JOHN"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                raw first_name middle_name last_name</span></span>
+<span><span class="co">#&gt; 1        HM CHERRY         HM                CHERRY</span></span>
+<span><span class="co">#&gt; 2 NICKHATH SHERIFF   NICKHATH               SHERIFF</span></span>
+<span><span class="co">#&gt; 3    HOWARD SITRON     HOWARD                SITRON</span></span>
+<span><span class="co">#&gt; 4    SHERIFF MASRY                            MASRY</span></span>
+<span><span class="co">#&gt; 5      BISHOP JOHN       JOHN                BISHOP</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="three-tokens-with-two-initials">Three tokens with two initials<a class="anchor" aria-label="anchor" href="#three-tokens-with-two-initials"></a>
@@ -197,7 +237,7 @@ rules assume two orders, <code>FIRST M LAST</code> and
 the end (<code>SMITH J ALAN</code>) is also reordered;</li>
 <li>otherwise the order is kept.</li>
 </ul>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN A SMITH"</span>, <span class="st">"SMITH JOHN A"</span>, <span class="st">"SMITH J ALAN"</span>, <span class="st">"J ALAN SMITH"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;            raw first_name middle_name last_name</span></span>
 <span><span class="co">#&gt; 1 JOHN A SMITH       JOHN           A     SMITH</span></span>
@@ -219,7 +259,7 @@ given name moves to the front;</li>
 token moves to the end;</li>
 <li>otherwise the order is kept: first, middle, last.</li>
 </ul>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN ALAN SMITH"</span>, <span class="st">"SMITH JOHN ALAN"</span>, <span class="st">"GARCIA LOPEZ MARIA"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                  raw first_name middle_name    last_name</span></span>
 <span><span class="co">#&gt; 1    JOHN ALAN SMITH       JOHN        ALAN        SMITH</span></span>
@@ -234,7 +274,7 @@ token moves to the end;</li>
 the middle name. If the name opens with two surnames followed by a given
 name (<code>SMITH JONES MARY ANN</code>), the two surnames are joined
 into one.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN PAUL GEORGE RINGO"</span>, <span class="st">"SMITH JONES MARY ANN"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                      raw first_name middle_name   last_name</span></span>
 <span><span class="co">#&gt; 1 JOHN PAUL GEORGE RINGO       JOHN PAUL GEORGE       RINGO</span></span>
@@ -255,11 +295,16 @@ looks names up with the dashes removed (<code>VON-KAMECKE</code> as
 join a particle to the word after it. The particles are <code>LA</code>,
 <code>VON</code>, <code>VAN</code>, <code>VANDER</code>,
 <code>DEL</code>, <code>DE</code>, <code>DI</code>, <code>DEN</code>,
-<code>DER</code>, <code>MC</code> and <code>O</code>, plus
-<code>ST</code> inside a name (Saint) and <code>LO GRANDE</code>.</p>
+<code>DER</code> and <code>O</code>, plus <code>ST</code> inside a name
+(Saint) and <code>LO GRANDE</code>.</p>
+<p>A split <code>MC</code> surname inside a name is joined without a
+dash, the way the census and most records spell it:
+<code>STEVE MC CORMICK</code> gives <code>MCCORMICK</code>. A leading
+<code>MC</code> is read as initials (<code>MC OLSON</code>), and a
+trailing one as a credential (Navy Medical Corps).</p>
 <p>Particles chain, so <code>DE LA ROSA</code> and
 <code>VAN DER BERG</code> become one token.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/fix_locative_surnames.html">fix_locative_surnames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Jane Van Dyke"</span>, <span class="st">"Carlos De La Rosa"</span>, <span class="st">"Dylan Van"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "Jane Van-Dyke"     "Carlos De-La-Rosa" "Dylan Van"</span></span>
 <span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"THOMAS H VON KAMECKE"</span>, <span class="st">"SEAN ST CLAIR"</span>, <span class="st">"JULIA DI BUSSOLO"</span>,</span>
@@ -296,7 +341,7 @@ they are joined in the order they were written.
 though <code>SMITH</code> was picked as the main surname. When they are
 not next to each other (<code>SMITH JOHN WALKER</code>, written surname
 first), the middle part goes first.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MARIA GARCIA LOPEZ"</span>, <span class="st">"ELIZABETH ANNE WALKER SMITH"</span>,</span>
 <span>       <span class="st">"JOHN Q PUBLIC SMITH"</span>, <span class="st">"MARY ANN SMITH JONES"</span>, <span class="st">"JEAN A DU PONT"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                           raw first_name middle_name    last_name</span></span>
@@ -308,7 +353,7 @@ first), the middle part goes first.</p>
 <p>One exception: <code>MAY</code> is a common middle name and a
 surname. If it ends up at the front of a compound surname, it is moved
 back to the middle name.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SARAH MAY WILSON"</span>, <span class="st">"MARY MAY"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                raw first_name middle_name last_name</span></span>
 <span><span class="co">#&gt; 1 SARAH MAY WILSON      SARAH         MAY    WILSON</span></span>
@@ -333,9 +378,10 @@ source uses. If you know the source writes <code>LAST FIRST</code>,
 reorder the tokens before parsing.</li>
 <li>Tokens absent from the census rank above names that are mostly given
 names, so an unlisted given name (<code>SEOKJIN</code>) next to a common
-given name can end up as the surname. Strong surnames rank above
-unlisted tokens (<code>TSHEPO CHO</code> keeps <code>CHO</code>), but a
-name with a large given-name share does not: in
+given name can end up as the surname (<code>SEOKJIN JAMES</code> -&gt;
+surname <code>SEOKJIN</code>). In names of three or more words, strong
+surnames rank above unlisted tokens (<code>TSHEPO CHO</code> keeps
+<code>CHO</code>), but a name with a large given-name share does not: in
 <code>LUDWIG VAN BEETHOVEN</code> the unlisted
 <code>VAN-BEETHOVEN</code> is the surname, as it should be, because
 <code>LUDWIG</code> is also a given name.</li>

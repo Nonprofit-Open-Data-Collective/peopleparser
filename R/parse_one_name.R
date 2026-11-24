@@ -117,37 +117,45 @@ assign_names <- function( x, suffix.name ) {
 
 #' Surname Position in a Two-Token Name
 #'
-#' [determine_surname()] with two extra rules for a two-token name in which
-#' exactly one token is absent from the census (there, the unlisted token
-#' otherwise ranks as the likely surname):
-#' * an unlisted first token of one or two letters is initials, not the
-#'   surname (`HM CHERRY`, `DC ALLEN`, `J MARKEL`);
-#' * a listed token whose surname share is at least 0.85 is the surname
-#'   (`NICKHATH SHERIFF`, `REETIKA KUMAR`, `SANRDA COHEN`). Names that are
-#'   also common given names stay below that (`IRWIN` 0.84, `LEE` 0.81,
-#'   `HOWARD` 0.65), so `HOWARD SITRON` keeps `SITRON` as the surname.
+#' Keeps the written order (first name, then surname) unless the census makes
+#' it much more likely that the name is written surname first.
+#'
+#' Each token gets a smoothed surname share, s = (last + a) / (first + last +
+#' 2a), with pseudo-count a = `.order_pseudo_count`, so thin evidence moves
+#' toward 0.5 (RUVIN, with 106 first-name records, no longer reads as a given
+#' name). A token absent from the census gets s = `.order_unlisted_share`. The
+#' tokens are swapped only when the odds that the name is written surname
+#' first, s1 (1 - s2) / ((1 - s1) s2), exceed `.order_prior_odds`; two-word
+#' Form 990 Part VII names are written first name first about 98% of the time.
+#' An unlisted first token of one or two letters is initials (`HM CHERRY`,
+#' `J MARKEL`), and a lone letter elsewhere gets s = `.order_initial_share`
+#' (`BISHOP J` -> surname `BISHOP`; `THOMAS H` keeps `H`, a middle initial
+#' left after a stripped surname).
+#'
+#' The settings were tuned on 758,388 two-word Part VII names labelled by the
+#' convention of the other names on the same return: see
+#' data-raw/name_order_eval.R and NEWS.md.
 #'
 #' @param x A length-2 character vector of name tokens.
 #' @param data Census rows for `x`, as returned by [get_census_data()].
 #' @return The position (1 or 2) of the surname.
 #' @keywords internal
 two_token_surname <- function( x, data ) {
-  pos <- determine_surname( data )
   f <- data$first_name_value; l <- data$last_name_value
   known <- f + l > 0
-  if ( sum( known ) != 1 ) return( pos )
-  k <- which( known ); u <- which( !known )
-  # leading initials (HM CHERRY); a trailing one is a middle initial left after
-  # a stripped surname or title (THOMAS H [LEED]) and keeps the old ranking
-  if ( nchar( x[u] ) <= 2 ) return( if ( u == 1L ) k else pos )
-  p_last <- ( 1 + l[k] ) / ( 1 + f[k] + l[k] )
-  if ( p_last >= .two_token_surname_min ) return( k )
-  pos
+  if ( !known[1] && nchar( x[1] ) <= 2 ) return( 2L )
+  a <- .order_pseudo_count
+  s <- ifelse( known, ( l + a ) / ( f + l + 2 * a ), .order_unlisted_share )
+  s[ !known & nchar( x ) == 1 ] <- .order_initial_share   # BISHOP J
+  odds <- ( s[1] * ( 1 - s[2] ) ) / ( ( 1 - s[1] ) * s[2] )
+  if ( odds > .order_prior_odds ) 1L else 2L
 }
 
-# Surname share at or above which a listed token beats an unlisted one as the
-# surname of a two-token name (two_token_surname()).
-.two_token_surname_min <- 0.85
+# Settings of the written-order prior for two-token names (two_token_surname()).
+.order_pseudo_count <- 20
+.order_unlisted_share <- 0.85
+.order_prior_odds <- 30
+.order_initial_share <- 0.05   # a lone letter is rarely the surname
 
 #' Resolve Middle Names as Potential Surnames
 #'

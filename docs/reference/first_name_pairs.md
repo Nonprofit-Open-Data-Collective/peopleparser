@@ -19,7 +19,7 @@ first_name_pairs
 
 A
 [data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html)
-with 24,972 rows and 13 variables, keyed on `name_short`:
+with 24,967 rows and 13 variables, keyed on `name_short`:
 
 - name_short, name_long:
 
@@ -72,6 +72,6 @@ synthid `dev/name-variants/first-name-variants.csv`, commit 07c320f
 
 ## Details
 
-The 1,007 rows with `lexicon = TRUE` are the pairs seen in 25+ people,
+The 1,002 rows with `lexicon = TRUE` are the pairs seen in 25+ people,
 reviewed by hand. The other 23,965 rows are sound-alike and misspelling
 pairs from rarer pairs, not reviewed.

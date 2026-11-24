@@ -1,5 +1,121 @@
 # Changelog
 
+## peopleparser 0.2.0
+
+### `parse_names()` no longer starts its own workers (breaking)
+
+- [`parse_names()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/parse_names.md)
+  used to start a new set of background R sessions on every call
+  (`future::plan(multisession)` with all cores but one). It now runs in
+  the current session unless the caller has set a
+  [`future::plan()`](https://future.futureverse.org/reference/plan.html),
+  or passes the new `workers` argument: `workers = 4` starts four
+  workers for that call and restores the caller’s plan afterwards;
+  `workers = 1` forces sequential parsing. Code that relied on the old
+  parallel default should pass `workers =` or set a plan.
+- Workers load the installed copy of peopleparser. Each now reports its
+  version and build time, and
+  [`parse_names()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/parse_names.md)
+  stops with a clear message if any differs from the calling session (a
+  reinstall while R was running, or a session using
+  [`devtools::load_all()`](https://devtools.r-lib.org/reference/load_all.html)),
+  instead of silently parsing with older code.
+
+### Faster parsing
+
+- Each dataset (`census.names`, `first_name_pairs`) is loaded once per
+  session. Before, when peopleparser was loaded but not attached (calls
+  like
+  [`peopleparser::parse_name()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/parse_name.md),
+  or inside workers), every census lookup reloaded the table.
+
+- Census lookups use a hashed index built once per session instead of a
+  keyed join per call, and
+  [`determine_surname()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/determine_surname.md)
+  ranks tokens in base R rather than dplyr. Parses are unchanged.
+
+- Speed on 20,000 Form 990 Part VII names, names a second (24-core
+  machine):
+
+  | Call | 0.1.0 | Now |
+  |----|----|----|
+  | [`peopleparser::parse_name()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/parse_name.md), package not attached | 6 | 370 |
+  | [`parse_name()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/parse_name.md), attached | 94 | 2,040 |
+  | [`parse_names()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/parse_names.md), five calls of 200 names | 73 | 1,790 |
+  | [`parse_names()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/parse_names.md), 20,000 names (default) | 586 | 1,660 |
+  | `parse_names(workers = 7)`, 20,000 names | \- | 3,860 |
+
+  The 0.1.0
+  [`parse_names()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/parse_names.md)
+  rows used its built-in parallel default, here 23 workers started on
+  every call. The 20,000 parses are identical before and after.
+
+### Split `MC` surnames
+
+- [`prep_name()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/prep_name.md)
+  no longer cuts everything after a standalone `MC`
+  (`CHARLES MC SPADDEN` gave last name `MC`). A split `MC` surname
+  inside a name is now joined without a dash (`MCSPADDEN`, `MCDERMOTT`).
+  A trailing `MC` is a credential (Navy Medical Corps) stripped at the
+  end of a name, and a leading `MC` is initials before one word
+  (`MC OLSON`) or part of the first name before two or more
+  (`MC-NELLY TORRES`). `MC` is no longer a default particle of
+  [`fix_locative_surnames()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/fix_locative_surnames.md).
+  `MCCM` is added as a credential. Of the 60 Form 990 Part VII names
+  with a standalone `MC`, 55 now parse better and 5 are unchanged.
+
+### Two-token names keep their written order (changes parses)
+
+- Two-word names now start from the written order (first name, then
+  surname) and are swapped only when the census makes surname-first much
+  more likely: smoothed surname shares (pseudo-count 20), odds of
+  surname-first above 30. Before, the token with the higher raw surname
+  share was the surname wherever it stood, so thin or mixed evidence
+  flipped names: `HARRIS MORRISON`, `RICHARD RUVIN` (first name
+  `RUVIN`), `FOSTER MCDONALD`, `MARK MICHAEL`, `MARSHALL RYAN`. Clear
+  surname-first names are still swapped (`SMITH JOHN`, `GARCIA MARIA`).
+
+- Tuned on 758,388 two-word Form 990 Part VII names, each labelled by
+  the convention of the other names on its return
+  (`data-raw/name_order_eval.R`): order errors fall from 12,463 to
+  2,687. Names written first name first keep their order 99.8% of the
+  time (was 98.4%); 89% of names written surname first are swapped (was
+  97%, at the cost of many false swaps).
+
+- A leading token of one or two letters absent from the census is
+  initials (`HM CHERRY`, `DC ALLEN`), and a lone letter is rarely the
+  surname (`BISHOP J` -\> surname `BISHOP`). This replaces the 0.85
+  surname-share rule added earlier in this development cycle.
+
+- Names of three or more words are unchanged.
+
+- A title that is also a surname (`SHERIFF`, `BROTHER`, `BISHOP`, …) as
+  the first of two tokens is a title when the other token is not mostly
+  a given name (`SHERIFF MASRY` -\> salutation `SHERIFF`, last name
+  `MASRY`).
+
+- On 9,608 Form 990 Part VII names, 20 parses change, 18 of them fixes.
+  Parse consistency for the 829 linked people written more than one way
+  is unchanged.
+
+- `first_name_pairs` is refreshed from synthid’s revised first-name
+  variant table: 24,967 pairs, 1,002 in the reviewed lexicon (was 24,972
+  and 1,007). Five pairs were dropped after a review of matches across
+  organizations showed they mostly link two different people:
+  JOHN/JONATHAN, JOHN/JOHNATHAN, MARY/MARIE, MARY/MARIA and MARIA/MARIE.
+  No other pair changed; `chain_id` numbers shift for 82 rows (same
+  chains, new numbers).
+
+- Effect on the nickname columns: JOHN is now
+  `first_name_type = "formal"` with no formal names (was `"both"`,
+  formal JONATHAN and JOHNATHAN), and JONATHAN and JOHNATHAN no longer
+  list JOHN as a nickname. These are the only changes to the nickname
+  columns across all names in the table, and no canonical first name
+  changes. In
+  [`first_name_variants()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/first_name_variants.md),
+  MARIE and MARIA no longer list each other or MARY as cognates (MARY
+  still reaches them as sound-alikes through MARI).
+
 ## peopleparser 0.1.0
 
 First tagged release. peopleparser parses raw person names into

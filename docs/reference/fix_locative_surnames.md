@@ -1,16 +1,16 @@
 # Fix Locative or Compound Surnames by Adding Dashes
 
 This function identifies common surname particles (e.g., *Van*, *De*,
-*Von*, *Mc*) that typically appear in compound or locative surnames
-(e.g., *Van Dyke*, *De La Rosa*) and merges them with the following word
-using a dash (e.g., *Van-Dyke*, *De-La-Rosa*).
+*Von*) that typically appear in compound or locative surnames (e.g.,
+*Van Dyke*, *De La Rosa*) and merges them with the following word using
+a dash (e.g., *Van-Dyke*, *De-La-Rosa*).
 
 ## Usage
 
 ``` r
 fix_locative_surnames(
   x,
-  particles = c("LA", "VON", "VAN", "VANDER", "DEL", "DE", "DI", "DEN", "DER", "MC", "O")
+  particles = c("LA", "VON", "VAN", "VANDER", "DEL", "DE", "DI", "DEN", "DER", "O")
 )
 ```
 
@@ -23,7 +23,14 @@ fix_locative_surnames(
 - particles:
 
   A character vector of common surname particles to merge with the
-  following word. Matching is case-insensitive.
+  following word. Matching is case-insensitive. `MC` is not a default
+  particle:
+  [`prep_name()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/prep_name.md)
+  joins a split `MC` surname without a dash (`MC CORMICK` -\>
+  `MCCORMICK`, see
+  [`join_mc()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/join_mc.md)),
+  and a leading or trailing `MC` is initials or a credential (Medical
+  Corps).
 
 ## Value
 

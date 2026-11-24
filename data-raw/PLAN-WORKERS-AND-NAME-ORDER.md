@@ -31,7 +31,13 @@ Phases 1-3 implemented together (uncommitted at the time of writing):
   0.1.0 started 23 workers per call on this 24-core machine. The 20,000
   parses are identical to 0.1.0's. 410,000 names now take about
   4 minutes sequentially, under 2 with 7 workers.
-* **Next:** phase 4 (name order).
+* **Phase 4 (two-token names):** done in 0.2.0. Hand labels were replaced by
+  filing-convention labels (`data-raw/name_order_eval.R`): 758,388 labelled
+  two-word names instead of ~200. Chosen settings: a = 20, unlisted
+  s_u = 0.85, prior odds 30, lone letter s = 0.05. Order errors on the labels:
+  12,463 -> 2,687. Still open: the same smoothing for three or more tokens
+  (`check_if_surname()`, `determine_surname()`), and unlisted given names
+  before a common given name (`SEOKJIN JAMES`).
 
 ## Where things stand
 
