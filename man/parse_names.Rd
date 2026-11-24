@@ -10,6 +10,8 @@ parse_names(
   suffixes = sfx,
   split_initials = FALSE,
   add_nicknames = FALSE,
+  split_run_together = FALSE,
+  classify = FALSE,
   workers = NULL,
   ...
 )
@@ -30,6 +32,15 @@ opt-in Defect 3 stray-initial split. Defaults to \code{FALSE}.}
 \code{first_name_nicknames}, \code{first_name_canonical}, \code{canonical_rule}).
 Defaults to \code{FALSE}.}
 
+\item{split_run_together}{Logical; if \code{TRUE}, split a surname and given
+name written as one word (\code{KramerKenneth}, \code{MURPHYSANDRA}) before parsing,
+with \code{\link[=split_run_together]{split_run_together()}}. Defaults to \code{FALSE}.}
+
+\item{classify}{Logical; if \code{TRUE}, add the \code{name_type} and \code{org_score}
+columns from \code{\link[=classify_names]{classify_names()}}, computed on the raw input, so that
+organisations, placeholders and couples can be set aside. Defaults to
+\code{FALSE}.}
+
 \item{workers}{\code{NULL} (default) to use the caller's \code{\link[future:plan]{future::plan()}}
 (sequential unless the caller set one), \code{1} to run in this session
 whatever the plan, or a number above 1 to start that many workers for this
@@ -42,7 +53,8 @@ A \code{data.frame} with one row per input name and columns \code{name} (the
 original input) plus the parsed components returned by \code{\link[=parse_name]{parse_name()}}:
 \code{salutation}, \code{first_name}, \code{middle_name}, \code{last_name}, \code{suffix}, \code{status},
 \code{gender}, and \code{gender_confidence}, plus the nickname columns when
-\code{add_nicknames = TRUE}.
+\code{add_nicknames = TRUE} and \code{name_type} and \code{org_score} when
+\code{classify = TRUE}.
 }
 \description{
 Parses a character vector of raw names into a data frame of structured name

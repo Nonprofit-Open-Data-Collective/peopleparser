@@ -30,6 +30,16 @@ Sanitize and normalize raw name strings before parsing.
 - [`extract_component()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/extract_component.md)
   : Extract Specific Name Components
 
+## Name types and run-together names
+
+Set aside organisations, placeholders and couples, and split names
+written as one word.
+
+- [`classify_names()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/classify_names.md)
+  : Classify Names as People, Organisations or Placeholders
+- [`split_run_together()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/split_run_together.md)
+  : Split a Surname and Given Name Written as One Word
+
 ## Census-based inference
 
 Resolve name ordering, surnames, and gender from census frequencies.

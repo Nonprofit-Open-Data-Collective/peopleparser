@@ -9,7 +9,7 @@ suffix, status, and inferred gender."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">peopleparser</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,6 +23,7 @@ suffix, status, and inferred gender."></head><body>
     <li><a class="dropdown-item" href="../articles/name-order.html">Name order and compound surnames</a></li>
     <li><a class="dropdown-item" href="../articles/gender-scoring.html">Gender scoring and the census table</a></li>
     <li><a class="dropdown-item" href="../articles/canonical-first-names.html">Canonical first names, nicknames and gender</a></li>
+    <li><a class="dropdown-item" href="../articles/name-types.html">People, organisations and run-together names</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -61,7 +62,8 @@ suffix, status, and inferred gender.</p>
 <span>  suffixes <span class="op">=</span> <span class="va">sfx</span>,</span>
 <span>  sanitize <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  split_initials <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  add_nicknames <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  add_nicknames <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  split_run_together <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -99,6 +101,14 @@ output. See <code><a href="deglue_tokens.html">deglue_tokens()</a></code>.</p></
 <dt id="arg-add-nicknames">add_nicknames<a class="anchor" aria-label="anchor" href="#arg-add-nicknames"></a></dt>
 <dd><p>Logical; if <code>TRUE</code>, append the nickname columns from
 <code><a href="nickname_lookup.html">nickname_lookup()</a></code>. Defaults to <code>FALSE</code>.</p></dd>
+
+
+<dt id="arg-split-run-together">split_run_together<a class="anchor" aria-label="anchor" href="#arg-split-run-together"></a></dt>
+<dd><p>Logical; if <code>TRUE</code>, first split a surname and
+given name written as one word (<code>KramerKenneth</code>, <code>MURPHYSANDRA</code>) with
+<code><a href="split_run_together.html">split_run_together()</a></code>. The capital-letter rule needs the original case,
+so with <code>sanitize = FALSE</code> only the all-capitals rule can apply. Defaults
+to <code>FALSE</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

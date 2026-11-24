@@ -10,3 +10,5 @@
   table](https://nonprofit-open-data-collective.github.io/peopleparser/articles/gender-scoring.md):
 - [Canonical first names, nicknames and
   gender](https://nonprofit-open-data-collective.github.io/peopleparser/articles/canonical-first-names.md):
+- [People, organisations and run-together
+  names](https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-types.md):

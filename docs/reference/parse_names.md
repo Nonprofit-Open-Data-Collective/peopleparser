@@ -13,6 +13,8 @@ parse_names(
   suffixes = sfx,
   split_initials = FALSE,
   add_nicknames = FALSE,
+  split_run_together = FALSE,
+  classify = FALSE,
   workers = NULL,
   ...
 )
@@ -48,6 +50,20 @@ parse_names(
   (`first_name_type`, `first_name_formal`, `first_name_nicknames`,
   `first_name_canonical`, `canonical_rule`). Defaults to `FALSE`.
 
+- split_run_together:
+
+  Logical; if `TRUE`, split a surname and given name written as one word
+  (`KramerKenneth`, `MURPHYSANDRA`) before parsing, with
+  [`split_run_together()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/split_run_together.md).
+  Defaults to `FALSE`.
+
+- classify:
+
+  Logical; if `TRUE`, add the `name_type` and `org_score` columns from
+  [`classify_names()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/classify_names.md),
+  computed on the raw input, so that organisations, placeholders and
+  couples can be set aside. Defaults to `FALSE`.
+
 - workers:
 
   `NULL` (default) to use the caller's
@@ -67,7 +83,8 @@ original input) plus the parsed components returned by
 [`parse_name()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/parse_name.md):
 `salutation`, `first_name`, `middle_name`, `last_name`, `suffix`,
 `status`, `gender`, and `gender_confidence`, plus the nickname columns
-when `add_nicknames = TRUE`.
+when `add_nicknames = TRUE` and `name_type` and `org_score` when
+`classify = TRUE`.
 
 ## Parallel parsing
 

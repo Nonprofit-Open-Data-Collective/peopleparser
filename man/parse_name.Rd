@@ -10,7 +10,8 @@ parse_name(
   suffixes = sfx,
   sanitize = FALSE,
   split_initials = FALSE,
-  add_nicknames = FALSE
+  add_nicknames = FALSE,
+  split_run_together = FALSE
 )
 }
 \arguments{
@@ -33,6 +34,12 @@ output. See \code{\link[=deglue_tokens]{deglue_tokens()}}.}
 
 \item{add_nicknames}{Logical; if \code{TRUE}, append the nickname columns from
 \code{\link[=nickname_lookup]{nickname_lookup()}}. Defaults to \code{FALSE}.}
+
+\item{split_run_together}{Logical; if \code{TRUE}, first split a surname and
+given name written as one word (\code{KramerKenneth}, \code{MURPHYSANDRA}) with
+\code{\link[=split_run_together]{split_run_together()}}. The capital-letter rule needs the original case,
+so with \code{sanitize = FALSE} only the all-capitals rule can apply. Defaults
+to \code{FALSE}.}
 }
 \value{
 A one-row \code{data.frame} with columns \code{salutation}, \code{first_name},

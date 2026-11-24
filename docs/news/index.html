@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">peopleparser</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,6 +21,7 @@
     <li><a class="dropdown-item" href="../articles/name-order.html">Name order and compound surnames</a></li>
     <li><a class="dropdown-item" href="../articles/gender-scoring.html">Gender scoring and the census table</a></li>
     <li><a class="dropdown-item" href="../articles/canonical-first-names.html">Canonical first names, nicknames and gender</a></li>
+    <li><a class="dropdown-item" href="../articles/name-types.html">People, organisations and run-together names</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -45,6 +46,21 @@
       <small>Source: <a href="https://github.com/Nonprofit-Open-Data-Collective/peopleparser/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.1" id="peopleparser-021">peopleparser 0.2.1<a class="anchor" aria-label="anchor" href="#peopleparser-021"></a></h2>
+<div class="section level3">
+<h3 id="name-types-people-organisations-and-placeholders-0-2-1">Name types: people, organisations and placeholders<a class="anchor" aria-label="anchor" href="#name-types-people-organisations-and-placeholders-0-2-1"></a></h3>
+<ul><li>New <code><a href="../reference/classify_names.html">classify_names()</a></code> labels each entry <code>person</code>, <code>organisation</code>, <code>person and organisation</code> (a name followed by an employer), <code>several people</code> or <code>placeholder</code> (<code>SEE SCHEDULE O</code>, <code>VACANT</code>), with an <code>org_score</code>. Placeholders and couples are found by rules; organisations by a model trained on Form 990 Part VII names (982,000 filer names against 9.4 million person-field names; held-out AUC 0.9996), plus a list of trust banks written without an organisation word (<code>BNY MELLON</code>, <code>WELLS FARGO</code>). See <code><a href="../articles/name-types.html">vignette("name-types")</a></code> and <code>data-raw/name_type_model.R</code>.</li>
+<li>
+<code>parse_names(classify = TRUE)</code> adds the <code>name_type</code> and <code>org_score</code> columns. Off by default.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="run-together-names-opt-in-0-2-1">Run-together names (opt-in)<a class="anchor" aria-label="anchor" href="#run-together-names-opt-in-0-2-1"></a></h3>
+<ul><li>New <code><a href="../reference/split_run_together.html">split_run_together()</a></code> splits a surname and given name written as one word: at an inner capital (<code>KramerKenneth</code>, <code>LedbetterJennifer A</code>) or, more cautiously, in all capitals (<code>MURPHYSANDRA</code>). Surname particles (<code>McDonald</code>, <code>LaToya</code>) and 214 recurring surnames that look like two names (<code>MARKWALD</code>) are left alone. On Part VII names it splits about 6,600 rows, and about 19 of 20 splits in random samples are right.</li>
+<li>
+<code>parse_names(split_run_together = TRUE)</code> and <code>parse_name(split_run_together = TRUE)</code> apply it before parsing. Off by default, so default parses are unchanged from 0.2.0.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="peopleparser-020">peopleparser 0.2.0<a class="anchor" aria-label="anchor" href="#peopleparser-020"></a></h2>
 <div class="section level3">

@@ -1,3 +1,30 @@
+# peopleparser 0.2.1
+
+## Name types: people, organisations and placeholders
+
+* New `classify_names()` labels each entry `person`, `organisation`,
+  `person and organisation` (a name followed by an employer), `several people`
+  or `placeholder` (`SEE SCHEDULE O`, `VACANT`), with an `org_score`. Placeholders
+  and couples are found by rules; organisations by a model trained on Form 990
+  Part VII names (982,000 filer names against 9.4 million person-field names;
+  held-out AUC 0.9996), plus a list of trust banks written without an
+  organisation word (`BNY MELLON`, `WELLS FARGO`). See
+  `vignette("name-types")` and `data-raw/name_type_model.R`.
+* `parse_names(classify = TRUE)` adds the `name_type` and `org_score`
+  columns. Off by default.
+
+## Run-together names (opt-in)
+
+* New `split_run_together()` splits a surname and given name written as one
+  word: at an inner capital (`KramerKenneth`, `LedbetterJennifer A`) or, more
+  cautiously, in all capitals (`MURPHYSANDRA`). Surname particles (`McDonald`,
+  `LaToya`) and 214 recurring surnames that look like two names (`MARKWALD`)
+  are left alone. On Part VII names it splits about 6,600 rows, and about 19
+  of 20 splits in random samples are right.
+* `parse_names(split_run_together = TRUE)` and
+  `parse_name(split_run_together = TRUE)` apply it before parsing. Off by
+  default, so default parses are unchanged from 0.2.0.
+
 # peopleparser 0.2.0
 
 ## `parse_names()` no longer starts its own workers (breaking)

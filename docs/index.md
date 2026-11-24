@@ -43,6 +43,16 @@ and
 also add each first name’s formal names, nicknames and one canonical
 first name.
 
+With `classify = TRUE`,
+[`parse_names()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/parse_names.md)
+adds a `name_type` column that marks organisations (`PNC BANK NA`),
+placeholders (`SEE SCHEDULE O`), couples and a person followed by an
+employer, so they can be set aside before matching people
+([`classify_names()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/classify_names.md)
+does this on its own). With `split_run_together = TRUE` it first splits
+a surname and given name typed as one word (`KramerKenneth`,
+`MURPHYSANDRA`). Both are off by default.
+
 ## Guides
 
 - [Cleaning names: clutter, titles, credentials and
@@ -53,6 +63,8 @@ first name.
   table](https://nonprofit-open-data-collective.github.io/peopleparser/articles/gender-scoring.html)
 - [Canonical first names, nicknames and
   gender](https://nonprofit-open-data-collective.github.io/peopleparser/articles/canonical-first-names.html)
+- [People, organisations and run-together
+  names](https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-types.html)
 
 [`parse_name()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/parse_name.md)
 parses a single name and returns a one-row data frame. Set

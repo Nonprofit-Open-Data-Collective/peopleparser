@@ -32,6 +32,13 @@
 #'   [nickname_lookup()] (`first_name_type`, `first_name_formal`,
 #'   `first_name_nicknames`, `first_name_canonical`, `canonical_rule`).
 #'   Defaults to `FALSE`.
+#' @param split_run_together Logical; if `TRUE`, split a surname and given
+#'   name written as one word (`KramerKenneth`, `MURPHYSANDRA`) before parsing,
+#'   with [split_run_together()]. Defaults to `FALSE`.
+#' @param classify Logical; if `TRUE`, add the `name_type` and `org_score`
+#'   columns from [classify_names()], computed on the raw input, so that
+#'   organisations, placeholders and couples can be set aside. Defaults to
+#'   `FALSE`.
 #' @param workers `NULL` (default) to use the caller's [future::plan()]
 #'   (sequential unless the caller set one), `1` to run in this session
 #'   whatever the plan, or a number above 1 to start that many workers for this
@@ -42,7 +49,8 @@
 #'   original input) plus the parsed components returned by [parse_name()]:
 #'   `salutation`, `first_name`, `middle_name`, `last_name`, `suffix`, `status`,
 #'   `gender`, and `gender_confidence`, plus the nickname columns when
-#'   `add_nicknames = TRUE`.
+#'   `add_nicknames = TRUE` and `name_type` and `org_score` when
+#'   `classify = TRUE`.
 #' @keywords parse
 #' @export
 #' @examples
@@ -61,9 +69,11 @@
 #' }
 parse_names <- function(x, prefixes = prx, suffixes = sfx,
                         split_initials = FALSE, add_nicknames = FALSE,
+                        split_run_together = FALSE, classify = FALSE,
                         workers = NULL, ...) {
 
   input_names <- x
+  if (split_run_together) x <- peopleparser::split_run_together(x)
   x <- sanitize_input(x)
 
   if (!is.null(workers)) {
@@ -89,6 +99,11 @@ parse_names <- function(x, prefixes = prx, suffixes = sfx,
 
   out <- data.frame(name = input_names, parsed_names)
   if (add_nicknames) out <- add_nickname_columns(out)
+  if (classify) {
+    ct <- classify_names(input_names)
+    out$name_type <- ct$name_type
+    out$org_score <- ct$org_score
+  }
   out
 }
 

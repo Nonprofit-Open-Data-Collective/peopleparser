@@ -5,6 +5,7 @@
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/articles/index.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-cleaning.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-order.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-types.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/authors.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/index.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/LICENSE.html</loc></url>
@@ -13,6 +14,7 @@
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/canonical_first_name.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/census.names.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/check_if_surname.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/classify_names.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/deglue_tokens.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/determine_gender.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/determine_surname.html</loc></url>
@@ -31,6 +33,7 @@
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/names_100.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/names_1000.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/nickname_lookup.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/org_features.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/parse_name.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/parse_names.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/peopleparser-package.html</loc></url>
@@ -46,6 +49,7 @@
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/split_glued_credentials.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/split_glued_honorific.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/split_glued_initial.html</loc></url>
+<url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/split_run_together.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/trailing_ambiguous_credentials.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/trim_spaces.html</loc></url>
 <url><loc>https://nonprofit-open-data-collective.github.io/peopleparser/reference/two_token_surname.html</loc></url>

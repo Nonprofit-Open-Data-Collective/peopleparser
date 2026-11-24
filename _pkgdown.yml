@@ -24,6 +24,8 @@ navbar:
         href: articles/gender-scoring.html
       - text: Canonical first names, nicknames and gender
         href: articles/canonical-first-names.html
+      - text: People, organisations and run-together names
+        href: articles/name-types.html
 
 articles:
 - title: Guides
@@ -33,6 +35,7 @@ articles:
   - name-order
   - gender-scoring
   - canonical-first-names
+  - name-types
 
 reference:
 - title: Parse names
@@ -52,6 +55,12 @@ reference:
   - fix_locative_surnames
   - remove_elements
   - extract_component
+
+- title: Name types and run-together names
+  desc: Set aside organisations, placeholders and couples, and split names written as one word.
+  contents:
+  - classify_names
+  - split_run_together
 
 - title: Census-based inference
   desc: Resolve name ordering, surnames, and gender from census frequencies.

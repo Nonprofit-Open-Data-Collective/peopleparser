@@ -489,6 +489,11 @@ trailing_ambiguous_credentials <- function( name_vec, prefixes, suffixes,
 #'   output. See [deglue_tokens()].
 #' @param add_nicknames Logical; if `TRUE`, append the nickname columns from
 #'   [nickname_lookup()]. Defaults to `FALSE`.
+#' @param split_run_together Logical; if `TRUE`, first split a surname and
+#'   given name written as one word (`KramerKenneth`, `MURPHYSANDRA`) with
+#'   [split_run_together()]. The capital-letter rule needs the original case,
+#'   so with `sanitize = FALSE` only the all-capitals rule can apply. Defaults
+#'   to `FALSE`.
 #'
 #' @return A one-row `data.frame` with columns `salutation`, `first_name`,
 #'   `middle_name`, `last_name`, `suffix`, `status`, `gender`, and
@@ -499,7 +504,9 @@ trailing_ambiguous_credentials <- function( name_vec, prefixes, suffixes,
 #' parse_name("LIVINGSTON III MICHAEL JOHN")
 #' parse_name("livingston III,  Mr. MICHAEL JOHN9", sanitize = TRUE)
 parse_name <- function( x, prefixes = prx, suffixes = sfx, sanitize = FALSE,
-                        split_initials = FALSE, add_nicknames = FALSE ) {
+                        split_initials = FALSE, add_nicknames = FALSE,
+                        split_run_together = FALSE ) {
+  if ( split_run_together ) { x <- peopleparser::split_run_together( x ) }
   if ( sanitize ) { x <- sanitize_input( x ) }
   Lx <- strsplit( x, ' ' ) |> unlist()   # strsplit( x, ' ' )[[1]]
 

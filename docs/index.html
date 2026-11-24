@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="index.html">peopleparser</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,6 +41,7 @@
     <li><a class="dropdown-item" href="articles/name-order.html">Name order and compound surnames</a></li>
     <li><a class="dropdown-item" href="articles/gender-scoring.html">Gender scoring and the census table</a></li>
     <li><a class="dropdown-item" href="articles/canonical-first-names.html">Canonical first names, nicknames and gender</a></li>
+    <li><a class="dropdown-item" href="articles/name-types.html">People, organisations and run-together names</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
@@ -95,6 +96,7 @@
 <p>The matching is done probabilistically based upon how often each token appears as a first name or a surname in U.S. Census Bureau name lists (the bundled <code>census.names</code> table, built from the 2020 Census first-name and surname lists).</p>
 <p>Gender coding is similarly done probabilistically using the given names from the parsed string and the same Census data table.</p>
 <p>With <code>add_nicknames = TRUE</code>, <code><a href="reference/parse_name.html">parse_name()</a></code> and <code><a href="reference/parse_names.html">parse_names()</a></code> also add each first name’s formal names, nicknames and one canonical first name.</p>
+<p>With <code>classify = TRUE</code>, <code><a href="reference/parse_names.html">parse_names()</a></code> adds a <code>name_type</code> column that marks organisations (<code>PNC BANK NA</code>), placeholders (<code>SEE SCHEDULE O</code>), couples and a person followed by an employer, so they can be set aside before matching people (<code><a href="reference/classify_names.html">classify_names()</a></code> does this on its own). With <code>split_run_together = TRUE</code> it first splits a surname and given name typed as one word (<code>KramerKenneth</code>, <code>MURPHYSANDRA</code>). Both are off by default.</p>
 </div>
 <div class="section level2">
 <h2 id="guides">Guides<a class="anchor" aria-label="anchor" href="#guides"></a>
@@ -104,6 +106,7 @@
 <li><a href="https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-order.html">Name order and compound surnames</a></li>
 <li><a href="https://nonprofit-open-data-collective.github.io/peopleparser/articles/gender-scoring.html">Gender scoring and the census name table</a></li>
 <li><a href="https://nonprofit-open-data-collective.github.io/peopleparser/articles/canonical-first-names.html">Canonical first names, nicknames and gender</a></li>
+<li><a href="https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-types.html">People, organisations and run-together names</a></li>
 </ul>
 <p><code><a href="reference/parse_name.html">parse_name()</a></code> parses a single name and returns a one-row data frame. Set <code>sanitize = TRUE</code> when the input still contains punctuation, titles, or other clutter:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a></span>

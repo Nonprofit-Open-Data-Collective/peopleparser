@@ -12,7 +12,8 @@ parse_name(
   suffixes = sfx,
   sanitize = FALSE,
   split_initials = FALSE,
-  add_nicknames = FALSE
+  add_nicknames = FALSE,
+  split_run_together = FALSE
 )
 ```
 
@@ -55,6 +56,15 @@ parse_name(
   Logical; if `TRUE`, append the nickname columns from
   [`nickname_lookup()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/nickname_lookup.md).
   Defaults to `FALSE`.
+
+- split_run_together:
+
+  Logical; if `TRUE`, first split a surname and given name written as
+  one word (`KramerKenneth`, `MURPHYSANDRA`) with
+  [`split_run_together()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/split_run_together.md).
+  The capital-letter rule needs the original case, so with
+  `sanitize = FALSE` only the all-capitals rule can apply. Defaults to
+  `FALSE`.
 
 ## Value
 

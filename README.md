@@ -31,12 +31,15 @@ Gender coding is similarly done probabilistically using the given names from the
 
 With `add_nicknames = TRUE`, `parse_name()` and `parse_names()` also add each first name's formal names, nicknames and one canonical first name.
 
+With `classify = TRUE`, `parse_names()` adds a `name_type` column that marks organisations (`PNC BANK NA`), placeholders (`SEE SCHEDULE O`), couples and a person followed by an employer, so they can be set aside before matching people (`classify_names()` does this on its own). With `split_run_together = TRUE` it first splits a surname and given name typed as one word (`KramerKenneth`, `MURPHYSANDRA`). Both are off by default.
+
 ## Guides
 
 * [Cleaning names: clutter, titles, credentials and suffixes](https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-cleaning.html)
 * [Name order and compound surnames](https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-order.html)
 * [Gender scoring and the census name table](https://nonprofit-open-data-collective.github.io/peopleparser/articles/gender-scoring.html)
 * [Canonical first names, nicknames and gender](https://nonprofit-open-data-collective.github.io/peopleparser/articles/canonical-first-names.html)
+* [People, organisations and run-together names](https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-types.html)
 
 `parse_name()` parses a single name and returns a one-row data frame. Set `sanitize = TRUE` when the input still contains punctuation, titles, or other clutter:
 
