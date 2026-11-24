@@ -24,25 +24,36 @@ get_census_data <- function(x) {
   # the census data stores compound last names without dashes
   x <- gsub("-", "", x, fixed = TRUE)
 
-  # ensure the reference table is available (lazy-loaded via LazyData)
-  if (!exists("census.names")) {
-    utils::data("census.names", package = "peopleparser", envir = environment())
-  }
+  # row of each token in census.names (0 when absent), from a hashed index
+  # built once per session (R/data_cache.R). This replaced a keyed join per
+  # call, whose setup cost dominated parse time.
+  i <- census_row(x)
+  cn <- census_names_table()
+  hit <- i > 0L
+  idx <- i; idx[!hit] <- NA_integer_
+  pick <- function(v) { out <- v[idx]; out[!hit] <- as.vector(0, typeof(v)); out }
 
-  # keyed binary-search join: census.names is keyed on `name`, so this avoids a
-  # full O(n) scan of the ~165k-row table on every lookup
+  rv <- list(name = x, ordinal = seq_along(x),
+             male_value = pick(cn$male_value),
+             female_value = pick(cn$female_value),
+             first_name_value = pick(cn$first_name_value),
+             last_name_value = pick(cn$last_name_value))
+  rv <- data.table::setDT(rv)
+  data.table::setattr(rv, "sorted", "ordinal")   # already in ordinal order
+  rv
+}
+
+# The previous implementation (a keyed join on every call). Kept for the test
+# that the fast path returns identical results.
+get_census_data_join <- function(x) {
+  x <- gsub("-", "", x, fixed = TRUE)
   query <- data.table::data.table(name = x, ordinal = seq_along(x))
-  rv <- census.names[query, on = "name"]
-
-  # tokens not found in the census table return NA counts -> set them to zero
+  rv <- census_names_table()[query, on = "name"]
   count_cols <- c("male_value", "female_value", "first_name_value", "last_name_value")
   for (col in count_cols) {
     data.table::set(rv, i = which(is.na(rv[[col]])), j = col, value = 0)
   }
-
-  # keep the historical column order (some callers index positionally) and sort
   data.table::setcolorder(rv, c("name", "ordinal", count_cols))
   data.table::setkey(rv, ordinal)
-
-  return(rv)
+  rv
 }

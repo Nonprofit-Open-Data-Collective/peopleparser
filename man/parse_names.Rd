@@ -10,6 +10,7 @@ parse_names(
   suffixes = sfx,
   split_initials = FALSE,
   add_nicknames = FALSE,
+  workers = NULL,
   ...
 )
 }
@@ -29,6 +30,11 @@ opt-in Defect 3 stray-initial split. Defaults to \code{FALSE}.}
 \code{first_name_nicknames}, \code{first_name_canonical}, \code{canonical_rule}).
 Defaults to \code{FALSE}.}
 
+\item{workers}{\code{NULL} (default) to use the caller's \code{\link[future:plan]{future::plan()}}
+(sequential unless the caller set one), \code{1} to run in this session
+whatever the plan, or a number above 1 to start that many workers for this
+call. See \emph{Parallel parsing}.}
+
 \item{...}{Reserved for future arguments; currently unused.}
 }
 \value{
@@ -40,11 +46,43 @@ original input) plus the parsed components returned by \code{\link[=parse_name]{
 }
 \description{
 Parses a character vector of raw names into a data frame of structured name
-components. Names are sanitized once up front and then parsed in parallel with
-\code{\link[furrr:future_map]{furrr::future_map_dfr()}}.
+components. Names are sanitized once up front and then parsed with
+\code{\link[=parse_name]{parse_name()}}.
 }
+\section{Parallel parsing}{
+
+By default \code{parse_names()} runs in the current R session and never starts
+background processes on its own. It uses parallel workers in two cases:
+\itemize{
+\item the caller has set a \code{\link[future:plan]{future::plan()}}, for example
+\code{future::plan(future::multisession, workers = 4)}. The workers are reused
+across calls until the caller changes the plan;
+\item \code{workers} is a number above 1. \code{parse_names()} starts that many
+background R sessions for this call and shuts them down when it returns,
+restoring the caller's plan.
+}
+
+Workers load the installed copy of peopleparser. Each one reports its
+version and build time, and \code{parse_names()} stops if any differs from the
+calling session (for example after a reinstall while R was running, or when
+the session runs development code through \code{devtools::load_all()}).
+Starting workers takes a few seconds, so they pay off only for large
+inputs.
+}
+
 \examples{
 x <- c("livingston III,  Mr. MICHAEL JOHN9", "THOMAS H VON KAMECKE")
 parse_names(x)
+
+\dontrun{
+# start 4 workers for one large call
+parse_names(big_vector, workers = 4)
+
+# or keep workers running across several calls
+future::plan(future::multisession, workers = 4)
+a <- parse_names(batch_1)
+b <- parse_names(batch_2)
+future::plan(future::sequential)
+}
 }
 \keyword{parse}

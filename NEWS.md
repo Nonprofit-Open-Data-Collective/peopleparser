@@ -1,5 +1,43 @@
 # peopleparser (development version)
 
+## `parse_names()` no longer starts its own workers (breaking)
+
+* `parse_names()` used to start a new set of background R sessions on every
+  call (`future::plan(multisession)` with all cores but one). It now runs in
+  the current session unless the caller has set a `future::plan()`, or passes
+  the new `workers` argument: `workers = 4` starts four workers for that call
+  and restores the caller's plan afterwards; `workers = 1` forces sequential
+  parsing. Code that relied on the old parallel default should pass
+  `workers =` or set a plan.
+* Workers load the installed copy of peopleparser. Each now reports its
+  version and build time, and `parse_names()` stops with a clear message if
+  any differs from the calling session (a reinstall while R was running, or a
+  session using `devtools::load_all()`), instead of silently parsing with
+  older code.
+
+## Faster parsing
+
+* Each dataset (`census.names`, `first_name_pairs`) is loaded once per
+  session. Before, when peopleparser was loaded but not attached (calls like
+  `peopleparser::parse_name()`, or inside workers), every census lookup
+  reloaded the table.
+* Census lookups use a hashed index built once per session instead of a
+  keyed join per call, and `determine_surname()` ranks tokens in base R
+  rather than dplyr. Parses are unchanged.
+* Speed on 20,000 Form 990 Part VII names, names a second (24-core machine):
+
+  | Call | 0.1.0 | Now |
+  |---|---|---|
+  | `peopleparser::parse_name()`, package not attached | 6 | 370 |
+  | `parse_name()`, attached | 94 | 2,040 |
+  | `parse_names()`, five calls of 200 names | 73 | 1,790 |
+  | `parse_names()`, 20,000 names (default) | 586 | 1,660 |
+  | `parse_names(workers = 7)`, 20,000 names | - | 3,860 |
+
+  The 0.1.0 `parse_names()` rows used its built-in parallel default, here 23
+  workers started on every call. The 20,000 parses are identical before and
+  after.
+
 ## Split `MC` surnames
 
 * `prep_name()` no longer cuts everything after a standalone `MC`

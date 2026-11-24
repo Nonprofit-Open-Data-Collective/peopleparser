@@ -41,19 +41,16 @@ determine_surname <- function(x) {
 
   # rank: (1) known names that are overwhelmingly surnames, more common first,
   # (2) names absent from the census, (3) other names by surname share
-  x <-
-    x %>%
-    dplyr::mutate(
-      tot = first_name_value + last_name_value + 1,
-      p.first = first_name_value / tot,
-      p.last = (1 + last_name_value) / tot,
-      known = first_name_value + last_name_value > 0,
-      tier = ifelse(known & p.last >= .surname_tier_min, 1L, ifelse(!known, 2L, 3L)),
-      score = ifelse(tier == 1L, tot, ifelse(tier == 3L, p.last, 0))
-    ) %>%
-    dplyr::arrange(tier, -score, -tot, -ordinal)
-
-  most.likely <- (x$ordinal)[1]
+  # (base R rather than dplyr: this runs for most names, and dplyr's per-call
+  # overhead dominated parse time)
+  f <- x$first_name_value; l <- x$last_name_value
+  tot <- f + l + 1
+  p.last <- (1 + l) / tot
+  known <- f + l > 0
+  tier <- ifelse(known & p.last >= .surname_tier_min, 1L, ifelse(!known, 2L, 3L))
+  score <- ifelse(tier == 1L, tot, ifelse(tier == 3L, p.last, 0))
+  ord <- x$ordinal
+  most.likely <- ord[order(tier, -score, -tot, -ord)][1]
   return(most.likely)
 }
 

@@ -28,7 +28,9 @@ Imports:
     tibble,
     utils
 Suggests:
+    callr,
     knitr,
+    pkgload,
     rmarkdown,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
