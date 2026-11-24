@@ -554,6 +554,19 @@ trailing_ambiguous_credentials <- function( name_vec, prefixes, suffixes,
   idx <- ( n - k + 1 ):n
   run <- name_vec[ idx ]
   out <- if ( any( run %in% c( prefixes, suffixes ) ) ) unique( run[ run %in% ambiguous ] ) else character( 0 )
+  # a lone ambiguous credential at the very end, after two name words
+  # (0.2.4): stripped when it is not a census surname (CAROL RUSSELL NP,
+  # SUSAN SIMMONS PT, ERIC HARTMAN DC), or, for those that are (MA, BA, AB,
+  # AUD), when the word before is a strong surname (JOHN BURKE MA). XIAOYI
+  # ALICIA MA and MAMADOU YACINE BA keep their surnames.
+  last <- name_vec[ n ]; prev <- name_vec[ n - 1 ]
+  if ( n >= 3 && last %in% ambiguous && !last %in% out && nchar( prev ) > 1 &&
+       !prev %in% known ) {
+    cd <- get_census_data( c( last, prev ) )
+    l <- cd$last_name_value; f <- cd$first_name_value
+    if ( l[1] == 0 || ( l[2] / max( f[2] + l[2], 1 ) >= .middle_join_share ) )
+      out <- c( out, last )
+  }
   # religious-title licence: a leading religious title, and the token at least
   # fourth (title + two names before it)
   if ( name_vec[1] %in% .religious_titles ) {

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">peopleparser</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,6 +47,11 @@
       <small>Source: <a href="https://github.com/Nonprofit-Open-Data-Collective/peopleparser/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.4" id="peopleparser-024">peopleparser 0.2.4<a class="anchor" aria-label="anchor" href="#peopleparser-024"></a></h2>
+<ul><li>A lone ambiguous credential at the end of a name, after two name words, is now stripped: <code>CAROL RUSSELL NP</code> gives <code>RUSSELL</code>, <code>ERIC HARTMAN DC</code> gives <code>HARTMAN</code>, where before it became the surname (<code>NP</code>, <code>HARTMAN-DC</code>). Up to 0.2.3 these short credentials (<code>NP</code>, <code>DC</code>, <code>PT</code>, <code>ND</code>, <code>PM</code>, <code>MA</code>, <code>BA</code>, …) were stripped only beside an unambiguous one, since some are also initials or surnames. Those that are not census names are now stripped after any name word. <code>MA</code>, <code>BA</code>, <code>AB</code> and <code>AUD</code> are census surnames, so they are stripped only when the word before is a strong surname (<code>JOHN BURKE MA</code>); <code>XIAOYI ALICIA MA</code>, <code>MAMADOU YACINE BA</code> and <code>WEI MA</code> keep them.</li>
+<li>In national Part VII names of three or more words, 5,434 end in a lone ambiguous credential; 4,757 are now stripped. In the 10,000-name synthid sample one name changes (<code>VERY REV RANDY M DOLLINS VG</code>).</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.3" id="peopleparser-023">peopleparser 0.2.3<a class="anchor" aria-label="anchor" href="#peopleparser-023"></a></h2>
 <div class="section level3">

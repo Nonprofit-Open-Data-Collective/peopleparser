@@ -30,7 +30,7 @@ test_that("ambiguous short credentials strip only inside a credential run", {
   expect_equal(pn("KATHY WILDE RN MA")$last_name, "WILDE")
   expect_equal(pn("JACK MA")$last_name, "MA")
   expect_equal(pn("MA LIN")$first_name, "MA")
-  expect_equal(pn("JOHN DOE DC")$last_name, "DOE-DC")    # no unambiguous credential: kept
+  expect_equal(pn("JOHN DOE DC")$last_name, "DOE")       # lone DC after a surname (0.2.4)
   expect_equal(pn("JOHN DOE MD DC")$last_name, "DOE")
   expect_equal(pn("MAUREEN SMITH RSM MA TERM ENDED")$last_name, "SMITH")
 })
@@ -94,6 +94,7 @@ test_that("a leading religious title licenses DC and MA at the end", {
   expect_equal(pn("Sister Marie Rachelle Cruz DC")$last_name, "CRUZ")
   expect_equal(pn("SR PATRICIA MCLAUGHLIN MA")$last_name, "MCLAUGHLIN")
   expect_true("MA" %in% unlist(pn("SR ANNA MA")[c("first_name", "last_name")]))  # one name between: kept
-  expect_equal(pn("JOHN DOE DC")$last_name, "DOE-DC")      # no religious title, no credential: kept
-  expect_equal(pn("Palmer Piana DC")$last_name, "PIANA-DC")
+  expect_equal(pn("JOHN DOE DC")$last_name, "DOE")         # 0.2.4: DC is not a census name
+  expect_equal(pn("Palmer Piana DC")$last_name, "PIANA")
+  expect_equal(pn("LINDA ROCK BA")$last_name, "BA")       # BA is a surname; ROCK is not a strong one
 })

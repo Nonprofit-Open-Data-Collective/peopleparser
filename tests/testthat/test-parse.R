@@ -187,9 +187,10 @@ test_that("RM strips only inside a corroborated trailing credential run", {
   expect_equal(run$last_name, "LEE")
   expect_true(grepl("RM", run$salutation))
 
-  # standalone trailing RM (no other credential) -> left in place, not a title
+  # standalone trailing RM after a surname: stripped since 0.2.4 (RM is not a
+  # census name; the lone-credential rule in trailing_ambiguous_credentials())
   solo <- parse_name("KAREN LEE RM", sanitize = TRUE)
-  expect_equal(solo$salutation, "")
+  expect_equal(solo$salutation, "RM")
 
   # real name that happens to contain the token must be untouched
   ma <- parse_name("MA LIN", sanitize = TRUE)

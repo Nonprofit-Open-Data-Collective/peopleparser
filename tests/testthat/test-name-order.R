@@ -64,6 +64,15 @@ test_that("unknown trailing credentials are stripped, unlisted surnames kept", {
   expect_equal(pn("MOHAMMED M AL HAEMLI")$last_name, "AL-HAEMLI")
 })
 
+test_that("a lone ambiguous credential at the end is stripped after a surname", {
+  expect_equal(pn("CAROL RUSSELL NP")$last_name, "RUSSELL")
+  expect_equal(pn("ERIC HARTMAN DC")$last_name, "HARTMAN")
+  expect_equal(pn("JOHN BURKE MA")$last_name, "BURKE")
+  expect_equal(pn("XIAOYI ALICIA MA")$last_name, "MA")
+  expect_equal(pn("MAMADOU YACINE BA")$last_name, "BA")
+  expect_equal(pn("WEI MA")$last_name, "MA")
+})
+
 test_that("inner particles, titles and ranks", {
   expect_equal(pn("KATRINA VANDEN HEUVEL")$last_name, "VANDEN-HEUVEL")
   expect_equal(pn("PATRICIA SAN PEDRO")$last_name, "SAN-PEDRO")

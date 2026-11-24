@@ -1,3 +1,18 @@
+# peopleparser 0.2.4
+
+* A lone ambiguous credential at the end of a name, after two name words, is
+  now stripped: `CAROL RUSSELL NP` gives `RUSSELL`, `ERIC HARTMAN DC` gives
+  `HARTMAN`, where before it became the surname (`NP`, `HARTMAN-DC`). Up to
+  0.2.3 these short credentials (`NP`, `DC`, `PT`, `ND`, `PM`, `MA`, `BA`, ...)
+  were stripped only beside an unambiguous one, since some are also initials
+  or surnames. Those that are not census names are now stripped after any
+  name word. `MA`, `BA`, `AB` and `AUD` are census surnames, so they are
+  stripped only when the word before is a strong surname (`JOHN BURKE MA`);
+  `XIAOYI ALICIA MA`, `MAMADOU YACINE BA` and `WEI MA` keep them.
+* In national Part VII names of three or more words, 5,434 end in a lone
+  ambiguous credential; 4,757 are now stripped. In the 10,000-name synthid
+  sample one name changes (`VERY REV RANDY M DOLLINS VG`).
+
 # peopleparser 0.2.3
 
 ## Unknown credentials no longer become the surname

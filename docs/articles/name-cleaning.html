@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">peopleparser</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -332,7 +332,9 @@ least two tokens before them</td>
 <code>PT</code>, <code>DC</code>, <code>ND</code>, <code>RM</code>,
 <code>PM</code>, <code>APR</code>, …</td>
 <td>they sit in that trailing run <strong>and</strong> the run also
-holds an unambiguous credential</td>
+holds an unambiguous credential; or, alone at the end after two name
+words, they are not census names (<code>CAROL RUSSELL NP</code>) or
+follow a strong surname (<code>JOHN BURKE MA</code>)</td>
 </tr>
 <tr class="even">
 <td>Tenure words</td>
