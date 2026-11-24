@@ -100,6 +100,7 @@ de_clutter <- function( x )
   x <- gsub( "-OUTGOING.*$", " OUTGOING", x )
   x <- gsub( "LAST DAY.*$", "", x )
   x <- gsub( " RETIRED .*$", "", x ) 
+  x <- gsub( "^([A-Z]+) RET ", "\\1 ", x )  # COL RET CLARENCE MAXWELL
   x <- gsub( " RET .*$", " ", x )
   x <- gsub( " RET$", "", x )  # JACK H JACOBS USA RET
   x <- gsub( "-RESIGNED.*$", "", x )

@@ -11,7 +11,7 @@ and merges them with the following word using a dash (e.g., Van-Dyke, De-La-Rosa
 
     <a class="navbar-brand me-2" href="../index.html">peopleparser</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,6 +26,7 @@ and merges them with the following word using a dash (e.g., Van-Dyke, De-La-Rosa
     <li><a class="dropdown-item" href="../articles/gender-scoring.html">Gender scoring and the census table</a></li>
     <li><a class="dropdown-item" href="../articles/canonical-first-names.html">Canonical first names, nicknames and gender</a></li>
     <li><a class="dropdown-item" href="../articles/name-types.html">People, organisations and run-together names</a></li>
+    <li><a class="dropdown-item" href="../articles/version-comparison.html">What changed since the synthid parses</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -61,7 +62,8 @@ and merges them with the following word using a dash (e.g., <em>Van-Dyke</em>, <
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fix_locative_surnames</span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
-<span>  particles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"LA"</span>, <span class="st">"VON"</span>, <span class="st">"VAN"</span>, <span class="st">"VANDER"</span>, <span class="st">"DEL"</span>, <span class="st">"DE"</span>, <span class="st">"DI"</span>, <span class="st">"DEN"</span>, <span class="st">"DER"</span>, <span class="st">"O"</span><span class="op">)</span></span>
+<span>  particles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"LA"</span>, <span class="st">"VON"</span>, <span class="st">"VAN"</span>, <span class="st">"VANDER"</span>, <span class="st">"DEL"</span>, <span class="st">"DE"</span>, <span class="st">"DI"</span>, <span class="st">"DEN"</span>, <span class="st">"DER"</span>, <span class="st">"O"</span><span class="op">)</span>,</span>
+<span>  inner_particles <span class="op">=</span> <span class="va">.inner_particles</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -79,6 +81,15 @@ with the following word. Matching is case-insensitive. <code>MC</code> is not a
 default particle: <code><a href="prep_name.html">prep_name()</a></code> joins a split <code>MC</code> surname without a dash
 (<code>MC CORMICK</code> -&gt; <code>MCCORMICK</code>, see <code><a href="join_mc.html">join_mc()</a></code>), and a leading or trailing
 <code>MC</code> is initials or a credential (Medical Corps).</p></dd>
+
+
+<dt id="arg-inner-particles">inner_particles<a class="anchor" aria-label="anchor" href="#arg-inner-particles"></a></dt>
+<dd><p>Particles that are joined only when they are not
+the first word and the next word is not a title or suffix:
+<code>PATRICIA SAN PEDRO</code> -&gt; <code>SAN-PEDRO</code>, <code>KATRINA VANDEN HEUVEL</code> -&gt;
+<code>VANDEN-HEUVEL</code>, <code>ESTELLA DE LOS RIOS</code> -&gt; <code>DE-LOS-RIOS</code>. Some of them
+are also given names or words (<code>SANTA</code>, <code>TEN</code>), so they never join
+from the start of a name.</p></dd>
 
 </dl></div>
     <div class="section level2">

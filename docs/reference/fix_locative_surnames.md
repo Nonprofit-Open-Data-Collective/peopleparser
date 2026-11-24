@@ -10,7 +10,8 @@ a dash (e.g., *Van-Dyke*, *De-La-Rosa*).
 ``` r
 fix_locative_surnames(
   x,
-  particles = c("LA", "VON", "VAN", "VANDER", "DEL", "DE", "DI", "DEN", "DER", "O")
+  particles = c("LA", "VON", "VAN", "VANDER", "DEL", "DE", "DI", "DEN", "DER", "O"),
+  inner_particles = .inner_particles
 )
 ```
 
@@ -31,6 +32,15 @@ fix_locative_surnames(
   [`join_mc()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/join_mc.md)),
   and a leading or trailing `MC` is initials or a credential (Medical
   Corps).
+
+- inner_particles:
+
+  Particles that are joined only when they are not the first word and
+  the next word is not a title or suffix: `PATRICIA SAN PEDRO` -\>
+  `SAN-PEDRO`, `KATRINA VANDEN HEUVEL` -\> `VANDEN-HEUVEL`,
+  `ESTELLA DE LOS RIOS` -\> `DE-LOS-RIOS`. Some of them are also given
+  names or words (`SANTA`, `TEN`), so they never join from the start of
+  a name.
 
 ## Value
 

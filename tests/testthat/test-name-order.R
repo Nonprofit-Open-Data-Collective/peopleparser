@@ -27,8 +27,41 @@ test_that("double surnames keep their written order", {
   expect_equal(r$last_name, "SMITH-JONES")
   expect_equal(pn("MARIA GARCIA LOPEZ")$last_name, "GARCIA-LOPEZ")
   expect_equal(pn("ELIZABETH ANNE WALKER SMITH")$last_name, "WALKER-SMITH")
-  # surname-first input: parts are not adjacent, so middle-then-last order
-  expect_equal(pn("SMITH JOHN WALKER")$last_name, "WALKER-SMITH")
+})
+
+test_that("three-word names keep their written order unless clearly surname first", {
+  r <- pn("SMITH JOHN ROBERT")
+  expect_equal(c(r$first_name, r$middle_name, r$last_name), c("JOHN", "ROBERT", "SMITH"))
+  r <- pn("DONG JOON YI")
+  expect_equal(c(r$first_name, r$middle_name, r$last_name), c("DONG", "JOON", "YI"))
+  r <- pn("TOKS MALIK ASHIRU")
+  expect_equal(c(r$first_name, r$last_name), c("TOKS", "ASHIRU"))
+  r <- pn("BOYD RAY SCOTT")
+  expect_equal(c(r$first_name, r$middle_name, r$last_name), c("BOYD", "RAY", "SCOTT"))
+})
+
+test_that("a middle name that is also a surname stays the middle name", {
+  expect_equal(pn("JOHN LEE SMITH")$middle_name, "LEE")
+  expect_equal(pn("BILLY RAY JONES")$last_name, "JONES")
+  expect_equal(pn("TOBI M E YOUNG")$middle_name, "M E")
+  expect_equal(pn("Albert J A Young ESQ")$last_name, "YOUNG")
+  r <- pn("Glynn C W Scott")
+  expect_equal(c(r$first_name, r$middle_name, r$last_name), c("GLYNN", "C W", "SCOTT"))
+  expect_equal(pn("COUNCILMAN BOBBY HENON")$first_name, "BOBBY")
+})
+
+test_that("inner particles, titles and ranks", {
+  expect_equal(pn("KATRINA VANDEN HEUVEL")$last_name, "VANDEN-HEUVEL")
+  expect_equal(pn("PATRICIA SAN PEDRO")$last_name, "SAN-PEDRO")
+  expect_equal(pn("ESTELLA DE LOS RIOS")$last_name, "DE-LOS-RIOS")
+  expect_equal(pn("RITA TEN MD")$last_name, "TEN")
+  r <- pn("SIR HUGH TAYLOR")
+  expect_equal(c(r$salutation, r$first_name, r$last_name), c("SIR", "HUGH", "TAYLOR"))
+  expect_equal(pn("CHIEF TODD SCHMADERER")$first_name, "TODD")
+  r <- pn("GEN PERRIN")
+  expect_equal(c(r$salutation, r$first_name, r$last_name), c("GEN", "", "PERRIN"))
+  r <- pn("COL RET CLARENCE MAXWELL")
+  expect_equal(c(r$salutation, r$first_name, r$last_name), c("COL", "CLARENCE", "MAXWELL"))
 })
 
 test_that("resolve_middle_name orders adjacent parts by the tokens", {

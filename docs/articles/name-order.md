@@ -172,8 +172,9 @@ rules assume two orders, `FIRST M LAST` and `LAST FIRST M`:
 
 - a trailing initial means the name was written surname first:
   `SMITH JOHN A` becomes `JOHN A SMITH`;
-- an initial in the middle with a surname in front and a given name at
-  the end (`SMITH J ALAN`) is also reordered;
+- an initial in the middle is reordered only when the two full words
+  pass the two-word written-order test above (`SMITH J ALAN` becomes
+  `ALAN J SMITH`);
 - otherwise the order is kept.
 
 ``` r
@@ -191,30 +192,37 @@ first.
 
 ### Three full tokens
 
-[`check_if_surname()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/check_if_surname.md)
-is applied to each token:
+The first and last words get the two-word written-order test above. The
+name is read surname first (`SMITH JOHN ALAN` becomes `JOHN ALAN SMITH`)
+only when the first word is much more likely a surname and the last a
+given name; otherwise the written order is kept: first, middle, last.
+`DONG JOON YI` and `TOKS MALIK ASHIRU` keep their order.
 
-- surname, surname, given name (`GARCIA LOPEZ MARIA`): the given name
-  moves to the front;
-- surname, given name, any (`SMITH JOHN ALAN`): the first token moves to
-  the end;
-- otherwise the order is kept: first, middle, last.
+Up to version 0.2.1 the rule reordered any name whose first word read as
+a surname and whose second did not, and counted every word missing from
+the census as a surname. Labelled by the convention of the other names
+on the same return, 28,811 three-word Part VII names were reordered
+wrongly 1,210 times by that rule and 53 times by the written-order test
+(`data-raw/name_order_eval3.R`).
 
 ``` r
-show(c("JOHN ALAN SMITH", "SMITH JOHN ALAN", "GARCIA LOPEZ MARIA"))
-#>                  raw first_name middle_name    last_name
-#> 1    JOHN ALAN SMITH       JOHN        ALAN        SMITH
-#> 2    SMITH JOHN ALAN       JOHN        ALAN        SMITH
-#> 3 GARCIA LOPEZ MARIA      MARIA             GARCIA-LOPEZ
+show(c("JOHN ALAN SMITH", "SMITH JOHN ALAN", "DONG JOON YI", "TOKS MALIK ASHIRU"))
+#>                 raw first_name middle_name last_name
+#> 1   JOHN ALAN SMITH       JOHN        ALAN     SMITH
+#> 2   SMITH JOHN ALAN       JOHN        ALAN     SMITH
+#> 3      DONG JOON YI       DONG        JOON        YI
+#> 4 TOKS MALIK ASHIRU       TOKS       MALIK    ASHIRU
 ```
 
 ### Four or more tokens
 
 The first token is the first name and
 [`determine_surname()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/determine_surname.md)
-picks the surname. Everything else is the middle name. If the name opens
-with two surnames followed by a given name (`SMITH JONES MARY ANN`), the
-two surnames are joined into one.
+picks the surname; a single letter is chosen only when nothing else can
+be. Everything else is the middle name. A word, two or more initials and
+a word (`GLYNN C W SCOTT`) is treated as a two-word name with middle
+initials. If the name opens with two surnames followed by a given name
+(`SMITH JONES MARY ANN`), the two surnames are joined into one.
 
 ``` r
 show(c("JOHN PAUL GEORGE RINGO", "SMITH JONES MARY ANN"))
@@ -236,7 +244,12 @@ and
 [`fix_locative_surnames()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/fix_locative_surnames.md)
 join a particle to the word after it. The particles are `LA`, `VON`,
 `VAN`, `VANDER`, `DEL`, `DE`, `DI`, `DEN`, `DER` and `O`, plus `ST`
-inside a name (Saint) and `LO GRANDE`.
+inside a name (Saint) and `LO GRANDE`. A second set joins only after the
+first word and before a word that is not a title: `VANDEN`, `VANDE`,
+`SAN`, `SANTA`, `LOS`, `LAS`, `DELLA`, `DALLA`, `DELA`, `DOS`, `DAS`,
+`DA`, `DU`, `TEN` and `TER` (`PATRICIA SAN PEDRO`,
+`ESTELLA DE LOS RIOS`, `LEANA DA SILVA`). Some of these are also given
+names, so they are not joined at the start of a name.
 
 A split `MC` surname inside a name is joined without a dash, the way the
 census and most records spell it: `STEVE MC CORMICK` gives `MCCORMICK`.
@@ -249,13 +262,16 @@ Particles chain, so `DE LA ROSA` and `VAN DER BERG` become one token.
 fix_locative_surnames(c("Jane Van Dyke", "Carlos De La Rosa", "Dylan Van"))
 #> [1] "Jane Van-Dyke"     "Carlos De-La-Rosa" "Dylan Van"
 show(c("THOMAS H VON KAMECKE", "SEAN ST CLAIR", "JULIA DI BUSSOLO",
-       "JUAN CARLOS DE LA ROSA", "MARY VAN DER BERG"))
+       "JUAN CARLOS DE LA ROSA", "MARY VAN DER BERG", "PATRICIA SAN PEDRO",
+       "ESTELLA DE LOS RIOS"))
 #>                      raw first_name middle_name    last_name
 #> 1   THOMAS H VON KAMECKE     THOMAS           H  VON-KAMECKE
 #> 2          SEAN ST CLAIR       SEAN                 ST-CLAIR
 #> 3       JULIA DI BUSSOLO      JULIA               DI-BUSSOLO
 #> 4 JUAN CARLOS DE LA ROSA       JUAN      CARLOS   DE-LA-ROSA
 #> 5      MARY VAN DER BERG       MARY             VAN-DER-BERG
+#> 6     PATRICIA SAN PEDRO   PATRICIA                SAN-PEDRO
+#> 7    ESTELLA DE LOS RIOS    ESTELLA              DE-LOS-RIOS
 ```
 
 A particle at the end of a name (`Dylan Van`) has nothing to join and is
@@ -265,11 +281,14 @@ is usually a title.
 ### Two surnames: middle tokens that read as surnames
 
 After the first, middle and last names are assigned, a middle name of
-three or more letters is checked again. If it reads as a surname, it is
-joined to the last name:
+three or more letters is checked again. A middle word joins the last
+name only when at least 90% of its census records are surnames, or it is
+not in the census. An initial never joins. So `MARIA GARCIA LOPEZ` gives
+`GARCIA-LOPEZ` (`GARCIA` is 99.8% surname), but `JOHN LEE SMITH` keeps
+`LEE` as the middle name (`LEE` is 81% surname; up to 0.2.1 this gave
+`LEE-SMITH`):
 
-- one middle token that reads as a surname joins the last name
-  (`MARIA GARCIA LOPEZ` gives `GARCIA-LOPEZ`);
+- one middle token that is a strong surname joins the last name;
 - with several middle tokens, an initial followed by a full token keeps
   the initial as the middle name and joins the rest to the surname;
 - otherwise, everything from the first surname-like middle token on
@@ -278,18 +297,18 @@ joined to the last name:
 When the surname parts are next to each other in the original string,
 they are joined in the order they were written. `MARY ANN SMITH JONES`
 gives `SMITH-JONES`, even though `SMITH` was picked as the main surname.
-When they are not next to each other (`SMITH JOHN WALKER`, written
-surname first), the middle part goes first.
+When they are not next to each other, the middle part goes first.
 
 ``` r
-show(c("MARIA GARCIA LOPEZ", "ELIZABETH ANNE WALKER SMITH",
+show(c("MARIA GARCIA LOPEZ", "JOHN LEE SMITH", "ELIZABETH ANNE WALKER SMITH",
        "JOHN Q PUBLIC SMITH", "MARY ANN SMITH JONES", "JEAN A DU PONT"))
 #>                           raw first_name middle_name    last_name
 #> 1          MARIA GARCIA LOPEZ      MARIA             GARCIA-LOPEZ
-#> 2 ELIZABETH ANNE WALKER SMITH  ELIZABETH        ANNE WALKER-SMITH
-#> 3         JOHN Q PUBLIC SMITH       JOHN           Q PUBLIC-SMITH
-#> 4        MARY ANN SMITH JONES       MARY         ANN  SMITH-JONES
-#> 5              JEAN A DU PONT       JEAN           A      DU-PONT
+#> 2              JOHN LEE SMITH       JOHN         LEE        SMITH
+#> 3 ELIZABETH ANNE WALKER SMITH  ELIZABETH        ANNE WALKER-SMITH
+#> 4         JOHN Q PUBLIC SMITH       JOHN           Q PUBLIC-SMITH
+#> 5        MARY ANN SMITH JONES       MARY         ANN  SMITH-JONES
+#> 6              JEAN A DU PONT       JEAN           A      DU-PONT
 ```
 
 One exception: `MAY` is a common middle name and a surname. If it ends
@@ -327,7 +346,12 @@ and a trailing one is the surname. See
 - A name that is both a common given name and a common surname (`JAMES`,
   `LESLIE`, `TAYLOR`, `JORDAN`) is decided by a small margin. Treat such
   parses as uncertain.
-- A middle name that is also a surname (`ANNE WALKER`) is joined to the
-  last name. That is right for Spanish and Portuguese double surnames
-  and for maiden names kept as a middle name, but not for given middle
-  names that are also surnames.
+- A middle word that is mostly a surname (`ANNE WALKER`, 96%) is joined
+  to the last name. That is right for Spanish and Portuguese double
+  surnames and for maiden names kept as a middle name, but not for a
+  given middle name that is a strong surname. Middle names that are
+  often given names (`LEE`, `RAY`, `GRANT`) stay middle names, so a real
+  double surname made of them is split.
+- A given name missing from the census before a listed name can still be
+  read as a surname written first (`CHIYA AYDIN AYHAN`,
+  `MASSUMEH FARHAD`).

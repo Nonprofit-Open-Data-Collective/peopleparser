@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">peopleparser</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,6 +40,7 @@
     <li><a class="dropdown-item" href="../articles/gender-scoring.html">Gender scoring and the census table</a></li>
     <li><a class="dropdown-item" href="../articles/canonical-first-names.html">Canonical first names, nicknames and gender</a></li>
     <li><a class="dropdown-item" href="../articles/name-types.html">People, organisations and run-together names</a></li>
+    <li><a class="dropdown-item" href="../articles/version-comparison.html">What changed since the synthid parses</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -305,7 +306,10 @@ they sit.</p>
 <td>
 <code>BISHOP</code>, <code>SHERIFF</code>, <code>CANTOR</code>,
 <code>DEACON</code>, <code>CAPTAIN</code>, <code>MOTHER</code>,
-<code>BROTHER</code>, <code>IMAM</code>, <code>MOST</code>
+<code>BROTHER</code>, <code>IMAM</code>, <code>MOST</code>,
+<code>SIR</code>, <code>DAME</code>, <code>CHIEF</code>,
+<code>COUNCILMAN</code>, <code>CORPORAL</code>, <code>REP</code>,
+<code>CHAPLAIN</code>
 </td>
 <td>they are the first token and two or more tokens follow</td>
 </tr>
@@ -375,12 +379,19 @@ that skips sanitizing:</p>
 stripping leaves no first name, and the removed token is a census given
 name (or <code>JD</code> or <code>ED</code>), the token is restored. Its
 original position decides its role: a leading token becomes the first
-name, a trailing one the surname.</p>
+name, a trailing one the surname. Ranks and offices (<code>GEN</code>,
+<code>COL</code>, <code>ADM</code>, <code>SGT</code>, <code>GOV</code>,
+<code>SEN</code>, <code>HON</code>, <code>REV</code>, <code>SIR</code>)
+are never restored, although some are rare given names in the 2020
+census, so <code>GEN PERRIN</code> keeps <code>GEN</code> as the
+title.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"EARL FAHNESTOCK"</span>, <span class="st">"TOM MAJOR"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;               raw salutation first_name middle_name  last_name suffix status</span></span>
-<span><span class="co">#&gt; 1 EARL FAHNESTOCK                  EARL             FAHNESTOCK              </span></span>
-<span><span class="co">#&gt; 2       TOM MAJOR                   TOM                  MAJOR</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"EARL FAHNESTOCK"</span>, <span class="st">"TOM MAJOR"</span>, <span class="st">"GEN PERRIN"</span>, <span class="st">"COL RET CLARENCE MAXWELL"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                        raw salutation first_name middle_name  last_name suffix status</span></span>
+<span><span class="co">#&gt; 1          EARL FAHNESTOCK                  EARL             FAHNESTOCK              </span></span>
+<span><span class="co">#&gt; 2                TOM MAJOR                   TOM                  MAJOR              </span></span>
+<span><span class="co">#&gt; 3               GEN PERRIN        GEN                            PERRIN              </span></span>
+<span><span class="co">#&gt; 4 COL RET CLARENCE MAXWELL        COL   CLARENCE                MAXWELL</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">

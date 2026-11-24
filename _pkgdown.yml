@@ -26,6 +26,8 @@ navbar:
         href: articles/canonical-first-names.html
       - text: People, organisations and run-together names
         href: articles/name-types.html
+      - text: What changed since the synthid parses
+        href: articles/version-comparison.html
 
 articles:
 - title: Guides
@@ -36,6 +38,9 @@ articles:
   - gender-scoring
   - canonical-first-names
   - name-types
+- title: Evaluations
+  contents:
+  - articles/version-comparison
 
 reference:
 - title: Parse names

@@ -10,7 +10,8 @@ names by surname share. Remaining ties break toward the later position.
 The first tier matters because in the 2020 Census lists nearly every
 common surname also appears, rarely, as a given name (4,999 people are
 named SMITH), so a pure share would let an unknown token or an initial
-outrank SMITH in `"SJ SMITH"`.
+outrank SMITH in `"SJ SMITH"`. A single letter comes last of all
+(`GLYNN C W SCOTT` -\> `SCOTT`).
 
 ## Usage
 

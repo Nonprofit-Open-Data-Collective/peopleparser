@@ -66,9 +66,8 @@ assign_names <- function( x, suffix.name ) {
   }
 
   if ( i == 3 && sum( s ) == 1 ) {
-    is.surname <- check_if_surname( x )
-    if ( l[2] == 1 && is.surname[1] && !is.surname[3] ) x <- x[c(2,3,1)]
     if ( l[3] == 1 ) x <- x[c(2,3,1)]
+    else if ( l[2] == 1 && three_token_surname_first( x ) ) x <- x[c(2,3,1)]
     first <- x[1]; middle <- x[2]; last <- x[3]
     gender <- get_gender( x[-3] )
 
@@ -77,9 +76,7 @@ assign_names <- function( x, suffix.name ) {
     gender <- get_gender( c( first, middle ) )
 
   } else if ( i == 3 ) {
-    is.surname <- check_if_surname( x )
-    if ( is.surname[1] && is.surname[2] && !is.surname[3] ) x <- x[c(3,1,2)]
-    if ( is.surname[1] && !is.surname[2] ) x <- x[c(2,3,1)]
+    if ( three_token_surname_first( x ) ) x <- x[c(2,3,1)]
     first <- x[1]; middle <- x[2]; last <- x[3]
     gender <- get_gender( x[-3] )
 
@@ -96,6 +93,17 @@ assign_names <- function( x, suffix.name ) {
 
   } else if ( i == 0 ) {
     first <- ""; middle <- ""; last <- ""; gender <- c("U", "0.0")
+
+  } else if ( l[1] > 1 && l[i] > 1 && all( l[2:(i - 1)] == 1 ) ) {
+    # a word, two or more initials, a word (GLYNN C W SCOTT): the written-order
+    # prior of two_token_surname() on the two words
+    ends <- x[c(1, i)]
+    data <- get_census_data( ends )
+    pos <- two_token_surname( ends, data )
+    if ( pos == 1L ) { first <- x[i]; last <- x[1] } else { first <- x[1]; last <- x[i] }
+    middle <- paste( x[2:(i - 1)], collapse = " " )
+    gender <- determine_gender( data[-pos, ] )
+    if ( gender[1] == "U" ) gender <- c( ifelse( suffix.name != "", "M", "U" ), "50.0" )
 
   } else {
     data <- get_census_data( x )
@@ -151,11 +159,32 @@ two_token_surname <- function( x, data ) {
   if ( odds > .order_prior_odds ) 1L else 2L
 }
 
+#' Is a Three-Token Name Written Surname First?
+#'
+#' Applies the written-order prior of [two_token_surname()] to the first and
+#' last tokens: `DONG JOON YI` and `TOKS MALIK ASHIRU` keep their order, and
+#' only a strong census surname before a strong given name is reordered
+#' (`SMITH JOHN ROBERT` -> `JOHN ROBERT SMITH`). This replaced a rule that read
+#' any unlisted word as a surname. On 28,811 three-word Part VII names labelled
+#' by the convention of their return it makes 235 order errors against 1,298
+#' (see data-raw/name_order_eval3.R).
+#'
+#' @param x A length-3 character vector of name tokens.
+#' @return `TRUE` when the name should be read as surname, given, middle.
+#' @keywords internal
+three_token_surname_first <- function( x ) {
+  ends <- x[c(1, 3)]
+  two_token_surname( ends, get_census_data( ends ) ) == 1L
+}
+
 # Settings of the written-order prior for two-token names (two_token_surname()).
 .order_pseudo_count <- 20
 .order_unlisted_share <- 0.85
 .order_prior_odds <- 30
 .order_initial_share <- 0.05   # a lone letter is rarely the surname
+
+# Census surname share a middle word needs to be joined to the surname.
+.middle_join_share <- 0.9
 
 #' Resolve Middle Names as Potential Surnames
 #'
@@ -182,13 +211,24 @@ resolve_middle_name <- function( middle, last, tokens = NULL ) {
     paste( parts, collapse = "-" )
   }
 
-  if ( length( mn ) == 1 && check_if_surname( mn ) ) return( c("", join_surname( c( mn, last ) )) )
+  # A middle word joins the surname only when it is a strong census surname
+  # (GARCIA LOPEZ), or absent from the census; a middle name that is also a
+  # surname (LEE 81%, RAY 55%, GRANT 56%) stays the middle name, so JOHN LEE
+  # SMITH no longer gives LEE-SMITH.
+  strong_surname <- function( t ) {
+    cd <- get_census_data( t )
+    tot <- cd$first_name_value + cd$last_name_value
+    nchar( t ) > 1 & ( tot == 0 | cd$last_name_value / pmax( tot, 1 ) >= .middle_join_share )
+  }
+
+  if ( length( mn ) == 1 && strong_surname( mn ) ) return( c("", join_surname( c( mn, last ) )) )
 
   if ( length( mn ) > 1 ) {
-    if ( nchar( mn[1] ) == 1 && nchar( mn[2] ) > 1 )
+    if ( nchar( mn[1] ) == 1 && nchar( mn[2] ) > 1 && all( strong_surname( mn[-1] ) ) )
       return( c( mn[1], join_surname( c( mn[-1], last ) ) ) )
 
-    surname_flags <- check_if_surname( mn )
+    # an initial is never part of a surname (TOBI M E YOUNG keeps M E)
+    surname_flags <- strong_surname( mn )
     if ( any( surname_flags ) ) {
       start <- min( which( surname_flags ) )
       mid <- if ( start > 1 ) paste( mn[1:(start - 1)], collapse = " " ) else ""
@@ -378,7 +418,17 @@ deglue_tokens <- function( name_vec, split_initials = FALSE ) {
 # token with at least two tokens after it ("RABBI"-style "BISHOP JOHN SMITH"),
 # so "JOHN BISHOP" keeps its surname. MOST is nearly always "MOST REV".
 .leading_only_titles <- c("BISHOP", "SHERIFF", "CANTOR", "DEACON", "CAPTAIN",
-                          "MOTHER", "MOST", "IMAM", "BROTHER")
+                          "MOTHER", "MOST", "IMAM", "BROTHER",
+                          # 0.2.2: SIR HUGH TAYLOR, CHIEF TODD SCHMADERER
+                          "SIR", "DAME", "CHIEF", "COUNCILMAN", "COUNCILWOMAN",
+                          "COUNCILMEMBER", "CORPORAL", "GENL", "REP", "CHAPLAIN")
+
+# Ranks and offices that are also rare given names in the 2020 census (GEN):
+# when stripping one leaves no first name ("GEN PERRIN"), it stays a title
+# instead of being restored as the given name.
+.rank_titles <- c("GEN", "LTGEN", "BGEN", "MGEN", "COL", "LTCOL", "LTC", "ADM",
+                  "RADM", "VADM", "SGT", "MSGT", "CMSGT", "LTG", "GOV", "SEN",
+                  "HON", "REV", "SIR", "DAME")
 
 #' Position-Restricted Titles and Status Words to Strip
 #'
@@ -559,7 +609,7 @@ parse_name <- function( x, prefixes = prx, suffixes = sfx, sanitize = FALSE,
   # A leading-only title stripped from a two-token name ("SHERIFF MASRY") was
   # judged a title on purpose, so it is not restored.
   if ( first.name == "" && salutation.name != "" &&
-       !salutation.name %in% .leading_only_titles &&
+       !salutation.name %in% c( .leading_only_titles, .rank_titles ) &&
        ( salutation.name %in% c( "JD", "ED" ) ||
          get_census_data( salutation.name )$first_name_value[1] > 0 ) ) {
     sal.pos  <- match( salutation.name, orig.tokens )

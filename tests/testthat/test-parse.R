@@ -48,8 +48,9 @@ test_that("resolve_middle_name shifts a surname into the last name", {
   res1 <- resolve_middle_name("van der", "Smith")
   expect_true(grepl("van-der-Smith", res1[2]) || res1[1] != "")
 
+  # an initial is never joined to the surname
   res2 <- resolve_middle_name("X", "Doe")
-  expect_equal(res2[2], "X-Doe")
+  expect_equal(res2, c("X", "Doe"))
 })
 
 test_that("get_census_data returns one row per token in order, zero-filling misses", {

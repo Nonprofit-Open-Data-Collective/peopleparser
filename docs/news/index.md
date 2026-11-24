@@ -1,5 +1,61 @@
 # Changelog
 
+## peopleparser 0.2.2
+
+### Compared with the parses in synthid
+
+- New article, “What changed since the synthid parses”
+  (`vignettes/articles/version-comparison.Rmd`), compares 0.2.2 with the
+  parses stored in synthid’s Part VII people tables (peopleparser
+  `cb01547`, 0.0.0.9000) on 10,000 random names from 2017 and 2024. 903
+  names (9%) parse differently:
+
+  | Change | Names | Assessment |
+  |----|----|----|
+  | Gender only | 485 | 562 names newly coded from the 2020 census; 98 unisex names switched |
+  | First and last name swapped | 262 | 256 now keep the written order |
+  | Middle name no longer joined to the surname | 50 | `DAVID LEE SMITH` was `LEE-SMITH`; a few names written surname first are now wrong |
+  | Title or credential taken out of the name | 41 | `SHERIFF`, `RABBI`, `MONSIGNOR`, `RSM`, `CRNA`, `PSYD` |
+  | Particle joined to the surname | 3 | `ST-GEORGE`, `DA-SILVA` |
+  | Other | 62 | compound surnames in written order, `KENNETHVAN` split; about half wrong in both |
+
+  Gaps that remain: an unlisted given name before a listed one can still
+  be read as surname first (`MASSUMEH FARHAD`); credentials the lists do
+  not know stay in the surname (`SSND`, `SIOR`, `FCAP`); organisations
+  in person fields are parsed as people unless `classify = TRUE` is
+  used; unisex names get a near coin-toss gender. The script is
+  `data-raw/compare_versions.R`.
+
+### Fixes for names 0.2.1 parsed worse than the old build
+
+- **Three-word names keep their written order** unless the first word is
+  clearly a surname and the last a given name, with the same
+  written-order test as two-word names. The old rule counted every word
+  missing from the census as a surname, so `TOKS MALIK ASHIRU` and
+  `DONG JOON YI` were reordered. On 28,811 three-word Part VII names
+  labelled by the convention of their return, wrong reorders fall from
+  1,210 to 53 (`data-raw/name_order_eval3.R`).
+- **A middle name joins the surname only when it is a strong surname**
+  (90% or more of its census records, or not in the census):
+  `MARIA GARCIA LOPEZ` still gives `GARCIA-LOPEZ`, but `JOHN LEE SMITH`,
+  `BILLY RAY JONES` and `BOYD RAY SCOTT` keep their middle names.
+  Initials never join the surname (`TOBI M E YOUNG` was `M-E-YOUNG`).
+- A word, two or more initials and a word (`GLYNN C W SCOTT`) is read
+  like a two-word name with middle initials; elsewhere a single letter
+  is chosen as the surname only when nothing else can be.
+- More surname particles, joined only inside a name: `VANDEN`, `VANDE`,
+  `SAN`, `SANTA`, `LOS`, `LAS`, `DELLA`, `DALLA`, `DELA`, `DOS`, `DAS`,
+  `DA`, `DU`, `TEN`, `TER` (`PATRICIA SAN PEDRO`,
+  `ESTELLA DE LOS RIOS`).
+- New leading titles: `SIR`, `DAME`, `CHIEF`, `COUNCILMAN`,
+  `COUNCILWOMAN`, `COUNCILMEMBER`, `CORPORAL`, `GENL`, `REP`,
+  `CHAPLAIN`. Ranks and offices (`GEN`, `COL`, `ADM`, `SGT`, `GOV`,
+  `SEN`, `HON`, `REV`) are no longer put back as a given name when
+  stripping them leaves none (`GEN PERRIN`).
+- [`de_clutter()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/de_clutter.md)
+  no longer drops the whole name after a rank followed by `RET`
+  (`COL RET CLARENCE MAXWELL` was `COL`).
+
 ## peopleparser 0.2.1
 
 ### Name types: people, organisations and placeholders

@@ -42,6 +42,12 @@ remove_punctuation <- function(x) {
 #'   default particle: [prep_name()] joins a split `MC` surname without a dash
 #'   (`MC CORMICK` -> `MCCORMICK`, see `join_mc()`), and a leading or trailing
 #'   `MC` is initials or a credential (Medical Corps).
+#' @param inner_particles Particles that are joined only when they are not
+#'   the first word and the next word is not a title or suffix:
+#'   `PATRICIA SAN PEDRO` -> `SAN-PEDRO`, `KATRINA VANDEN HEUVEL` ->
+#'   `VANDEN-HEUVEL`, `ESTELLA DE LOS RIOS` -> `DE-LOS-RIOS`. Some of them
+#'   are also given names or words (`SANTA`, `TEN`), so they never join
+#'   from the start of a name.
 #'
 #' @return A character vector of names with compound surnames corrected
 #'   by inserting dashes between the particle and the following surname component.
@@ -66,16 +72,22 @@ remove_punctuation <- function(x) {
 #'
 #' @export
 fix_locative_surnames <- function(x,
-                                  particles = c("LA", "VON", "VAN", "VANDER", "DEL", "DE", "DI", "DEN", "DER", "O")) {
+                                  particles = c("LA", "VON", "VAN", "VANDER", "DEL", "DE", "DI", "DEN", "DER", "O"),
+                                  inner_particles = .inner_particles) {
   particles <- toupper(particles)
+  inner_particles <- toupper(inner_particles)
   lapply(strsplit(x, "\\s+"), function(words) {
     # Join a word that is (or, once dashed, ends in) a particle to the next
     # word, and keep going, so chains join fully: DE LA ROSA -> DE-LA-ROSA,
     # and DE-LA ROSA (after prep_name()'s " DE " rule) -> DE-LA-ROSA.
+    # An inner particle joins only after the first word and before a word
+    # that is not a title or suffix (SAN PEDRO, but not RITA TEN MD).
     j <- 1
     while (j < length(words)) {
       tail_part <- sub(".*-", "", toupper(words[j]))
-      if (tail_part %in% particles) {
+      inner <- j > 1 && tail_part %in% inner_particles &&
+        !toupper(words[j + 1]) %in% c(prx, sfx)
+      if (tail_part %in% particles || inner) {
         words[j] <- paste0(words[j], "-", words[j + 1])
         words <- words[-(j + 1)]
       } else {
@@ -87,6 +99,13 @@ fix_locative_surnames <- function(x,
 }
 
 
+
+# Particles joined only inside a name (fix_locative_surnames()). In Part VII
+# names each appears mostly as an inner word before a surname (SAN 51 inner,
+# 1 first; VANDEN 12, 0). LE is left out: inside a name it is as often a
+# Vietnamese surname or middle name (HANG LE TO) as a particle.
+.inner_particles <- c("VANDEN", "VANDE", "SAN", "SANTA", "LOS", "LAS", "DELLA",
+                      "DALLA", "DELA", "DOS", "DAS", "DA", "DU", "TEN", "TER")
 
 #' Prep a Name for Parsing
 #'

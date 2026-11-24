@@ -1,0 +1,220 @@
+---
+title: "What changed since the parses in synthid"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", echo = FALSE)
+options(width = 100)
+library(peopleparser)
+library(data.table)
+
+# every name of the 10,000-name sample whose parse changed, or that is not
+# classified as a person (written by data-raw/compare_versions.R)
+d <- fread("../../data-raw/compare-v0.0.9-v0.2.2.csv", colClasses = "character",
+           na.strings = NULL)
+lg <- grep("_chg$|^any_chg$|^name_chg$|^order_flip$|^split_changed$", names(d), value = TRUE)
+for (v in lg) set(d, j = v, value = d[[v]] == "TRUE")
+N <- 10000
+chg <- d[any_chg == TRUE]
+f <- c("salutation", "first_name", "middle_name", "last_name", "suffix")
+part <- function(x, w) do.call(paste, c(lapply(f, function(v) x[[paste0(v, "_", w)]]), sep = " | "))
+chg[, `:=`(old = part(chg, "old"), new = part(chg, "new"))]
+chg[, tok := strsplit(sanitize_input(name), " ")]
+chg[, written := mapply(function(t, a, b) {
+  pa <- match(a, t); pb <- match(b, t)
+  if (is.na(pb)) pb <- match(sub("-.*", "", b), t)
+  !is.na(pa) && !is.na(pb) && pa < pb }, tok, first_name_new, last_name_new)]
+chg[, middle_split := mapply(function(lo, ln, mn) grepl("-", lo) && !grepl("-", ln) &&
+  mn != "" && grepl(mn, lo, fixed = TRUE), last_name_old, last_name_new, middle_name_new)]
+chg[, category := fcase(
+  !name_chg & !salutation_chg & !suffix_chg, "Gender only",
+  order_flip, "First and last name swapped",
+  middle_split, "Middle name no longer joined to the surname",
+  salutation_new != salutation_old & salutation_new != "", "Title or credential taken out of the name",
+  grepl("-", last_name_new) & !grepl("-", last_name_old), "Particle joined to the surname",
+  default = "Other changes")]
+
+tab <- function(x, n = 8) knitr::kable(head(x, n))
+ex <- function(k, n = 8) tab(chg[category == k & name_type == "person", .(Name = name, `0.0.9` = old, `0.2.2` = new)], n)
+cnt <- function(k) sum(chg$category == k)
+fmt <- function(x) format(x, big.mark = ",")
+```
+
+synthid's Form 990 Part VII people tables
+(`s3://nccs-efile/dev/synthid/partvii-v3_1/people/`) were parsed in October
+2026 with peopleparser commit `cb01547`, version 0.0.0.9000, called 0.0.9
+here. This page compares those parses with version 0.2.2 on a sample of names,
+to show what the changes since then do to real data and where the parser is
+still wrong.
+
+## The sample
+
+Twenty thousand rows were drawn at random from each of the 2017 and 2024
+people files, and `r fmt(N)` distinct names taken from them. Each name was
+parsed again with 0.2.2, with `split_run_together = TRUE` and
+`classify = TRUE`, and the salutation, first, middle and last name, suffix
+and gender compared with the stored values. The script is
+`data-raw/compare_versions.R`; every changed name is listed in
+`data-raw/compare-v0.0.9-v0.2.2.csv`. Parts are shown below as
+`salutation | first | middle | last | suffix`.
+
+## Summary
+
+`r fmt(nrow(chg))` of the `r fmt(N)` names (`r round(100 * nrow(chg) / N, 1)`%)
+parse differently. The rest are unchanged.
+
+```{r}
+s <- chg[, .(Names = .N), by = .(Change = category)]
+s[, Assessment := c(
+  "Gender only" = "Mostly gains: names newly coded from the 2020 census",
+  "First and last name swapped" = "Nearly all now keep the written order",
+  "Middle name no longer joined to the surname" = "Mostly better; a few names written surname first are now wrong",
+  "Title or credential taken out of the name" = "Better",
+  "Particle joined to the surname" = "Better",
+  "Other changes" = "Mixed; most are compound-surname order and names wrong in both")[Change]]
+setorder(s, -Names)
+knitr::kable(s)
+```
+
+`split_run_together()` changed none of these names: about one Part VII name in
+10,000 is written as one run-together word, so a sample this size holds few or
+none.
+
+## Gender
+
+```{r}
+g <- chg[gender_chg == TRUE]
+g[, type := fcase(gender_old == "U", "Unknown to F or M",
+                  gender_new == "U", "F or M to unknown",
+                  default = "Switched between F and M")]
+knitr::kable(g[, .(Names = .N), by = .(Change = type)][order(-Names)])
+```
+
+Most gains come from the 2020 census given-name lists, which hold about ten
+times as many names as the 1990 lists the old build used. The F/M switches are
+unisex names whose balance moved between 1990 and 2020:
+
+```{r}
+sw <- g[type == "Switched between F and M", .(Names = .N, F_to_M = sum(gender_new == "M")),
+        by = .(`First name` = first_name_new)][order(-Names)]
+tab(sw[, .(`First name`, Names, `Now M` = F_to_M, `Now F` = Names - F_to_M)], 10)
+```
+
+Gender for these names is close to a coin toss in either census; read the
+`gender_confidence` column before relying on it.
+
+## First and last name swapped
+
+`r cnt("First and last name swapped")` names have their first and last names
+swapped. In `r sum(chg[category == "First and last name swapped"]$written)` the
+new parse keeps the order the name was written in, first name first. The old
+build often read a two-word name as surname first when the census leaned that
+way at all.
+
+```{r}
+ex("First and last name swapped", 6)
+```
+
+The others are swapped away from the written order. Some may be right either
+way (`Sandoh Mayu`); the rest are the known weakness described under
+[Gaps](#gaps-that-persist).
+
+```{r}
+tab(chg[category == "First and last name swapped" & !written,
+        .(Name = name, `0.0.9` = old, `0.2.2` = new)])
+```
+
+## Middle names that are also surnames
+
+The old build joined a middle name to the surname whenever the census listed
+it more often as a surname, so `DAVID LEE SMITH` got the surname `LEE-SMITH`.
+Version 0.2.2 joins a middle word only when at least 90% of its census
+records are surnames (`GARCIA LOPEZ`). Initials are never joined.
+
+```{r}
+ex("Middle name no longer joined to the surname", 10)
+```
+
+A few names that were written surname first lost a right parse:
+`WALPERT LEVY TARA` was `TARA WALPERT-LEVY` and is now first name `LEVY`.
+
+## Titles, credentials and particles
+
+```{r}
+ex("Title or credential taken out of the name", 10)
+ex("Particle joined to the surname", 5)
+```
+
+## Other changes
+
+Most of the rest are compound surnames now kept in written order
+(`GUTIERREZ-VALVERDE`), stray words fixed (`KENNETHVAN-DER-VLIET` becomes
+`KENNETH VAN-DER-VLIET`) and `DO` and `DOCTOR` read as surnames. About half are
+names that are wrong in both versions: an unknown credential left in the
+surname (`OWENS-SSND`) or an organisation parsed as a person.
+
+```{r}
+ex("Other changes", 12)
+```
+
+## Regressions in 0.2.1 that 0.2.2 fixes
+
+The same comparison run with 0.2.1 found names that 0.2.1 parsed worse than
+0.0.9. These were fixed in 0.2.2:
+
+```{r}
+r <- data.table(Name = c("KATRINA VANDEN HEUVEL", "PATRICIA SAN PEDRO", "ESTELLA DE LOS RIOS",
+                         "SIR HUGH TAYLOR", "CHIEF TODD SCHMADERER", "GEN PERRIN",
+                         "COL RET CLARENCE MAXWELL", "TOKS MALIK ASHIRU", "DONG JOON YI",
+                         "TOBI M E YOUNG", "Albert J A Young ESQ", "BOYD RAY SCOTT",
+                         "CHIYA AYDIN AYHAN"),
+                `0.2.1` = c(" | KATRINA | VANDEN | HEUVEL | ", " | PATRICIA | SAN | PEDRO | ",
+                            " | ESTELLA | DE-LOS | RIOS | ", " | SIR | HUGH | TAYLOR | ",
+                            " | CHIEF | TODD | SCHMADERER | ", " | GEN |  | PERRIN | ",
+                            " | COL |  |  | ", " | MALIK |  | ASHIRU-TOKS | ",
+                            " | JOON | YI | DONG | ", " | TOBI |  | M-E-YOUNG | ",
+                            "ESQ | ALBERT |  | J-A-YOUNG | ", " | SCOTT |  | BOYD-RAY | ",
+                            " | AYDIN | AYHAN | CHIYA | "))
+p <- parse_names(r$Name)
+r[, `0.2.2` := do.call(paste, c(lapply(f, function(v) p[[v]]), sep = " | "))]
+knitr::kable(r)
+```
+
+`CHIYA AYDIN AYHAN` is still read as surname first; see below.
+
+## Name types
+
+```{r}
+nt <- d[name_type != "person"]
+```
+
+`classify_names()` labels `r nrow(nt)` of the `r fmt(N)` entries
+(`r round(100 * nrow(nt) / N, 2)`%) as something other than a person. Nearly
+all are right; `Sun Cheer Sheen` is a person labelled an organisation, and
+`METTA WORLD PEACE` (the basketball player's legal name) is labelled a person
+and an organisation.
+
+```{r}
+knitr::kable(nt[order(name_type, -as.numeric(org_score)),
+                .(Name = name, Type = name_type, `Org score` = org_score)])
+```
+
+## Gaps that persist
+
+* **An unlisted given name before a listed name.** A word missing from the
+  census counts as a likely surname, so `DR MASSUMEH FARHAD`,
+  `CLEVELAND TAYLER` and `CHIYA AYDIN AYHAN` are read as written surname
+  first.
+* **Names written surname first with weak evidence.** The written-order rule
+  keeps the order unless the census is clear, so `WALPERT LEVY TARA` and
+  `Soh Yeun Kim` are read in written order.
+* **Credentials the lists do not know** stay in the surname: `SSND`, `SIOR`,
+  `CNHA`, `MSCJ`, `FCAP`, `FACFAS`, `CPPO`, `CPSM`, `VG`. Add them with
+  `prefixes = c(prx, ...)`.
+* **Organisations and notes in person fields** are parsed as people
+  (`NORTHWESTERN MUTUAL LIFE INSURANCE COMPANY`, `PHILIP JONES VISIT DALLAS`).
+  Use `classify = TRUE` and drop the entries that are not people.
+* **Unisex names** (`KERRY`, `TAYLOR`, `KRIS`, `RILEY`) get a gender close to
+  a coin toss.
+* **Double surnames made of common given names** (`LEE`, `RAY`, `GRANT`) are
+  now split into a middle name and a surname.

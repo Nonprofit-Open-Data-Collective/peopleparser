@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">peopleparser</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,6 +40,7 @@
     <li><a class="dropdown-item" href="../articles/gender-scoring.html">Gender scoring and the census table</a></li>
     <li><a class="dropdown-item" href="../articles/canonical-first-names.html">Canonical first names, nicknames and gender</a></li>
     <li><a class="dropdown-item" href="../articles/name-types.html">People, organisations and run-together names</a></li>
+    <li><a class="dropdown-item" href="../articles/version-comparison.html">What changed since the synthid parses</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
@@ -234,8 +235,9 @@ rules assume two orders, <code>FIRST M LAST</code> and
 <ul>
 <li>a trailing initial means the name was written surname first:
 <code>SMITH JOHN A</code> becomes <code>JOHN A SMITH</code>;</li>
-<li>an initial in the middle with a surname in front and a given name at
-the end (<code>SMITH J ALAN</code>) is also reordered;</li>
+<li>an initial in the middle is reordered only when the two full words
+pass the two-word written-order test above (<code>SMITH J ALAN</code>
+becomes <code>J ALAN SMITH</code>);</li>
 <li>otherwise the order is kept.</li>
 </ul>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -252,29 +254,37 @@ the end (<code>SMITH J ALAN</code>) is also reordered;</li>
 <div class="section level3">
 <h3 id="three-full-tokens">Three full tokens<a class="anchor" aria-label="anchor" href="#three-full-tokens"></a>
 </h3>
-<p><code><a href="../reference/check_if_surname.html">check_if_surname()</a></code> is applied to each token:</p>
-<ul>
-<li>surname, surname, given name (<code>GARCIA LOPEZ MARIA</code>): the
-given name moves to the front;</li>
-<li>surname, given name, any (<code>SMITH JOHN ALAN</code>): the first
-token moves to the end;</li>
-<li>otherwise the order is kept: first, middle, last.</li>
-</ul>
+<p>The first and last words get the two-word written-order test above.
+The name is read surname first (<code>SMITH JOHN ALAN</code> becomes
+<code>JOHN ALAN SMITH</code>) only when the first word is much more
+likely a surname and the last a given name; otherwise the written order
+is kept: first, middle, last. <code>DONG JOON YI</code> and
+<code>TOKS MALIK ASHIRU</code> keep their order.</p>
+<p>Up to version 0.2.1 the rule reordered any name whose first word read
+as a surname and whose second did not, and counted every word missing
+from the census as a surname. Labelled by the convention of the other
+names on the same return, 28,811 three-word Part VII names were
+reordered wrongly 1,210 times by that rule and 53 times by the
+written-order test (<code>data-raw/name_order_eval3.R</code>).</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN ALAN SMITH"</span>, <span class="st">"SMITH JOHN ALAN"</span>, <span class="st">"GARCIA LOPEZ MARIA"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                  raw first_name middle_name    last_name</span></span>
-<span><span class="co">#&gt; 1    JOHN ALAN SMITH       JOHN        ALAN        SMITH</span></span>
-<span><span class="co">#&gt; 2    SMITH JOHN ALAN       JOHN        ALAN        SMITH</span></span>
-<span><span class="co">#&gt; 3 GARCIA LOPEZ MARIA      MARIA             GARCIA-LOPEZ</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN ALAN SMITH"</span>, <span class="st">"SMITH JOHN ALAN"</span>, <span class="st">"DONG JOON YI"</span>, <span class="st">"TOKS MALIK ASHIRU"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                 raw first_name middle_name last_name</span></span>
+<span><span class="co">#&gt; 1   JOHN ALAN SMITH       JOHN        ALAN     SMITH</span></span>
+<span><span class="co">#&gt; 2   SMITH JOHN ALAN       JOHN        ALAN     SMITH</span></span>
+<span><span class="co">#&gt; 3      DONG JOON YI       DONG        JOON        YI</span></span>
+<span><span class="co">#&gt; 4 TOKS MALIK ASHIRU       TOKS       MALIK    ASHIRU</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="four-or-more-tokens">Four or more tokens<a class="anchor" aria-label="anchor" href="#four-or-more-tokens"></a>
 </h3>
 <p>The first token is the first name and
-<code><a href="../reference/determine_surname.html">determine_surname()</a></code> picks the surname. Everything else is
-the middle name. If the name opens with two surnames followed by a given
-name (<code>SMITH JONES MARY ANN</code>), the two surnames are joined
-into one.</p>
+<code><a href="../reference/determine_surname.html">determine_surname()</a></code> picks the surname; a single letter is
+chosen only when nothing else can be. Everything else is the middle
+name. A word, two or more initials and a word
+(<code>GLYNN C W SCOTT</code>) is treated as a two-word name with middle
+initials. If the name opens with two surnames followed by a given name
+(<code>SMITH JONES MARY ANN</code>), the two surnames are joined into
+one.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN PAUL GEORGE RINGO"</span>, <span class="st">"SMITH JONES MARY ANN"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                      raw first_name middle_name   last_name</span></span>
@@ -297,7 +307,16 @@ join a particle to the word after it. The particles are <code>LA</code>,
 <code>VON</code>, <code>VAN</code>, <code>VANDER</code>,
 <code>DEL</code>, <code>DE</code>, <code>DI</code>, <code>DEN</code>,
 <code>DER</code> and <code>O</code>, plus <code>ST</code> inside a name
-(Saint) and <code>LO GRANDE</code>.</p>
+(Saint) and <code>LO GRANDE</code>. A second set joins only after the
+first word and before a word that is not a title: <code>VANDEN</code>,
+<code>VANDE</code>, <code>SAN</code>, <code>SANTA</code>,
+<code>LOS</code>, <code>LAS</code>, <code>DELLA</code>,
+<code>DALLA</code>, <code>DELA</code>, <code>DOS</code>,
+<code>DAS</code>, <code>DA</code>, <code>DU</code>, <code>TEN</code> and
+<code>TER</code> (<code>PATRICIA SAN PEDRO</code>,
+<code>ESTELLA DE LOS RIOS</code>, <code>LEANA DA SILVA</code>). Some of
+these are also given names, so they are not joined at the start of a
+name.</p>
 <p>A split <code>MC</code> surname inside a name is joined without a
 dash, the way the census and most records spell it:
 <code>STEVE MC CORMICK</code> gives <code>MCCORMICK</code>. A leading
@@ -309,13 +328,16 @@ trailing one as a credential (Navy Medical Corps).</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/fix_locative_surnames.html">fix_locative_surnames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Jane Van Dyke"</span>, <span class="st">"Carlos De La Rosa"</span>, <span class="st">"Dylan Van"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "Jane Van-Dyke"     "Carlos De-La-Rosa" "Dylan Van"</span></span>
 <span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"THOMAS H VON KAMECKE"</span>, <span class="st">"SEAN ST CLAIR"</span>, <span class="st">"JULIA DI BUSSOLO"</span>,</span>
-<span>       <span class="st">"JUAN CARLOS DE LA ROSA"</span>, <span class="st">"MARY VAN DER BERG"</span><span class="op">)</span><span class="op">)</span></span>
+<span>       <span class="st">"JUAN CARLOS DE LA ROSA"</span>, <span class="st">"MARY VAN DER BERG"</span>, <span class="st">"PATRICIA SAN PEDRO"</span>,</span>
+<span>       <span class="st">"ESTELLA DE LOS RIOS"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                      raw first_name middle_name    last_name</span></span>
 <span><span class="co">#&gt; 1   THOMAS H VON KAMECKE     THOMAS           H  VON-KAMECKE</span></span>
 <span><span class="co">#&gt; 2          SEAN ST CLAIR       SEAN                 ST-CLAIR</span></span>
 <span><span class="co">#&gt; 3       JULIA DI BUSSOLO      JULIA               DI-BUSSOLO</span></span>
 <span><span class="co">#&gt; 4 JUAN CARLOS DE LA ROSA       JUAN      CARLOS   DE-LA-ROSA</span></span>
-<span><span class="co">#&gt; 5      MARY VAN DER BERG       MARY             VAN-DER-BERG</span></span></code></pre></div>
+<span><span class="co">#&gt; 5      MARY VAN DER BERG       MARY             VAN-DER-BERG</span></span>
+<span><span class="co">#&gt; 6     PATRICIA SAN PEDRO   PATRICIA                SAN-PEDRO</span></span>
+<span><span class="co">#&gt; 7    ESTELLA DE LOS RIOS    ESTELLA              DE-LOS-RIOS</span></span></code></pre></div>
 <p>A particle at the end of a name (<code>Dylan Van</code>) has nothing
 to join and is left alone. <code>ST</code> at the start of a name is not
 joined, because there it is usually a title.</p>
@@ -324,11 +346,15 @@ joined, because there it is usually a title.</p>
 <h3 id="two-surnames-middle-tokens-that-read-as-surnames">Two surnames: middle tokens that read as surnames<a class="anchor" aria-label="anchor" href="#two-surnames-middle-tokens-that-read-as-surnames"></a>
 </h3>
 <p>After the first, middle and last names are assigned, a middle name of
-three or more letters is checked again. If it reads as a surname, it is
-joined to the last name:</p>
+three or more letters is checked again. A middle word joins the last
+name only when at least 90% of its census records are surnames, or it is
+not in the census. An initial never joins. So
+<code>MARIA GARCIA LOPEZ</code> gives <code>GARCIA-LOPEZ</code>
+(<code>GARCIA</code> is 99.8% surname), but <code>JOHN LEE SMITH</code>
+keeps <code>LEE</code> as the middle name (<code>LEE</code> is 81%
+surname; up to 0.2.1 this gave <code>LEE-SMITH</code>):</p>
 <ul>
-<li>one middle token that reads as a surname joins the last name
-(<code>MARIA GARCIA LOPEZ</code> gives <code>GARCIA-LOPEZ</code>);</li>
+<li>one middle token that is a strong surname joins the last name;</li>
 <li>with several middle tokens, an initial followed by a full token
 keeps the initial as the middle name and joins the rest to the
 surname;</li>
@@ -340,17 +366,17 @@ name.</li>
 they are joined in the order they were written.
 <code>MARY ANN SMITH JONES</code> gives <code>SMITH-JONES</code>, even
 though <code>SMITH</code> was picked as the main surname. When they are
-not next to each other (<code>SMITH JOHN WALKER</code>, written surname
-first), the middle part goes first.</p>
+not next to each other, the middle part goes first.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MARIA GARCIA LOPEZ"</span>, <span class="st">"ELIZABETH ANNE WALKER SMITH"</span>,</span>
+<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MARIA GARCIA LOPEZ"</span>, <span class="st">"JOHN LEE SMITH"</span>, <span class="st">"ELIZABETH ANNE WALKER SMITH"</span>,</span>
 <span>       <span class="st">"JOHN Q PUBLIC SMITH"</span>, <span class="st">"MARY ANN SMITH JONES"</span>, <span class="st">"JEAN A DU PONT"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                           raw first_name middle_name    last_name</span></span>
 <span><span class="co">#&gt; 1          MARIA GARCIA LOPEZ      MARIA             GARCIA-LOPEZ</span></span>
-<span><span class="co">#&gt; 2 ELIZABETH ANNE WALKER SMITH  ELIZABETH        ANNE WALKER-SMITH</span></span>
-<span><span class="co">#&gt; 3         JOHN Q PUBLIC SMITH       JOHN           Q PUBLIC-SMITH</span></span>
-<span><span class="co">#&gt; 4        MARY ANN SMITH JONES       MARY         ANN  SMITH-JONES</span></span>
-<span><span class="co">#&gt; 5              JEAN A DU PONT       JEAN           A      DU-PONT</span></span></code></pre></div>
+<span><span class="co">#&gt; 2              JOHN LEE SMITH       JOHN         LEE        SMITH</span></span>
+<span><span class="co">#&gt; 3 ELIZABETH ANNE WALKER SMITH  ELIZABETH        ANNE WALKER-SMITH</span></span>
+<span><span class="co">#&gt; 4         JOHN Q PUBLIC SMITH       JOHN           Q PUBLIC-SMITH</span></span>
+<span><span class="co">#&gt; 5        MARY ANN SMITH JONES       MARY         ANN  SMITH-JONES</span></span>
+<span><span class="co">#&gt; 6              JEAN A DU PONT       JEAN           A      DU-PONT</span></span></code></pre></div>
 <p>One exception: <code>MAY</code> is a common middle name and a
 surname. If it ends up at the front of a compound surname, it is moved
 back to the middle name.</p>
@@ -390,10 +416,16 @@ surnames rank above unlisted tokens (<code>TSHEPO CHO</code> keeps
 (<code>JAMES</code>, <code>LESLIE</code>, <code>TAYLOR</code>,
 <code>JORDAN</code>) is decided by a small margin. Treat such parses as
 uncertain.</li>
-<li>A middle name that is also a surname (<code>ANNE WALKER</code>) is
-joined to the last name. That is right for Spanish and Portuguese double
-surnames and for maiden names kept as a middle name, but not for given
-middle names that are also surnames.</li>
+<li>A middle word that is mostly a surname (<code>ANNE WALKER</code>,
+96%) is joined to the last name. That is right for Spanish and
+Portuguese double surnames and for maiden names kept as a middle name,
+but not for a given middle name that is a strong surname. Middle names
+that are often given names (<code>LEE</code>, <code>RAY</code>,
+<code>GRANT</code>) stay middle names, so a real double surname made of
+them is split.</li>
+<li>A given name missing from the census before a listed name can still
+be read as a surname written first (<code>CHIYA AYDIN AYHAN</code>,
+<code>MASSUMEH FARHAD</code>).</li>
 </ul>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

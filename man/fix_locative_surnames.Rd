@@ -6,7 +6,8 @@
 \usage{
 fix_locative_surnames(
   x,
-  particles = c("LA", "VON", "VAN", "VANDER", "DEL", "DE", "DI", "DEN", "DER", "O")
+  particles = c("LA", "VON", "VAN", "VANDER", "DEL", "DE", "DI", "DEN", "DER", "O"),
+  inner_particles = .inner_particles
 )
 }
 \arguments{
@@ -17,6 +18,13 @@ with the following word. Matching is case-insensitive. \code{MC} is not a
 default particle: \code{\link[=prep_name]{prep_name()}} joins a split \code{MC} surname without a dash
 (\verb{MC CORMICK} -> \code{MCCORMICK}, see \code{join_mc()}), and a leading or trailing
 \code{MC} is initials or a credential (Medical Corps).}
+
+\item{inner_particles}{Particles that are joined only when they are not
+the first word and the next word is not a title or suffix:
+\verb{PATRICIA SAN PEDRO} -> \code{SAN-PEDRO}, \verb{KATRINA VANDEN HEUVEL} ->
+\code{VANDEN-HEUVEL}, \verb{ESTELLA DE LOS RIOS} -> \code{DE-LOS-RIOS}. Some of them
+are also given names or words (\code{SANTA}, \code{TEN}), so they never join
+from the start of a name.}
 }
 \value{
 A character vector of names with compound surnames corrected

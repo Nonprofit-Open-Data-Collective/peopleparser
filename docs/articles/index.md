@@ -12,3 +12,8 @@
   gender](https://nonprofit-open-data-collective.github.io/peopleparser/articles/canonical-first-names.md):
 - [People, organisations and run-together
   names](https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-types.md):
+
+### Evaluations
+
+- [What changed since the parses in
+  synthid](https://nonprofit-open-data-collective.github.io/peopleparser/articles/version-comparison.md):

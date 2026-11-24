@@ -209,7 +209,7 @@ where they sit.
 
 | Rule | Tokens (examples) | Removed only when |
 |----|----|----|
-| Leading-only titles | `BISHOP`, `SHERIFF`, `CANTOR`, `DEACON`, `CAPTAIN`, `MOTHER`, `BROTHER`, `IMAM`, `MOST` | they are the first token and two or more tokens follow |
+| Leading-only titles | `BISHOP`, `SHERIFF`, `CANTOR`, `DEACON`, `CAPTAIN`, `MOTHER`, `BROTHER`, `IMAM`, `MOST`, `SIR`, `DAME`, `CHIEF`, `COUNCILMAN`, `CORPORAL`, `REP`, `CHAPLAIN` | they are the first token and two or more tokens follow |
 | Trailing-only titles | `SJ`, `CISA`, `OP`, `SC`, `DD`, and role words: `PRESIDENT`, `CHAIR`, `SECRETARY`, `TREASURER`, `TRUSTEE`, `VICECHAIR` | they sit in the run of known tokens at the end of the name, with at least two tokens before them |
 | Ambiguous credentials | `MA`, `BA`, `AB`, `NP`, `PT`, `DC`, `ND`, `RM`, `PM`, `APR`, … | they sit in that trailing run **and** the run also holds an unambiguous credential |
 | Tenure words | `TERM`, `ENDED`, `JOINED`, `SINCE`, `EMERITUS`, `NONVOTING`, … | they sit in that trailing run; they go to `status` |
@@ -252,13 +252,17 @@ A last safety net catches titles that are also given names. If stripping
 leaves no first name, and the removed token is a census given name (or
 `JD` or `ED`), the token is restored. Its original position decides its
 role: a leading token becomes the first name, a trailing one the
-surname.
+surname. Ranks and offices (`GEN`, `COL`, `ADM`, `SGT`, `GOV`, `SEN`,
+`HON`, `REV`, `SIR`) are never restored, although some are rare given
+names in the 2020 census, so `GEN PERRIN` keeps `GEN` as the title.
 
 ``` r
-show(c("EARL FAHNESTOCK", "TOM MAJOR"))
-#>               raw salutation first_name middle_name  last_name suffix status
-#> 1 EARL FAHNESTOCK                  EARL             FAHNESTOCK              
-#> 2       TOM MAJOR                   TOM                  MAJOR
+show(c("EARL FAHNESTOCK", "TOM MAJOR", "GEN PERRIN", "COL RET CLARENCE MAXWELL"))
+#>                        raw salutation first_name middle_name  last_name suffix status
+#> 1          EARL FAHNESTOCK                  EARL             FAHNESTOCK              
+#> 2                TOM MAJOR                   TOM                  MAJOR              
+#> 3               GEN PERRIN        GEN                            PERRIN              
+#> 4 COL RET CLARENCE MAXWELL        COL   CLARENCE                MAXWELL
 ```
 
 ## Using your own lists

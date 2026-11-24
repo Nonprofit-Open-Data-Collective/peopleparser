@@ -8,7 +8,8 @@
 #' break toward the later position. The first tier matters because in the 2020
 #' Census lists nearly every common surname also appears, rarely, as a given
 #' name (4,999 people are named SMITH), so a pure share would let an unknown
-#' token or an initial outrank SMITH in `"SJ SMITH"`.
+#' token or an initial outrank SMITH in `"SJ SMITH"`. A single letter comes
+#' last of all (`GLYNN C W SCOTT` -> `SCOTT`).
 #'
 #' @param x A census-data `data.table` to evaluate, as produced by
 #'   [get_census_data()].
@@ -48,6 +49,8 @@ determine_surname <- function(x) {
   p.last <- (1 + l) / tot
   known <- f + l > 0
   tier <- ifelse(known & p.last >= .surname_tier_min, 1L, ifelse(!known, 2L, 3L))
+  # an initial is the surname only when nothing else can be (GLYNN C W SCOTT)
+  tier[!known & nchar(x$name) == 1] <- 4L
   score <- ifelse(tier == 1L, tot, ifelse(tier == 3L, p.last, 0))
   ord <- x$ordinal
   most.likely <- ord[order(tier, -score, -tot, -ord)][1]
