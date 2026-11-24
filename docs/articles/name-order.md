@@ -174,7 +174,7 @@ rules assume two orders, `FIRST M LAST` and `LAST FIRST M`:
   `SMITH JOHN A` becomes `JOHN A SMITH`;
 - an initial in the middle is reordered only when the two full words
   pass the two-word written-order test above (`SMITH J ALAN` becomes
-  `ALAN J SMITH`);
+  `J ALAN SMITH`);
 - otherwise the order is kept.
 
 ``` r

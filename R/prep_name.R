@@ -103,8 +103,9 @@ fix_locative_surnames <- function(x,
 # Particles joined only inside a name (fix_locative_surnames()). In Part VII
 # names each appears mostly as an inner word before a surname (SAN 51 inner,
 # 1 first; VANDEN 12, 0). LE is left out: inside a name it is as often a
-# Vietnamese surname or middle name (HANG LE TO) as a particle.
-.inner_particles <- c("VANDEN", "VANDE", "SAN", "SANTA", "LOS", "LAS", "DELLA",
+# Vietnamese surname or middle name (HANG LE TO) as a particle. AL and EL
+# (0.2.3): MOHAMMED M AL HAEMLI -> AL-HAEMLI.
+.inner_particles <- c("VANDEN", "VANDE", "SAN", "SANTA", "LOS", "LAS", "DELLA", "AL", "EL",
                       "DALLA", "DELA", "DOS", "DAS", "DA", "DU", "TEN", "TER")
 
 #' Prep a Name for Parsing

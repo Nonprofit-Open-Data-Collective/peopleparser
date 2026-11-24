@@ -276,8 +276,8 @@ than replace them, so the built-in credentials are still removed:
 ``` r
 x <- "JANE DOE CFRE BOARDCHAIR"
 parse_name(x)[c("salutation", "last_name")]
-#>   salutation      last_name
-#> 1       CFRE DOE-BOARDCHAIR
+#>        salutation last_name
+#> 1 CFRE_BOARDCHAIR       DOE
 parse_name(x, prefixes = c(prx, "BOARDCHAIR"))[c("salutation", "last_name")]
 #>        salutation last_name
 #> 1 CFRE_BOARDCHAIR       DOE

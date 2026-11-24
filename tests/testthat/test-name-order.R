@@ -50,6 +50,20 @@ test_that("a middle name that is also a surname stays the middle name", {
   expect_equal(pn("COUNCILMAN BOBBY HENON")$first_name, "BOBBY")
 })
 
+test_that("unknown trailing credentials are stripped, unlisted surnames kept", {
+  expect_equal(pn("ANDREA M GORDON NMF")$last_name, "GORDON")
+  expect_equal(pn("ANTHONY F CHONG MD FAAFP")$last_name, "CHONG")
+  expect_equal(pn("Brian Fritz UHC")$last_name, "FRITZ")
+  expect_equal(pn("SUSAN M ROBEL RN BSN MHA NEA-BC")$last_name, "ROBEL")
+  expect_equal(pn("Samuel C Scott III NMHC")$last_name, "SCOTT")
+  expect_equal(pn("MARGARET RUSSELL SR MANAGER")$last_name, "RUSSELL")
+  expect_equal(pn("ROBERT J SLOAN CO-CHAIR")$last_name, "SLOAN")
+  expect_equal(pn("Cynthia Simon Skjodt")$last_name, "SKJODT")
+  expect_equal(pn("Noreen Gordon Sablotsky")$last_name, "SABLOTSKY")
+  expect_equal(pn("MARISSA PIAZZA PASKY")$last_name, "PIAZZA-PASKY")
+  expect_equal(pn("MOHAMMED M AL HAEMLI")$last_name, "AL-HAEMLI")
+})
+
 test_that("inner particles, titles and ranks", {
   expect_equal(pn("KATRINA VANDEN HEUVEL")$last_name, "VANDEN-HEUVEL")
   expect_equal(pn("PATRICIA SAN PEDRO")$last_name, "SAN-PEDRO")

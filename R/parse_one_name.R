@@ -411,7 +411,10 @@ deglue_tokens <- function( name_vec, split_initials = FALSE ) {
   "PRESIDENT", "CHAIR", "CHAIRMAN", "CHAIRWOMAN", "CHAIRPERSON", "SECRETARY",
   "TREASURER", "TRUSTEE", "SVP", "EVP", "ASSOCIATE", "ASSOC", "ASST",
   "VICECHAIR", "VICECHAIRMAN", "VICECHAIRWOMAN", "VICECHAIRPERSON",
-  "VICEPRESIDENT", "VICEPRES")
+  "VICEPRESIDENT", "VICEPRES",
+  # 0.2.3 (npmerger): MARGARET RUSSELL SR MANAGER, ROBERT J SLOAN CO-CHAIR
+  "MANAGER", "FOUNDER", "COFOUNDER", "CO-FOUNDER", "COCHAIR", "CO-CHAIR",
+  "CONTROLLER")
 
 # Titles that are also common surnames (BISHOP 116,618 census records; SHERIFF,
 # CANTOR, DEACON, CAPTAIN, MOST, IMAM, BROTHER): stripped only as the first
@@ -468,6 +471,56 @@ positional_tokens <- function( name_vec, prefixes, suffixes ) {
       out$titles <- unique( c( out$titles, name_vec[1] ) )
   }
   out
+}
+
+#' Unknown Credentials at the End of a Name
+#'
+#' Finds trailing words that are not in the census and read as a credential or
+#' organisation code the title lists do not know, so that they are stripped
+#' rather than taken as the surname (`ANDREA M GORDON NMF` -> `GORDON`,
+#' `ANTHONY F CHONG MD FAAFP` -> `CHONG`). A word missing from the census at
+#' the end of the name counts when it
+#' * follows a known title, suffix or credential (`RN BSN MHA NEA-BC`,
+#'   `SCOTT III NMHC`), or another word stripped by this rule;
+#' * is in `trailing_credentials`, words that end the Part VII names of many
+#'   different people after a surname (built by
+#'   data-raw/trailing_credentials.R), and follows a census surname; or
+#' * is a short code (five letters or fewer, at most one vowel, Y included) after a census
+#'   surname (`BRIAN FRITZ UHC`, `SCOTT WILLIS USMCR`).
+#' Only the run of such words at the end is taken, and two name words always
+#' stay. A surname missing from the census after a given name (`CYNTHIA SIMON
+#' SKJODT`, `NOREEN GORDON SABLOTSKY`) is kept.
+#'
+#' @param name_vec A character vector of name tokens.
+#' @param prefixes,suffixes The active prefix/suffix removal sets.
+#' @return A character vector of tokens to strip (possibly empty).
+#' @keywords internal
+unknown_trailing_credentials <- function( name_vec, prefixes, suffixes ) {
+  n <- length( name_vec )
+  if ( n < 3 ) return( character( 0 ) )
+  known <- name_vec %in% c( prefixes, suffixes, .ambiguous_suffix_credentials,
+                            .trailing_only_titles, .status_words, .trailing_status_words )
+  cd <- get_census_data( name_vec )
+  f <- cd$first_name_value; l <- cd$last_name_value
+  listed <- f + l > 0
+  surname <- listed & l > f
+  bare <- gsub( "-", "", name_vec )
+  vowels <- nchar( gsub( "[^AEIOUY]", "", bare ) )   # Y counts: PASKY is a surname
+  code <- nchar( bare ) >= 2 & nchar( bare ) <= 5 & vowels <= 1
+  flag <- known
+  for ( i in 3:n ) {
+    if ( known[i] || listed[i] ) next
+    flag[i] <- flag[i - 1] ||
+      ( surname[i - 1] && ( name_vec[i] %in% trailing_credentials || code[i] ) )
+  }
+  # the maximal run of flagged words at the end, keeping two name words
+  k <- 0
+  while ( k < n && flag[ n - k ] ) k <- k + 1
+  if ( k == 0 ) return( character( 0 ) )
+  idx <- ( n - k + 1 ):n
+  idx <- idx[ idx >= 3 & !known[ idx ] ]
+  if ( sum( !flag ) < 2 ) return( character( 0 ) )
+  unique( name_vec[ idx ] )
 }
 
 #' Ambiguous Suffix Credentials Eligible to Strip
@@ -574,7 +627,8 @@ parse_name <- function( x, prefixes = prx, suffixes = sfx, sanitize = FALSE,
   pos <- positional_tokens( Lx, prefixes, suffixes )
   prefixes <- c( prefixes,
                  trailing_ambiguous_credentials( Lx, prefixes, suffixes ),
-                 pos$titles )
+                 pos$titles,
+                 unknown_trailing_credentials( Lx, prefixes, suffixes ) )
 
   salutation.out <- extract_component( Lx, prefixes )
   salutation.name <- salutation.out$name; Lx <- salutation.out$remainder

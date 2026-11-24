@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">peopleparser</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,6 +47,17 @@
       <small>Source: <a href="https://github.com/Nonprofit-Open-Data-Collective/peopleparser/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.3" id="peopleparser-023">peopleparser 0.2.3<a class="anchor" aria-label="anchor" href="#peopleparser-023"></a></h2>
+<div class="section level3">
+<h3 id="unknown-credentials-no-longer-become-the-surname-0-2-3">Unknown credentials no longer become the surname<a class="anchor" aria-label="anchor" href="#unknown-credentials-no-longer-become-the-surname-0-2-3"></a></h3>
+<ul><li>In 0.2.2 a middle name joins the surname only when it is a strong surname. Where the last word was a credential or organisation code the lists do not know, that code became the whole surname: <code>ANDREA M GORDON NMF</code> gave <code>NMF</code>, where 0.2.1 gave <code>GORDON-NMF</code>. npmerger found 2,433 such last names in 1.77 million Part VII names (about half were real surnames missing from the census, which 0.2.2 parses correctly).</li>
+<li>A last word that is not in the census is now stripped as a credential when it follows a known title, suffix or credential (<code>CHONG MD FAAFP</code>, <code>ROBEL RN BSN MHA NEA-BC</code>, <code>SCOTT III NMHC</code>), when it is in a new list of 1,223 trailing codes, or when it is a short code (five letters or fewer, at most one vowel) after a census surname (<code>BRIAN FRITZ UHC</code>, <code>SCOTT WILLIS USMCR</code>). A surname missing from the census after a given name is kept (<code>CYNTHIA SIMON SKJODT</code>, <code>MARISSA PIAZZA PASKY</code>).</li>
+<li>The list (<code>data-raw/trailing-credentials.csv</code>, built by <code>data-raw/trailing_credentials.R</code> from all Part VII names) holds words that end the names of at least three different people, follow a census surname or a credential in at least 70% of them, and look like a code: medical credentials and fellowships (<code>FACEP</code>, <code>FAAFP</code>, <code>FACR</code>, <code>CRNP</code>), dates and tenure notes (<code>OCT</code>, <code>JAN-JUNE</code>, <code>PART-YEAR</code>), other professions (<code>SIOR</code>, <code>CGCS</code>), religious orders (<code>SSND</code>, <code>OSFS</code>) and hospital or system codes (<code>UPMC</code>, <code>NMHC</code>).</li>
+<li>On npmerger’s 2,433 names, 976 now get the true surname back; most of the rest are real surnames missing from the census. On the 10,000-name synthid sample, 29 names change from 0.2.2, all but one for the better.</li>
+<li>New trailing role words <code>MANAGER</code>, <code>FOUNDER</code>, <code>COFOUNDER</code>, <code>COCHAIR</code>, <code>CO-CHAIR</code>, <code>CONTROLLER</code>, and the inner particles <code>AL</code> and <code>EL</code> (<code>MOHAMMED M AL HAEMLI</code> -&gt; <code>AL-HAEMLI</code>).</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.2" id="peopleparser-022">peopleparser 0.2.2<a class="anchor" aria-label="anchor" href="#peopleparser-022"></a></h2>
 <div class="section level3">

@@ -1,3 +1,35 @@
+# peopleparser 0.2.3
+
+## Unknown credentials no longer become the surname
+
+* In 0.2.2 a middle name joins the surname only when it is a strong surname.
+  Where the last word was a credential or organisation code the lists do not
+  know, that code became the whole surname: `ANDREA M GORDON NMF` gave
+  `NMF`, where 0.2.1 gave `GORDON-NMF`. npmerger found 2,433 such last names
+  in 1.77 million Part VII names (about half were real surnames missing from
+  the census, which 0.2.2 parses correctly).
+* A last word that is not in the census is now stripped as a credential when
+  it follows a known title, suffix or credential (`CHONG MD FAAFP`,
+  `ROBEL RN BSN MHA NEA-BC`, `SCOTT III NMHC`), when it is in a new list of
+  1,223 trailing codes, or when it is a short code (five letters or fewer, at
+  most one vowel) after a census surname (`BRIAN FRITZ UHC`,
+  `SCOTT WILLIS USMCR`). A surname missing from the census after a given
+  name is kept (`CYNTHIA SIMON SKJODT`, `MARISSA PIAZZA PASKY`).
+* The list (`data-raw/trailing-credentials.csv`, built by
+  `data-raw/trailing_credentials.R` from all Part VII names) holds words that
+  end the names of at least three different people, follow a census surname
+  or a credential in at least 70% of them, and look like a code: medical
+  credentials and fellowships (`FACEP`, `FAAFP`, `FACR`, `CRNP`), dates and
+  tenure notes (`OCT`, `JAN-JUNE`, `PART-YEAR`), other professions
+  (`SIOR`, `CGCS`), religious orders (`SSND`, `OSFS`) and hospital or system
+  codes (`UPMC`, `NMHC`).
+* On npmerger's 2,433 names, 976 now get the true surname back; most of the
+  rest are real surnames missing from the census. On the 10,000-name synthid
+  sample, 29 names change from 0.2.2, all but one for the better.
+* New trailing role words `MANAGER`, `FOUNDER`, `COFOUNDER`, `COCHAIR`,
+  `CO-CHAIR`, `CONTROLLER`, and the inner particles `AL` and `EL`
+  (`MOHAMMED M AL HAEMLI` -> `AL-HAEMLI`).
+
 # peopleparser 0.2.2
 
 ## Compared with the parses in synthid
