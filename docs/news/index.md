@@ -1,5 +1,28 @@
 # Changelog
 
+## peopleparser 0.2.7
+
+### An organisation followed by its representative keeps the person
+
+- Entries that name an organisation and then the person who represents
+  it now parse the person: `PRUDENTIAL INSURANCE - KYLE SMITH` gives
+  `KYLE SMITH`, where before the dash cut the person and left
+  `PRUDENTIAL INSURANCE`; `INDIANA INSURANCE CO JOSEPH YEAGER` gives
+  `JOSEPH YEAGER`, where before it gave `INSURANCE-JOSEPH-YEAGER`. The
+  organisation must end in a clear organisation word (`INSURANCE`,
+  `INS`, `BANK`, `INC`, `LLC`, `CORPORATION`, `GROUP`, `SERVICES`, …),
+  optionally followed by `CO`, `INC`, `NA` and the like, and the rest
+  must look like a person: two to four words, the first a census given
+  name or an initial. `CITIZENS BANK AND TRUST`, `BANK OF NY MELLON` and
+  `COMERICA BANK - TRUST DIVISION` are left alone.
+- [`classify_names()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/classify_names.md)
+  labels these entries `"person and organisation"`.
+- `CO` before more words after a given name and surname is “care of” an
+  employer: `CHAD COTTER CO BURNS MCDONELL` gives `COTTER`, where before
+  it gave `COTTER-BURNS-MCDONELL`.
+- In all national Part VII names, 110 distinct entries (309 rows) are an
+  organisation followed by a person.
+
 ## peopleparser 0.2.6
 
 ### Role words, tenure notes and employers no longer become the surname
@@ -29,6 +52,10 @@ surname parts: `INSURANCE`, `STARTING`, `APPOINTED`, `MANAGING-DIR`.
   note is now joined as a double surname (`JAMES-JOHNSON`), as is the
   word after a single word (`ADKINS- RICEHOUSE PAULA`); otherwise the
   dash starts a note and the rest is cut, as for `-`.
+- On 200,000 distinct national Part VII names, 103 (0.05%) parse
+  differently from 0.2.5. Most are double surnames written with a
+  dangling dash (`STETSON-COMPTON`, `JEAN-BAPTISTE`) and tenure words
+  now in `status`; the rest are organisation names.
 
 ### Documentation
 

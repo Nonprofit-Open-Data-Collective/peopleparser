@@ -14,9 +14,11 @@ and show the columns that matter here as a table:
 ``` r
 library(peopleparser)
 
-show <- function(x, cols = c("salutation", "first_name", "middle_name",
-                             "suffix", "gender", "gender_confidence")) {
-  parse_names(x)[c("name", cols)] |> knitr::kable()
+# parse names and show the columns this article is about
+show <- function( x ) {
+  vars <- c( "name", "salutation", "first_name", "middle_name",
+             "suffix", "gender", "gender_confidence" )
+  parse_names( x )[ vars ] |> knitr::kable()
 }
 ```
 
@@ -35,8 +37,8 @@ and reports the larger side:
 rounded to one decimal place.
 
 ``` r
-cd <- get_census_data(c("LESLIE"))
-cd[, c("name", "male_value", "female_value")] |> knitr::kable()
+cd <- get_census_data( "LESLIE" )
+cd[ , c("name", "male_value", "female_value") ] |> knitr::kable()
 ```
 
 | name   | male_value | female_value |
@@ -44,7 +46,8 @@ cd[, c("name", "male_value", "female_value")] |> knitr::kable()
 | LESLIE |      52838 |       237654 |
 
 ``` r
-determine_gender(cd)
+
+determine_gender( cd )
 #> [1] "F"    "81.8"
 ```
 
@@ -55,8 +58,9 @@ that gender, which also depends on their age and on the population the
 record comes from.
 
 ``` r
-show(c("JOHN SMITH", "MARY SMITH", "LESLIE SMITH", "PAT SMITH",
-       "CHRIS JONES", "TAYLOR SWIFT"))
+x <- c( "JOHN SMITH", "MARY SMITH",  "LESLIE SMITH",
+        "PAT SMITH",  "CHRIS JONES", "TAYLOR SWIFT" )
+show( x )
 ```
 
 | name         | salutation | first_name | middle_name | suffix | gender | gender_confidence |
@@ -73,14 +77,26 @@ names, the majority gender holds 95% or more of the count for most of
 them:
 
 ``` r
-fn <- census.names[census.names$first_name_value > 0, ]
-share <- pmax(fn$male_value, fn$female_value) / (fn$male_value + fn$female_value)
-table(cut(share, c(0.5, 0.8, 0.95, 1), include.lowest = TRUE,
-          labels = c("50-80%", "80-95%", "95-100%")))
-#> 
-#>  50-80%  80-95% 95-100% 
-#>    7454    9093   37069
+fn    <- census.names[ census.names$first_name_value > 0, ]
+share <- pmax( fn$male_value, fn$female_value ) / ( fn$male_value + fn$female_value )
+
+# first names grouped by the share held by the majority gender
+bands <-
+  cut(
+    share,
+    breaks         = c(0.5, 0.8, 0.95, 1),
+    labels         = c("50-80%", "80-95%", "95-100%"),
+    include.lowest = TRUE
+  )
+
+table( bands ) |> knitr::kable( col.names = c("Majority gender share", "First names") )
 ```
+
+| Majority gender share | First names |
+|:----------------------|------------:|
+| 50-80%                |        7454 |
+| 80-95%                |        9093 |
+| 95-100%               |       37069 |
 
 ### Middle names count too
 
@@ -90,7 +106,7 @@ very common name outweighs a rare one, and two names of opposite gender
 give a weak score whatever their order:
 
 ``` r
-show(c("SARAH MAY WILSON", "JOHN MARY SMITH", "MARY JOHN SMITH"))
+show( c("SARAH MAY WILSON", "JOHN MARY SMITH", "MARY JOHN SMITH") )
 ```
 
 | name | salutation | first_name | middle_name | suffix | gender | gender_confidence |
@@ -114,7 +130,7 @@ The suffix rule reflects that generational suffixes are almost always
 used by men. The 50.0 says that the call is a default, not evidence.
 
 ``` r
-show(c("J SMITH", "J SMITH JR", "A J SMITH", "TSHEPO CHO", "SMITH JR"))
+show( c("J SMITH", "J SMITH JR", "A J SMITH", "TSHEPO CHO", "SMITH JR") )
 ```
 
 | name       | salutation | first_name | middle_name | suffix | gender | gender_confidence |
@@ -133,10 +149,15 @@ does not use the salutation for gender: `MR PAT SMITH` is scored from
 it after parsing:
 
 ``` r
-d <- parse_names(c("MR PAT SMITH", "MRS PAT SMITH", "DR PAT SMITH"))
-d$gender_sal <- ifelse(d$salutation == "MR", "M",
-                ifelse(d$salutation %in% c("MRS", "MS", "MISS"), "F", d$gender))
-d[c("name", "salutation", "gender", "gender_confidence", "gender_sal")] |> knitr::kable()
+d <- parse_names( c("MR PAT SMITH", "MRS PAT SMITH", "DR PAT SMITH") )
+
+# MR is male, MRS / MS / MISS female; any other title keeps the census score
+d$gender_sal <-
+  ifelse( d$salutation == "MR", "M",
+  ifelse( d$salutation %in% c("MRS", "MS", "MISS"), "F",
+          d$gender ) )
+
+d[ c("name", "salutation", "gender", "gender_confidence", "gender_sal") ] |> knitr::kable()
 ```
 
 | name          | salutation | gender | gender_confidence | gender_sal |
@@ -156,10 +177,13 @@ score. See
 `gender_confidence` is returned as text. Convert it before comparing:
 
 ``` r
-d <- parse_names(c("JOHN SMITH", "PAT SMITH", "J SMITH", "CHRIS JONES"))
-d$gender_confidence <- as.numeric(d$gender_confidence)
-d$gender_80 <- ifelse(d$gender_confidence >= 80, d$gender, "U")
-d[c("name", "gender", "gender_confidence", "gender_80")] |> knitr::kable()
+d <- parse_names( c("JOHN SMITH", "PAT SMITH", "J SMITH", "CHRIS JONES") )
+
+# confidence is text: convert it, then call anything under 80 unknown
+d$gender_confidence <- as.numeric( d$gender_confidence )
+d$gender_80         <- ifelse( d$gender_confidence >= 80, d$gender, "U" )
+
+d[ c("name", "gender", "gender_confidence", "gender_80") ] |> knitr::kable()
 ```
 
 | name        | gender | gender_confidence | gender_80 |
@@ -197,14 +221,25 @@ by `data-raw/census_names.R` from the Census Bureau’s 2020 name release,
 
 ``` r
 cn <- census.names
-c(rows           = nrow(cn),
-  male_names     = sum(cn$male_value > 0),
-  female_names   = sum(cn$female_value > 0),
-  first_names    = sum(cn$first_name_value > 0),
-  surnames       = sum(cn$last_name_value > 0))
-#>         rows   male_names female_names  first_names     surnames 
-#>       195311        47089        51475        53616       156622
-cn[cn$name %in% c("SMITH", "ALL OTHER NAMES"), ] |> knitr::kable()
+
+# how many names have a count in each role
+data.frame(
+  rows         = nrow( cn ),
+  male_names   = sum( cn$male_value > 0 ),
+  female_names = sum( cn$female_value > 0 ),
+  first_names  = sum( cn$first_name_value > 0 ),
+  surnames     = sum( cn$last_name_value > 0 )
+) |> knitr::kable( format.args = list(big.mark = ",") )
+```
+
+|    rows | male_names | female_names | first_names | surnames |
+|--------:|-----------:|-------------:|------------:|---------:|
+| 195,311 |     47,089 |       51,475 |      53,616 |  156,622 |
+
+``` r
+
+# a common surname, and the catch-all row
+cn[ cn$name %in% c("SMITH", "ALL OTHER NAMES"), ] |> knitr::kable()
 ```
 
 | name            | male_value | female_value | first_name_value | last_name_value |

@@ -98,6 +98,28 @@ test_that("role words, tenure words and employers do not become the surname", {
   expect_equal(classify_names("NOT APPOINTED")$name_type, "placeholder")
 })
 
+test_that("an organisation followed by a person keeps the person", {
+  for (x in c("PRUDENTIAL INSURANCE - KYLE SMITH", "Prudential Ins. Co. - Kyle Smith",
+              "PLEXUS GROUP-KYLE SMITH", "INDIANA INSURANCE CO KYLE SMITH",
+              "ANTHEM INC KYLE SMITH")) {
+    r <- pn(x)
+    expect_equal(c(r$first_name, r$last_name), c("KYLE", "SMITH"), info = x)
+  }
+  r <- pn("C R R ENTERPRISE INC - RONALD J RAB")
+  expect_equal(c(r$first_name, r$middle_name, r$last_name), c("RONALD", "J", "RAB"))
+  expect_equal(pn("NY LIFE INSURANCE D WHEELER")$last_name, "WHEELER")
+  # not a person after the organisation
+  expect_equal(peopleparser:::person_after_org_split(
+    c("CITIZENS BANK AND TRUST", "BANK OF NY MELLON", "US BANK AS TRUSTEE",
+      "COMERICA BANK - TRUST DIVISION", "FIRST DAKOTA NATIONAL BANK - MED SC",
+      "JOHN HEISER INSURANCE")), rep(NA_character_, 6))
+  expect_equal(classify_names("PRUDENTIAL INSURANCE - KYLE SMITH")$name_type,
+               "person and organisation")
+  # CO before more words is care of an employer
+  expect_equal(pn("CHAD COTTER CO BURNS MCDONELL")$last_name, "COTTER")
+  expect_equal(pn("JOHN SMITH CO")$last_name, "SMITH")
+})
+
 test_that("a dash at the end of a word joins a double surname or cuts a note", {
   expect_equal(pn("DEADERIA MORRIS- BOWMAN")$last_name, "MORRIS-BOWMAN")
   expect_equal(pn("HANA BEN- SHABAT")$last_name, "BEN-SHABAT")

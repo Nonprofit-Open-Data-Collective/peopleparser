@@ -38,10 +38,13 @@ false match waiting to happen.
 ## Classifying names
 
 ``` r
-x <- c("JOHN A SMITH", "PNC BANK NA", "TEAMSTERS LOCAL NO 338", "BNY MELLON",
-       "SEE SCHEDULE O", "VACANT", "MICHAEL AND ASHLEY SMITH",
-       "MARY SHURTS - LHS INC", "LARRY CHURCH", "SEE MOUA")
-classify_names(x) |> knitr::kable()
+x <- c( "JOHN A SMITH",             "PNC BANK NA",
+        "TEAMSTERS LOCAL NO 338",   "BNY MELLON",
+        "SEE SCHEDULE O",           "VACANT",
+        "MICHAEL AND ASHLEY SMITH", "MARY SHURTS - LHS INC",
+        "LARRY CHURCH",             "SEE MOUA" )
+
+classify_names( x ) |> knitr::kable()
 ```
 
 | name                     | name_type               | org_score |
@@ -73,19 +76,23 @@ classify_names(x) |> knitr::kable()
   words are a given name and a surname (`MARY SHURTS - LHS INC`, an
   employer after the name). Organisations named after a person
   (`KURT SUZUKI FAMILY FOUNDATION`) stay organisations, unless a dash
-  separates the parts.
+  separates the parts. An organisation followed by its representative
+  (`PRUDENTIAL INSURANCE - KYLE SMITH`) is also a person and an
+  organisation.
   [`parse_names()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/parse_names.md)
   still finds the person in most of these: the part after a dash is cut,
   and from an employer word such as `INSURANCE` or `COMPANY` on, the
-  rest is dropped (`JOHN HEISER INSURANCE` gives `JOHN HEISER`; see
+  rest is dropped (`JOHN HEISER INSURANCE` gives `JOHN HEISER`), and a
+  person after an organisation is kept (`KYLE SMITH`; see
   [`vignette("name-cleaning")`](https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-cleaning.md)).
 
 `parse_names(x, classify = TRUE)` adds the `name_type` and `org_score`
 columns to the parsed names, so the non-people can be set aside:
 
 ``` r
-p <- parse_names(x, classify = TRUE)
-p[, c("name", "first_name", "last_name", "name_type")] |> knitr::kable()
+# parse and classify in one step
+p <- parse_names( x, classify = TRUE )
+p[ , c("name", "first_name", "last_name", "name_type") ] |> knitr::kable()
 ```
 
 | name                     | first_name | last_name | name_type               |
@@ -157,12 +164,24 @@ checks in this article in `data-raw/name_type_eval.R`.
 ## Splitting run-together names
 
 ``` r
-split_run_together(c("KramerKenneth", "LedbetterJennifer A", "MURPHYSANDRA",
-                     "KLINESUZANNE", "McDonald", "LaToya Jones", "JOHN MARKWALD",
-                     "MARKWALD J"))
-#> [1] "Kramer Kenneth"       "Ledbetter Jennifer A" "MURPHY SANDRA"        "KLINE SUZANNE"       
-#> [5] "McDonald"             "LaToya Jones"         "JOHN MARKWALD"        "MARKWALD J"
+x <- c( "KramerKenneth", "LedbetterJennifer A",
+        "MURPHYSANDRA",  "KLINESUZANNE",
+        "McDonald",      "LaToya Jones",
+        "JOHN MARKWALD", "MARKWALD J" )
+
+data.frame( raw = x, split = split_run_together(x) ) |> knitr::kable()
 ```
+
+| raw                 | split                |
+|:--------------------|:---------------------|
+| KramerKenneth       | Kramer Kenneth       |
+| LedbetterJennifer A | Ledbetter Jennifer A |
+| MURPHYSANDRA        | MURPHY SANDRA        |
+| KLINESUZANNE        | KLINE SUZANNE        |
+| McDonald            | McDonald             |
+| LaToya Jones        | LaToya Jones         |
+| JOHN MARKWALD       | JOHN MARKWALD        |
+| MARKWALD J          | MARKWALD J           |
 
 A word is split only when the whole word is not a census name and the
 two parts are a strong surname and a strong given name:
@@ -180,8 +199,10 @@ two parts are a strong surname and a strong given name:
 The parser’s order rules then decide which part is the surname:
 
 ``` r
-parse_names(c("LedbetterJennifer A", "KramerKenneth", "MURPHYSANDRA"),
-            split_run_together = TRUE)[, c("name", "first_name", "middle_name", "last_name")] |> knitr::kable()
+x    <- c( "LedbetterJennifer A", "KramerKenneth", "MURPHYSANDRA" )
+vars <- c( "name", "first_name", "middle_name", "last_name" )
+
+parse_names( x, split_run_together = TRUE )[ , vars ] |> knitr::kable()
 ```
 
 | name                | first_name | middle_name | last_name |

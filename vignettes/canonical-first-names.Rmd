@@ -31,7 +31,9 @@ vignette *First-name variants - how the table was built* describes the build
 and the hand review.
 
 ```{r}
-table(first_name_pairs$type, first_name_pairs$lexicon)
+# pairs by type, split by whether they were reviewed by hand (the lexicon)
+table( first_name_pairs$type, first_name_pairs$lexicon ) |>
+  knitr::kable( col.names = c("not reviewed", "lexicon") )
 ```
 
 * The **lexicon** (`lexicon = TRUE`) is 1,002 pairs seen in 25 or more
@@ -46,8 +48,11 @@ form is nationally (`freq_short`, `freq_long`) and the share of each form's
 records that are female (`f_short`, `f_long`).
 
 ```{r}
-subset(first_name_pairs, name_short %in% c("PAT", "KATE") & lexicon,
-       c(name_short, name_long, type, n_emp_ids, f_short, f_long, formal)) |> knitr::kable()
+# the hand-reviewed pairs for PAT and KATE
+keep <- first_name_pairs$name_short %in% c("PAT", "KATE") & first_name_pairs$lexicon
+vars <- c( "name_short", "name_long", "type", "n_emp_ids", "f_short", "f_long", "formal" )
+
+subset( first_name_pairs, keep, vars ) |> knitr::kable()
 ```
 
 Pairs are stored with the shorter form first. That is not always the formal
@@ -86,8 +91,10 @@ goes to a more common name, so the path always ends. Its end is the
 **spelling root**:
 
 ```{r}
-nickname_lookup(c("KATHRYN", "KATHERINE", "STEVEN", "JEFFERY", "KATHRINE"))[
-  , c("first_name_canonical", "canonical_rule")] |> knitr::kable()
+x    <- c( "KATHRYN", "KATHERINE", "STEVEN", "JEFFERY", "KATHRINE" )
+vars <- c( "first_name_canonical", "canonical_rule" )
+
+cbind( name = x, nickname_lookup(x)[ , vars ] ) |> knitr::kable()
 ```
 
 KATHRYN moves to KATHERINE (more common), and KATHERINE to CATHERINE (more
@@ -110,7 +117,7 @@ MARK/MARCUS, out of 591,323 MARK records (0.008%), so MARK stays MARK. JIM
 passes easily: 13,435 people carry JIM/JAMES, 3.7% of the JIM records.
 
 ```{r}
-canonical_first_name(c("JIM", "MARK", "CHAD", "LISA"))
+canonical_first_name( c("JIM", "MARK", "CHAD", "LISA") )
 ```
 
 The formal candidates are the name's **direct** formal partners. Partners that
@@ -133,9 +140,13 @@ knitr::include_graphics("figures/chain-katherine-canonical.png")
 ```
 
 ```{r}
-x <- c("KATE", "KATIE", "KITTY", "KATHY", "CATHY", "KATHLEEN", "CATHLEEN")
-cbind(name = x, nickname_lookup(x, gender = "F", gender_confidence = 99)[
-  , c("first_name_type", "first_name_canonical", "canonical_rule")]) |> knitr::kable()
+x    <- c( "KATE", "KATIE", "KITTY", "KATHY", "CATHY", "KATHLEEN", "CATHLEEN" )
+vars <- c( "first_name_type", "first_name_canonical", "canonical_rule" )
+
+# all female with high confidence, so gender rules out the male formal names
+nk <- nickname_lookup( x, gender = "F", gender_confidence = 99 )
+
+cbind( name = x, nk[ , vars ] ) |> knitr::kable()
 ```
 
 `canonical_rule` records how each canonical name was reached:
@@ -166,9 +177,17 @@ knitr::include_graphics("figures/gender-pat.png")
 ```
 
 ```{r}
-nickname_lookup(c("PAT", "PAT", "PAT"), gender = c("F", "M", "U"),
-                gender_confidence = c(95, 95, 50))[
-  , c("first_name_formal", "first_name_canonical", "canonical_rule")] |> knitr::kable()
+# the same nickname for a woman, a man and a person of unknown gender
+nk <-
+  nickname_lookup(
+    first_name        = c("PAT", "PAT", "PAT"),
+    gender            = c("F", "M", "U"),
+    gender_confidence = c(95, 95, 50)
+  )
+
+vars <- c( "first_name_formal", "first_name_canonical", "canonical_rule" )
+
+cbind( gender = c("F", "M", "U"), nk[ , vars ] ) |> knitr::kable()
 ```
 
 If gender rules out **every** candidate, the name keeps its own form (`self`).
@@ -176,8 +195,8 @@ The table has no female formal name for CHRIS, so a female CHRIS stays CHRIS
 and is not sent to CHRISTOPHER:
 
 ```{r}
-nickname_lookup("CHRIS", gender = "F", gender_confidence = 95)[
-  , c("first_name_formal", "first_name_canonical", "canonical_rule")] |> knitr::kable()
+nk <- nickname_lookup( "CHRIS", gender = "F", gender_confidence = 95 )
+nk[ , vars ] |> knitr::kable()
 ```
 
 **A caution about gender.** The `gender` field in a parse is itself inferred
@@ -190,8 +209,10 @@ does not use the salutation (MR PAT still reads F there); the nickname step
 does:
 
 ```{r}
-parse_names(c("PAT SMITH", "MR PAT SMITH", "MRS PAT SMITH"), add_nicknames = TRUE)[
-  , c("name", "gender", "gender_confidence", "first_name_canonical", "canonical_rule")] |> knitr::kable()
+x    <- c( "PAT SMITH", "MR PAT SMITH", "MRS PAT SMITH" )
+vars <- c( "name", "gender", "gender_confidence", "first_name_canonical", "canonical_rule" )
+
+parse_names( x, add_nicknames = TRUE )[ , vars ] |> knitr::kable()
 ```
 
 ## A name's whole family: `first_name_variants()`
@@ -205,7 +226,7 @@ and how each name gets there. `via` is the name it connects through. Rows with
 * nicknames that are ambiguous between this name and another.
 
 ```{r}
-first_name_variants("kate", min_freq = 1000) |> knitr::kable()
+first_name_variants( "kate", min_freq = 1000 ) |> knitr::kable()
 ```
 
 KATE resolves to CATHERINE. The family holds CATHERINE's spellings, the
@@ -216,15 +237,18 @@ into it.
 Without the related rows and the rare forms:
 
 ```{r}
-first_name_variants("steve", related = FALSE, min_freq = 100) |> knitr::kable()
+first_name_variants( "steve", related = FALSE, min_freq = 100 ) |> knitr::kable()
 ```
 
 Gender can change the family. For a female PAT the family is PATRICIA. With
 no gender PAT is ambiguous, so its family is just PAT:
 
 ```{r}
-first_name_variants("pat", gender = "F", min_freq = 1000) |> knitr::kable()
-first_name_variants("pat", min_freq = 1000) |> knitr::kable()
+# a female PAT
+first_name_variants( "pat", gender = "F", min_freq = 1000 ) |> knitr::kable()
+
+# PAT with no gender
+first_name_variants( "pat", min_freq = 1000 ) |> knitr::kable()
 ```
 
 ## Using it when parsing
@@ -234,10 +258,12 @@ columns `first_name_type`, `first_name_formal`, `first_name_nicknames`,
 `first_name_canonical` and `canonical_rule`:
 
 ```{r}
-x <- c("Bob Jones", "MRS PAT LEE", "Kathy Ruiz", "STEVEN H PARK", "Mark Webb")
-parse_names(x, add_nicknames = TRUE)[
-  , c("name", "first_name", "gender", "first_name_formal", "first_name_canonical",
-      "canonical_rule")] |> knitr::kable()
+x <- c( "Bob Jones", "MRS PAT LEE", "Kathy Ruiz", "STEVEN H PARK", "Mark Webb" )
+
+vars <- c( "name", "first_name", "gender",
+           "first_name_formal", "first_name_canonical", "canonical_rule" )
+
+parse_names( x, add_nicknames = TRUE )[ , vars ] |> knitr::kable()
 ```
 
 The helpers `canonical_first_name()`, `get_formal_names()` and

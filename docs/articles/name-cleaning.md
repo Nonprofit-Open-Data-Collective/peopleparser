@@ -16,9 +16,11 @@ and show the columns that matter here as a table:
 ``` r
 library(peopleparser)
 
-show <- function(x, cols = c("salutation", "first_name", "middle_name",
-                             "last_name", "suffix", "status")) {
-  parse_names(x)[c("name", cols)] |> knitr::kable()
+# parse names and show the columns this article is about
+show <- function( x ) {
+  vars <- c( "name", "salutation", "first_name", "middle_name",
+             "last_name", "suffix", "status" )
+  parse_names( x )[ vars ] |> knitr::kable()
 }
 ```
 
@@ -43,9 +45,10 @@ show <- function(x, cols = c("salutation", "first_name", "middle_name",
     name tokens -> name order and gender
 
 ``` r
-show(c("livingston III,  Mr. MICHAEL JOHN9",
-       "ROBERT NAGLE - SMFA BOARD OF",
-       "JANE DOE RN MA TERM ENDED"))
+x <- c( "livingston III,  Mr. MICHAEL JOHN9",
+        "ROBERT NAGLE - SMFA BOARD OF",
+        "JANE DOE RN MA TERM ENDED" )
+show( x )
 ```
 
 | name | salutation | first_name | middle_name | last_name | suffix | status |
@@ -69,12 +72,13 @@ Most patterns delete everything from the marker to the end of the
 string.
 
 ``` r
-x <- c("ROBERT NAGLE - SMFA BOARD OF",
-       "MARY JONES EXECUTIVE DIRECTOR",
-       "JOHN SMITH SEE SCHEDULE O",
-       "ANN LEE THROUGH 6/30",
-       "MR AND MRS PATRICK VETERS")
-data.frame(raw = x, cleaned = de_clutter(x)) |> knitr::kable()
+x <- c( "ROBERT NAGLE - SMFA BOARD OF",
+        "MARY JONES EXECUTIVE DIRECTOR",
+        "JOHN SMITH SEE SCHEDULE O",
+        "ANN LEE THROUGH 6/30",
+        "MR AND MRS PATRICK VETERS" )
+
+data.frame( raw = x, cleaned = de_clutter(x) ) |> knitr::kable()
 ```
 
 | raw                           | cleaned        |
@@ -92,9 +96,11 @@ the `status` column later instead of being lost: `AS OF ...` becomes
 after it.
 
 ``` r
-x <- c("JOHN SMITH AS OF 6/2019", "ANN LEE FORMER PRESIDENT",
-       "DUANE LARSON STARTING 6-2022")
-data.frame(raw = x, cleaned = de_clutter(x)) |> knitr::kable()
+x <- c( "JOHN SMITH AS OF 6/2019",
+        "ANN LEE FORMER PRESIDENT",
+        "DUANE LARSON STARTING 6-2022" )
+
+data.frame( raw = x, cleaned = de_clutter(x) ) |> knitr::kable()
 ```
 
 | raw                          | cleaned               |
@@ -111,9 +117,13 @@ single word (`ADKINS- RICEHOUSE PAULA`). Otherwise the dash starts a
 note and the rest is cut, as for `-`.
 
 ``` r
-x <- c("KARA JAMES- JOHNSON", "ADKINS- RICEHOUSE PAULA",
-       "JASON FRENN- MANAGING DIRECTOR", "RICK DIETZ- JAN THRU JUNE")
-data.frame(raw = x, cleaned = de_clutter(x)) |> knitr::kable()
+# the first two are double surnames, the last two start a note
+x <- c( "KARA JAMES- JOHNSON",
+        "ADKINS- RICEHOUSE PAULA",
+        "JASON FRENN- MANAGING DIRECTOR",
+        "RICK DIETZ- JAN THRU JUNE" )
+
+data.frame( raw = x, cleaned = de_clutter(x) ) |> knitr::kable()
 ```
 
 | raw                            | cleaned                |
@@ -140,13 +150,20 @@ produces the token string the parser works on:
   [`vignette("name-order")`](https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-order.md).
 
 ``` r
-prep_name(c("livingston III,  Mr. MICHAEL JOHN9",
-            "Jane O'Brien-Smith, Ph.D.",
-            "THOMAS H VON KAMECKE",
-            "SEAN ST CLAIR, VICE CHAIR"))
-#> [1] "LIVINGSTON III MR MICHAEL JOHN" "JANE OBRIEN-SMITH PHD"         
-#> [3] "THOMAS H VON-KAMECKE"           "SEAN ST-CLAIR VICECHAIR"
+x <- c( "livingston III,  Mr. MICHAEL JOHN9",
+        "Jane O'Brien-Smith, Ph.D.",
+        "THOMAS H VON KAMECKE",
+        "SEAN ST CLAIR, VICE CHAIR" )
+
+data.frame( raw = x, prepped = prep_name(x) ) |> knitr::kable()
 ```
+
+| raw                               | prepped                        |
+|:----------------------------------|:-------------------------------|
+| livingston III, Mr. MICHAEL JOHN9 | LIVINGSTON III MR MICHAEL JOHN |
+| Jane O’Brien-Smith, Ph.D.         | JANE OBRIEN-SMITH PHD          |
+| THOMAS H VON KAMECKE              | THOMAS H VON-KAMECKE           |
+| SEAN ST CLAIR, VICE CHAIR         | SEAN ST-CLAIR VICECHAIR        |
 
 The re-joins matter because the pieces are otherwise ambiguous: `ED` is
 a given name, `VICE` is a surname, and `ST` on its own is in the prefix
@@ -174,7 +191,7 @@ are real:
   for example against the same person in other years.
 
 ``` r
-show(c("MRWILLIAM JONES", "JOHN SMITH JRMD", "DREW CAREY"))
+show( c("MRWILLIAM JONES", "JOHN SMITH JRMD", "DREW CAREY") )
 ```
 
 | name            | salutation | first_name | middle_name | last_name | suffix | status |
@@ -184,7 +201,9 @@ show(c("MRWILLIAM JONES", "JOHN SMITH JRMD", "DREW CAREY"))
 | DREW CAREY      |            | DREW       |             | CAREY     |        |        |
 
 ``` r
-parse_name("JOHN CWOOLFOLK", split_initials = TRUE) |> knitr::kable()
+
+# off by default: split a stray initial from the surname
+parse_name( "JOHN CWOOLFOLK", split_initials = TRUE ) |> knitr::kable()
 ```
 
 | salutation | first_name | middle_name | last_name | suffix | status | gender | gender_confidence |
@@ -198,16 +217,16 @@ employer: `JOHN HEISER INSURANCE`, `LISA PIERCE ALLSTATE INSURANCE CO`.
 When an employer word (`INSURANCE`, `ASSURANCE`, `COMPANY`, `COMPANIES`,
 `AGENCY`, `CORPORATION`, `CORP`, `INC`, `LLC`) is the third word or
 later, the name keeps its given name and surname, plus any title or
-suffix right after them, and the rest is dropped. A name that starts
-with the organisation (`PRUDENTIAL INSURANCE - KYLE SMITH`) is not
-repaired;
-[`classify_names()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/classify_names.md)
-flags most of these (see
-[`vignette("name-types")`](https://nonprofit-open-data-collective.github.io/peopleparser/articles/name-types.md)).
+suffix right after them, and the rest is dropped. `CO` followed by more
+words is “care of” an employer and ends the name the same way.
 
 ``` r
-show(c("JOHN HEISER INSURANCE", "LISA PIERCE ALLSTATE INSURANCE CO",
-       "RANDY DENNIS DENNIS COMPANY", "DR JOHN SMITH JR STATE FARM INSURANCE"))
+x <- c( "JOHN HEISER INSURANCE",
+        "LISA PIERCE ALLSTATE INSURANCE CO",
+        "RANDY DENNIS DENNIS COMPANY",
+        "DR JOHN SMITH JR STATE FARM INSURANCE",
+        "CHAD COTTER CO BURNS MCDONELL" )
+show( x )
 ```
 
 | name | salutation | first_name | middle_name | last_name | suffix | status |
@@ -216,6 +235,48 @@ show(c("JOHN HEISER INSURANCE", "LISA PIERCE ALLSTATE INSURANCE CO",
 | LISA PIERCE ALLSTATE INSURANCE CO |  | LISA |  | PIERCE |  |  |
 | RANDY DENNIS DENNIS COMPANY |  | RANDY |  | DENNIS |  |  |
 | DR JOHN SMITH JR STATE FARM INSURANCE | DR | JOHN |  | SMITH | JR |  |
+| CHAD COTTER CO BURNS MCDONELL |  | CHAD |  | COTTER |  |  |
+
+### An organisation, then its representative
+
+The order can also be reversed: the organisation first, then the person
+who represents it (`PRUDENTIAL INSURANCE - KYLE SMITH`).
+[`de_clutter()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/de_clutter.md)
+keeps the person when the organisation ends in a clear organisation word
+(`INSURANCE`, `INS`, `BANK`, `INC`, `LLC`, `CORPORATION`, `GROUP`,
+`SERVICES`, …), and the rest looks like a person: two to four words, the
+first a census given name or an initial.
+[`classify_names()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/classify_names.md)
+labels these entries `"person and organisation"`.
+
+``` r
+# the person after the organisation is kept
+x <- c( "PRUDENTIAL INSURANCE - KYLE SMITH",
+        "INDIANA INSURANCE CO JOSEPH YEAGER",
+        "PLEXUS GROUP-ROGER HISER",
+        "NY LIFE INSURANCE D WHEELER" )
+show( x )
+```
+
+| name | salutation | first_name | middle_name | last_name | suffix | status |
+|:---|:---|:---|:---|:---|:---|:---|
+| PRUDENTIAL INSURANCE - KYLE SMITH |  | KYLE |  | SMITH |  |  |
+| INDIANA INSURANCE CO JOSEPH YEAGER |  | JOSEPH |  | YEAGER |  |  |
+| PLEXUS GROUP-ROGER HISER |  | ROGER |  | HISER |  |  |
+| NY LIFE INSURANCE D WHEELER |  | D |  | WHEELER |  |  |
+
+``` r
+
+# no person after the organisation, so nothing changes
+x <- c( "CITIZENS BANK AND TRUST",
+        "COMERICA BANK - TRUST DIVISION" )
+data.frame( raw = x, cleaned = de_clutter(x) ) |> knitr::kable()
+```
+
+| raw                            | cleaned                 |
+|:-------------------------------|:------------------------|
+| CITIZENS BANK AND TRUST        | CITIZENS BANK AND TRUST |
+| COMERICA BANK - TRUST DIVISION | COMERICA BANK           |
 
 ## Steps 6-9: stripping titles, credentials, suffixes and status
 
@@ -232,7 +293,8 @@ Three lists of tokens are removed from the name:
   `DECEASED` and `ASOF`. Removed tokens go to `status`.
 
 ``` r
-length(prx)
+# number of titles and credentials, and the generational suffixes
+length( prx )
 #> [1] 266
 sfx
 #> [1] "JR"     "JUNIOR" "SR"     "SENIOR" "II"     "III"    "IV"
@@ -243,7 +305,7 @@ or the end. When several tokens match, they are all removed and joined
 with `_`:
 
 ``` r
-show(c("DR JOHN SMITH MD PHD", "REV JANE DOE JR"))
+show( c("DR JOHN SMITH MD PHD", "REV JANE DOE JR") )
 ```
 
 | name                 | salutation | first_name | middle_name | last_name | suffix | status |
@@ -257,21 +319,36 @@ keep the credentials rather than throw them away:
 
 ``` r
 titles <- known_titles()
-table(titles$type)
-#> 
-#>            Academic Degree    Civic / Political Title           Fraternal Office 
-#>                         57                         15                          5 
-#>         Geographic / Other      Honorific / Nobiliary       Military Affiliation 
-#>                          1                          1                          9 
-#>              Military Rank            Military Status        Organizational Role 
-#>                         28                          4                         32 
-#>                      Other Personal Name Abbreviation             Personal Title 
-#>                          1                          1                          9 
-#>    Professional Credential        Religious Honorific            Religious Order 
-#>                         84                          1                         22 
-#>            Religious Title 
-#>                         24
-subset(titles, abbr %in% c("RSM", "FACHE", "CFRE", "USNRET")) |> knitr::kable()
+
+# how many tokens of each type
+table( type = titles$type ) |>
+  sort( decreasing = TRUE ) |>
+  knitr::kable( col.names = c("Title type", "Tokens") )
+```
+
+| Title type                 | Tokens |
+|:---------------------------|-------:|
+| Professional Credential    |     84 |
+| Academic Degree            |     57 |
+| Organizational Role        |     32 |
+| Military Rank              |     28 |
+| Religious Title            |     24 |
+| Religious Order            |     22 |
+| Civic / Political Title    |     15 |
+| Military Affiliation       |      9 |
+| Personal Title             |      9 |
+| Fraternal Office           |      5 |
+| Military Status            |      4 |
+| Geographic / Other         |      1 |
+| Honorific / Nobiliary      |      1 |
+| Other                      |      1 |
+| Personal Name Abbreviation |      1 |
+| Religious Honorific        |      1 |
+
+``` r
+
+# a few of the rows
+subset( titles, abbr %in% c("RSM", "FACHE", "CFRE", "USNRET") ) |> knitr::kable()
 ```
 
 | abbr | label | type |
@@ -298,11 +375,12 @@ where they sit.
 | Unknown trailing credentials | `NMF`, `FAAFP`, `NEA-BC`, `UHC`, and over a thousand more learned from Part VII names | they end the name after a census surname or another credential, are not census names, and are on the learned list or look like a code (2-5 letters, at most one vowel); at least two name words stay |
 
 ``` r
-show(c("BISHOP JOHN SMITH", "JOHN BISHOP",
-       "JANE DOE RN MA", "MA LIN",
-       "LARRY BLACK SECRETARY",
-       "KENT CASHELL TERM ENDED",
-       "ANDREA M GORDON NMF", "ANTHONY F CHONG MD FAAFP"))
+x <- c( "BISHOP JOHN SMITH",       "JOHN BISHOP",
+        "JANE DOE RN MA",          "MA LIN",
+        "LARRY BLACK SECRETARY",
+        "KENT CASHELL TERM ENDED",
+        "ANDREA M GORDON NMF",     "ANTHONY F CHONG MD FAAFP" )
+show( x )
 ```
 
 | name | salutation | first_name | middle_name | last_name | suffix | status |
@@ -329,8 +407,9 @@ has already cut `TERM ENDED`, so `status` is empty. The tenure-word rule
 matters for input that skips sanitizing:
 
 ``` r
-parse_name("KENT CASHELL TERM ENDED")[c("first_name", "last_name", "status")] |>
-  knitr::kable()
+# not sanitized, so TERM ENDED is still there for the tenure-word rule
+p <- parse_name( "KENT CASHELL TERM ENDED" )
+p[ c("first_name", "last_name", "status") ] |> knitr::kable()
 ```
 
 | first_name | last_name | status     |
@@ -348,7 +427,9 @@ surname. Ranks and offices (`GEN`, `COL`, `ADM`, `SGT`, `GOV`, `SEN`,
 names in the 2020 census, so `GEN PERRIN` keeps `GEN` as the title.
 
 ``` r
-show(c("EARL FAHNESTOCK", "TOM MAJOR", "GEN PERRIN", "COL RET CLARENCE MAXWELL"))
+x <- c( "EARL FAHNESTOCK", "TOM MAJOR",
+        "GEN PERRIN",      "COL RET CLARENCE MAXWELL" )
+show( x )
 ```
 
 | name | salutation | first_name | middle_name | last_name | suffix | status |
@@ -367,10 +448,16 @@ take `prefixes` and `suffixes` arguments. Extend the defaults rather
 than replace them, so the built-in credentials are still removed:
 
 ``` r
-x <- "JANE DOE CFRE BOARDCHAIR"
-rbind(default  = parse_name(x)[c("salutation", "last_name")],
-      extended = parse_name(x, prefixes = c(prx, "BOARDCHAIR"))[c("salutation", "last_name")]) |>
-  knitr::kable()
+x    <- "JANE DOE CFRE BOARDCHAIR"
+vars <- c( "salutation", "last_name" )
+
+# the default list plus one more word
+my_prx <- c( prx, "BOARDCHAIR" )
+
+rbind(
+  default  = parse_name( x )[ vars ],
+  extended = parse_name( x, prefixes = my_prx )[ vars ]
+) |> knitr::kable()
 ```
 
 |          | salutation      | last_name |

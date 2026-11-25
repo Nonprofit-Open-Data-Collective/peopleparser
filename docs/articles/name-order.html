@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">peopleparser</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -96,8 +96,10 @@ show the name columns as a table:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://nonprofit-open-data-collective.github.io/peopleparser/">peopleparser</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">show</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">cols</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"first_name"</span>, <span class="st">"middle_name"</span>, <span class="st">"last_name"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="../reference/parse_names.html">parse_names</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="va">cols</span><span class="op">)</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># parse names and show the name columns</span></span>
+<span><span class="va">show</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span> <span class="va">x</span> <span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"name"</span>, <span class="st">"first_name"</span>, <span class="st">"middle_name"</span>, <span class="st">"last_name"</span> <span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/parse_names.html">parse_names</a></span><span class="op">(</span> <span class="va">x</span> <span class="op">)</span><span class="op">[</span> <span class="va">vars</span> <span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="the-evidence-first-name-and-surname-counts">The evidence: first-name and surname counts<a class="anchor" aria-label="anchor" href="#the-evidence-first-name-and-surname-counts"></a>
@@ -107,7 +109,8 @@ and how often a surname in U.S. Census Bureau name files (see
 <code><a href="../articles/gender-scoring.html">vignette("gender-scoring")</a></code> for where the table comes from).
 <code><a href="../reference/get_census_data.html">get_census_data()</a></code> looks up each token:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/get_census_data.html">get_census_data</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN"</span>, <span class="st">"SMITH"</span>, <span class="st">"JORDAN"</span>, <span class="st">"TAYLOR"</span>, <span class="st">"LESLIE"</span>, <span class="st">"TSHEPO"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"JOHN"</span>, <span class="st">"SMITH"</span>, <span class="st">"JORDAN"</span>, <span class="st">"TAYLOR"</span>, <span class="st">"LESLIE"</span>, <span class="st">"TSHEPO"</span> <span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/get_census_data.html">get_census_data</a></span><span class="op">(</span> <span class="va">x</span> <span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
 <colgroup>
 <col width="9%">
@@ -186,10 +189,39 @@ neither list.</p>
 token reads as a surname when more than half of its count is in the
 surname position. A token found in neither list reads as a surname.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN"</span>, <span class="st">"SMITH"</span>, <span class="st">"JORDAN"</span>, <span class="st">"TAYLOR"</span>, <span class="st">"LESLIE"</span>, <span class="st">"TSHEPO"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="../reference/check_if_surname.html">check_if_surname</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="va">x</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   JOHN  SMITH JORDAN TAYLOR LESLIE TSHEPO </span></span>
-<span><span class="co">#&gt;  FALSE   TRUE  FALSE   TRUE  FALSE   TRUE</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span> name <span class="op">=</span> <span class="va">x</span>, surname <span class="op">=</span> <span class="fu"><a href="../reference/check_if_surname.html">check_if_surname</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">name</th>
+<th align="left">surname</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">JOHN</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">SMITH</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">JORDAN</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">TAYLOR</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">LESLIE</td>
+<td align="left">FALSE</td>
+</tr>
+<tr class="even">
+<td align="left">TSHEPO</td>
+<td align="left">TRUE</td>
+</tr>
+</tbody>
+</table>
 <p><code><a href="../reference/determine_surname.html">determine_surname()</a></code> picks the single most likely surname
 in a name. It uses each token’s surname share,</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mi>l</mi><mi>a</mi><mi>s</mi><mi>t</mi></mrow></msub><mo>=</mo><mfrac><mrow><mn>1</mn><mo>+</mo><msub><mi>n</mi><mrow><mi>l</mi><mi>a</mi><mi>s</mi><mi>t</mi></mrow></msub></mrow><mrow><mn>1</mn><mo>+</mo><msub><mi>n</mi><mrow><mi>f</mi><mi>i</mi><mi>r</mi><mi>s</mi><mi>t</mi></mrow></msub><mo>+</mo><msub><mi>n</mi><mrow><mi>l</mi><mi>a</mi><mi>s</mi><mi>t</mi></mrow></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">
@@ -210,8 +242,10 @@ the more common first;</li>
 so its share is just under 1, while an unlisted token’s share is exactly
 1.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_census_data.html">get_census_data</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TAYLOR"</span>, <span class="st">"JORDAN"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/determine_surname.html">determine_surname</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span>   <span class="co"># position of the surname: JORDAN is first, TAYLOR the surname</span></span>
+<code class="sourceCode R"><span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_census_data.html">get_census_data</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TAYLOR"</span>, <span class="st">"JORDAN"</span><span class="op">)</span> <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># position of the surname: JORDAN is first, TAYLOR the surname</span></span>
+<span><span class="fu"><a href="../reference/determine_surname.html">determine_surname</a></span><span class="op">(</span> <span class="va">cd</span> <span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 1</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -222,7 +256,7 @@ so its share is just under 1, while an unlisted token’s share is exactly
 </h3>
 <p>A lone token is treated as the surname.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SMITH"</span>, <span class="st">"MADONNA"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SMITH"</span>, <span class="st">"MADONNA"</span><span class="op">)</span> <span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">name</th>
@@ -264,8 +298,11 @@ written surname first are</p>
 first token of one or two letters is initials (<code>HM CHERRY</code>,
 <code>DC ALLEN</code>).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN SMITH"</span>, <span class="st">"SMITH JOHN"</span>, <span class="st">"JORDAN TAYLOR"</span>, <span class="st">"TAYLOR JORDAN"</span>,</span>
-<span>       <span class="st">"LESLIE JAMES"</span>, <span class="st">"HARRIS MORRISON"</span>, <span class="st">"RICHARD RUVIN"</span>, <span class="st">"R BLINCOE"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"JOHN SMITH"</span>,    <span class="st">"SMITH JOHN"</span>,</span>
+<span>        <span class="st">"JORDAN TAYLOR"</span>, <span class="st">"TAYLOR JORDAN"</span>,</span>
+<span>        <span class="st">"LESLIE JAMES"</span>,  <span class="st">"HARRIS MORRISON"</span>,</span>
+<span>        <span class="st">"RICHARD RUVIN"</span>, <span class="st">"R BLINCOE"</span> <span class="op">)</span></span>
+<span><span class="fu">show</span><span class="op">(</span> <span class="va">x</span> <span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">name</th>
@@ -345,8 +382,10 @@ treated as a title when the other token is not mostly a given name.
 <code>BISHOP JOHN</code> is left alone, because it may be
 <code>JOHN BISHOP</code> written surname first.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HM CHERRY"</span>, <span class="st">"NICKHATH SHERIFF"</span>, <span class="st">"HOWARD SITRON"</span>, <span class="st">"SHERIFF MASRY"</span>,</span>
-<span>       <span class="st">"BISHOP JOHN"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"HM CHERRY"</span>,     <span class="st">"NICKHATH SHERIFF"</span>,</span>
+<span>        <span class="st">"HOWARD SITRON"</span>, <span class="st">"SHERIFF MASRY"</span>,</span>
+<span>        <span class="st">"BISHOP JOHN"</span> <span class="op">)</span></span>
+<span><span class="fu">show</span><span class="op">(</span> <span class="va">x</span> <span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">name</th>
@@ -410,7 +449,7 @@ becomes <code>J ALAN SMITH</code>);</li>
 <li>otherwise the order is kept.</li>
 </ul>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN A SMITH"</span>, <span class="st">"SMITH JOHN A"</span>, <span class="st">"SMITH J ALAN"</span>, <span class="st">"J ALAN SMITH"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN A SMITH"</span>, <span class="st">"SMITH JOHN A"</span>, <span class="st">"SMITH J ALAN"</span>, <span class="st">"J ALAN SMITH"</span><span class="op">)</span> <span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">name</th>
@@ -465,7 +504,9 @@ names on the same return, 28,811 three-word Part VII names were
 reordered wrongly 1,210 times by that rule and 53 times by the
 written-order test (<code>data-raw/name_order_eval3.R</code>).</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN ALAN SMITH"</span>, <span class="st">"SMITH JOHN ALAN"</span>, <span class="st">"DONG JOON YI"</span>, <span class="st">"TOKS MALIK ASHIRU"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"JOHN ALAN SMITH"</span>, <span class="st">"SMITH JOHN ALAN"</span>,</span>
+<span>        <span class="st">"DONG JOON YI"</span>,    <span class="st">"TOKS MALIK ASHIRU"</span> <span class="op">)</span></span>
+<span><span class="fu">show</span><span class="op">(</span> <span class="va">x</span> <span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">name</th>
@@ -513,7 +554,7 @@ initials. If the name opens with two surnames followed by a given name
 (<code>SMITH JONES MARY ANN</code>), the two surnames are joined into
 one.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN PAUL GEORGE RINGO"</span>, <span class="st">"SMITH JONES MARY ANN"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN PAUL GEORGE RINGO"</span>, <span class="st">"SMITH JONES MARY ANN"</span><span class="op">)</span> <span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">name</th>
@@ -571,11 +612,35 @@ trailing one as a credential (Navy Medical Corps).</p>
 <p>Particles chain, so <code>DE LA ROSA</code> and
 <code>VAN DER BERG</code> become one token.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/fix_locative_surnames.html">fix_locative_surnames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Jane Van Dyke"</span>, <span class="st">"Carlos De La Rosa"</span>, <span class="st">"Dylan Van"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "Jane Van-Dyke"     "Carlos De-La-Rosa" "Dylan Van"</span></span>
-<span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"THOMAS H VON KAMECKE"</span>, <span class="st">"SEAN ST CLAIR"</span>, <span class="st">"JULIA DI BUSSOLO"</span>,</span>
-<span>       <span class="st">"JUAN CARLOS DE LA ROSA"</span>, <span class="st">"MARY VAN DER BERG"</span>, <span class="st">"PATRICIA SAN PEDRO"</span>,</span>
-<span>       <span class="st">"ESTELLA DE LOS RIOS"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"Jane Van Dyke"</span>, <span class="st">"Carlos De La Rosa"</span>, <span class="st">"Dylan Van"</span> <span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span> raw <span class="op">=</span> <span class="va">x</span>, joined <span class="op">=</span> <span class="fu"><a href="../reference/fix_locative_surnames.html">fix_locative_surnames</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">raw</th>
+<th align="left">joined</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Jane Van Dyke</td>
+<td align="left">Jane Van-Dyke</td>
+</tr>
+<tr class="even">
+<td align="left">Carlos De La Rosa</td>
+<td align="left">Carlos De-La-Rosa</td>
+</tr>
+<tr class="odd">
+<td align="left">Dylan Van</td>
+<td align="left">Dylan Van</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"THOMAS H VON KAMECKE"</span>, <span class="st">"SEAN ST CLAIR"</span>,</span>
+<span>        <span class="st">"JULIA DI BUSSOLO"</span>,     <span class="st">"JUAN CARLOS DE LA ROSA"</span>,</span>
+<span>        <span class="st">"MARY VAN DER BERG"</span>,    <span class="st">"PATRICIA SAN PEDRO"</span>,</span>
+<span>        <span class="st">"ESTELLA DE LOS RIOS"</span> <span class="op">)</span></span>
+<span><span class="fu">show</span><span class="op">(</span> <span class="va">x</span> <span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">name</th>
@@ -657,9 +722,12 @@ they are joined in the order they were written.
 <code>MARY ANN SMITH JONES</code> gives <code>SMITH-JONES</code>, even
 though <code>SMITH</code> was picked as the main surname. When they are
 not next to each other, the middle part goes first.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MARIA GARCIA LOPEZ"</span>, <span class="st">"JOHN LEE SMITH"</span>, <span class="st">"ELIZABETH ANNE WALKER SMITH"</span>,</span>
-<span>       <span class="st">"JOHN Q PUBLIC SMITH"</span>, <span class="st">"MARY ANN SMITH JONES"</span>, <span class="st">"JEAN A DU PONT"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"MARIA GARCIA LOPEZ"</span>,  <span class="st">"JOHN LEE SMITH"</span>,</span>
+<span>        <span class="st">"ELIZABETH ANNE WALKER SMITH"</span>,</span>
+<span>        <span class="st">"JOHN Q PUBLIC SMITH"</span>, <span class="st">"MARY ANN SMITH JONES"</span>,</span>
+<span>        <span class="st">"JEAN A DU PONT"</span> <span class="op">)</span></span>
+<span><span class="fu">show</span><span class="op">(</span> <span class="va">x</span> <span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">name</th>
@@ -709,8 +777,8 @@ not next to each other, the middle part goes first.</p>
 <p>One exception: <code>MAY</code> is a common middle name and a
 surname. If it ends up at the front of a compound surname, it is moved
 back to the middle name.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SARAH MAY WILSON"</span>, <span class="st">"MARY MAY"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SARAH MAY WILSON"</span>, <span class="st">"MARY MAY"</span><span class="op">)</span> <span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">name</th>

@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">peopleparser</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -163,10 +163,13 @@ waiting to happen.</p>
 <h2 id="classifying-names">Classifying names<a class="anchor" aria-label="anchor" href="#classifying-names"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN A SMITH"</span>, <span class="st">"PNC BANK NA"</span>, <span class="st">"TEAMSTERS LOCAL NO 338"</span>, <span class="st">"BNY MELLON"</span>,</span>
-<span>       <span class="st">"SEE SCHEDULE O"</span>, <span class="st">"VACANT"</span>, <span class="st">"MICHAEL AND ASHLEY SMITH"</span>,</span>
-<span>       <span class="st">"MARY SHURTS - LHS INC"</span>, <span class="st">"LARRY CHURCH"</span>, <span class="st">"SEE MOUA"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/classify_names.html">classify_names</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"JOHN A SMITH"</span>,             <span class="st">"PNC BANK NA"</span>,</span>
+<span>        <span class="st">"TEAMSTERS LOCAL NO 338"</span>,   <span class="st">"BNY MELLON"</span>,</span>
+<span>        <span class="st">"SEE SCHEDULE O"</span>,           <span class="st">"VACANT"</span>,</span>
+<span>        <span class="st">"MICHAEL AND ASHLEY SMITH"</span>, <span class="st">"MARY SHURTS - LHS INC"</span>,</span>
+<span>        <span class="st">"LARRY CHURCH"</span>,             <span class="st">"SEE MOUA"</span> <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/classify_names.html">classify_names</a></span><span class="op">(</span> <span class="va">x</span> <span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">name</th>
@@ -251,19 +254,23 @@ whose first two words are a given name and a surname
 (<code>MARY SHURTS - LHS INC</code>, an employer after the name).
 Organisations named after a person
 (<code>KURT SUZUKI FAMILY   FOUNDATION</code>) stay organisations,
-unless a dash separates the parts. <code><a href="../reference/parse_names.html">parse_names()</a></code> still
-finds the person in most of these: the part after a dash is cut, and
-from an employer word such as <code>INSURANCE</code> or
-<code>COMPANY</code> on, the rest is dropped
-(<code>JOHN HEISER INSURANCE</code> gives <code>JOHN HEISER</code>; see
+unless a dash separates the parts. An organisation followed by its
+representative (<code>PRUDENTIAL INSURANCE - KYLE SMITH</code>) is also
+a person and an organisation. <code><a href="../reference/parse_names.html">parse_names()</a></code> still finds the
+person in most of these: the part after a dash is cut, and from an
+employer word such as <code>INSURANCE</code> or <code>COMPANY</code> on,
+the rest is dropped (<code>JOHN HEISER INSURANCE</code> gives
+<code>JOHN HEISER</code>), and a person after an organisation is kept
+(<code>KYLE SMITH</code>; see
 <code><a href="../articles/name-cleaning.html">vignette("name-cleaning")</a></code>).</li>
 </ul>
 <p><code>parse_names(x, classify = TRUE)</code> adds the
 <code>name_type</code> and <code>org_score</code> columns to the parsed
 names, so the non-people can be set aside:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parse_names.html">parse_names</a></span><span class="op">(</span><span class="va">x</span>, classify <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">p</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"first_name"</span>, <span class="st">"last_name"</span>, <span class="st">"name_type"</span><span class="op">)</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># parse and classify in one step</span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parse_names.html">parse_names</a></span><span class="op">(</span> <span class="va">x</span>, classify <span class="op">=</span> <span class="cn">TRUE</span> <span class="op">)</span></span>
+<span><span class="va">p</span><span class="op">[</span> , <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"first_name"</span>, <span class="st">"last_name"</span>, <span class="st">"name_type"</span><span class="op">)</span> <span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
 <colgroup>
 <col width="35%">
@@ -431,11 +438,52 @@ person’s name toward organisation.</li>
 <h2 id="splitting-run-together-names">Splitting run-together names<a class="anchor" aria-label="anchor" href="#splitting-run-together-names"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/split_run_together.html">split_run_together</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"KramerKenneth"</span>, <span class="st">"LedbetterJennifer A"</span>, <span class="st">"MURPHYSANDRA"</span>,</span>
-<span>                     <span class="st">"KLINESUZANNE"</span>, <span class="st">"McDonald"</span>, <span class="st">"LaToya Jones"</span>, <span class="st">"JOHN MARKWALD"</span>,</span>
-<span>                     <span class="st">"MARKWALD J"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "Kramer Kenneth"       "Ledbetter Jennifer A" "MURPHY SANDRA"        "KLINE SUZANNE"       </span></span>
-<span><span class="co">#&gt; [5] "McDonald"             "LaToya Jones"         "JOHN MARKWALD"        "MARKWALD J"</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"KramerKenneth"</span>, <span class="st">"LedbetterJennifer A"</span>,</span>
+<span>        <span class="st">"MURPHYSANDRA"</span>,  <span class="st">"KLINESUZANNE"</span>,</span>
+<span>        <span class="st">"McDonald"</span>,      <span class="st">"LaToya Jones"</span>,</span>
+<span>        <span class="st">"JOHN MARKWALD"</span>, <span class="st">"MARKWALD J"</span> <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span> raw <span class="op">=</span> <span class="va">x</span>, split <span class="op">=</span> <span class="fu"><a href="../reference/split_run_together.html">split_run_together</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">raw</th>
+<th align="left">split</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">KramerKenneth</td>
+<td align="left">Kramer Kenneth</td>
+</tr>
+<tr class="even">
+<td align="left">LedbetterJennifer A</td>
+<td align="left">Ledbetter Jennifer A</td>
+</tr>
+<tr class="odd">
+<td align="left">MURPHYSANDRA</td>
+<td align="left">MURPHY SANDRA</td>
+</tr>
+<tr class="even">
+<td align="left">KLINESUZANNE</td>
+<td align="left">KLINE SUZANNE</td>
+</tr>
+<tr class="odd">
+<td align="left">McDonald</td>
+<td align="left">McDonald</td>
+</tr>
+<tr class="even">
+<td align="left">LaToya Jones</td>
+<td align="left">LaToya Jones</td>
+</tr>
+<tr class="odd">
+<td align="left">JOHN MARKWALD</td>
+<td align="left">JOHN MARKWALD</td>
+</tr>
+<tr class="even">
+<td align="left">MARKWALD J</td>
+<td align="left">MARKWALD J</td>
+</tr>
+</tbody>
+</table>
 <p>A word is split only when the whole word is not a census name and the
 two parts are a strong surname and a strong given name:</p>
 <ul>
@@ -456,8 +504,10 @@ split.</li>
 </ul>
 <p>The parser’s order rules then decide which part is the surname:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/parse_names.html">parse_names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"LedbetterJennifer A"</span>, <span class="st">"KramerKenneth"</span>, <span class="st">"MURPHYSANDRA"</span><span class="op">)</span>,</span>
-<span>            split_run_together <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"first_name"</span>, <span class="st">"middle_name"</span>, <span class="st">"last_name"</span><span class="op">)</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">x</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"LedbetterJennifer A"</span>, <span class="st">"KramerKenneth"</span>, <span class="st">"MURPHYSANDRA"</span> <span class="op">)</span></span>
+<span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"name"</span>, <span class="st">"first_name"</span>, <span class="st">"middle_name"</span>, <span class="st">"last_name"</span> <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/parse_names.html">parse_names</a></span><span class="op">(</span> <span class="va">x</span>, split_run_together <span class="op">=</span> <span class="cn">TRUE</span> <span class="op">)</span><span class="op">[</span> , <span class="va">vars</span> <span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">name</th>

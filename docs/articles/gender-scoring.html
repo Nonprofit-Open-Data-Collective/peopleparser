@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">peopleparser</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -92,9 +92,11 @@ show the columns that matter here as a table:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://nonprofit-open-data-collective.github.io/peopleparser/">peopleparser</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">show</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">cols</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"salutation"</span>, <span class="st">"first_name"</span>, <span class="st">"middle_name"</span>,</span>
-<span>                             <span class="st">"suffix"</span>, <span class="st">"gender"</span>, <span class="st">"gender_confidence"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="../reference/parse_names.html">parse_names</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="va">cols</span><span class="op">)</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co"># parse names and show the columns this article is about</span></span>
+<span><span class="va">show</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span> <span class="va">x</span> <span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"name"</span>, <span class="st">"salutation"</span>, <span class="st">"first_name"</span>, <span class="st">"middle_name"</span>,</span>
+<span>             <span class="st">"suffix"</span>, <span class="st">"gender"</span>, <span class="st">"gender_confidence"</span> <span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/parse_names.html">parse_names</a></span><span class="op">(</span> <span class="va">x</span> <span class="op">)</span><span class="op">[</span> <span class="va">vars</span> <span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="the-score">The score<a class="anchor" aria-label="anchor" href="#the-score"></a>
@@ -108,8 +110,8 @@ side:</p>
 </annotation></semantics></math></p>
 <p>rounded to one decimal place.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_census_data.html">get_census_data</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"LESLIE"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">cd</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"male_value"</span>, <span class="st">"female_value"</span><span class="op">)</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">cd</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_census_data.html">get_census_data</a></span><span class="op">(</span> <span class="st">"LESLIE"</span> <span class="op">)</span></span>
+<span><span class="va">cd</span><span class="op">[</span> , <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"male_value"</span>, <span class="st">"female_value"</span><span class="op">)</span> <span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">name</th>
@@ -123,7 +125,8 @@ side:</p>
 </tr></tbody>
 </table>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/determine_gender.html">determine_gender</a></span><span class="op">(</span><span class="va">cd</span><span class="op">)</span></span>
+<code class="sourceCode R"><span></span>
+<span><span class="fu"><a href="../reference/determine_gender.html">determine_gender</a></span><span class="op">(</span> <span class="va">cd</span> <span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "F"    "81.8"</span></span></code></pre></div>
 <p>The confidence is the share of people with these names who have the
 reported gender. It runs from 50 (an even split) to 100 (only one gender
@@ -131,8 +134,9 @@ recorded). It is not the probability that this particular person has
 that gender, which also depends on their age and on the population the
 record comes from.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN SMITH"</span>, <span class="st">"MARY SMITH"</span>, <span class="st">"LESLIE SMITH"</span>, <span class="st">"PAT SMITH"</span>,</span>
-<span>       <span class="st">"CHRIS JONES"</span>, <span class="st">"TAYLOR SWIFT"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"JOHN SMITH"</span>, <span class="st">"MARY SMITH"</span>,  <span class="st">"LESLIE SMITH"</span>,</span>
+<span>        <span class="st">"PAT SMITH"</span>,  <span class="st">"CHRIS JONES"</span>, <span class="st">"TAYLOR SWIFT"</span> <span class="op">)</span></span>
+<span><span class="fu">show</span><span class="op">(</span> <span class="va">x</span> <span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="16%">
@@ -213,13 +217,39 @@ record comes from.</p>
 first names, the majority gender holds 95% or more of the count for most
 of them:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fn</span> <span class="op">&lt;-</span> <span class="va">census.names</span><span class="op">[</span><span class="va">census.names</span><span class="op">$</span><span class="va">first_name_value</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="op">]</span></span>
-<span><span class="va">share</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="va">fn</span><span class="op">$</span><span class="va">male_value</span>, <span class="va">fn</span><span class="op">$</span><span class="va">female_value</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="va">fn</span><span class="op">$</span><span class="va">male_value</span> <span class="op">+</span> <span class="va">fn</span><span class="op">$</span><span class="va">female_value</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cut.html" class="external-link">cut</a></span><span class="op">(</span><span class="va">share</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.8</span>, <span class="fl">0.95</span>, <span class="fl">1</span><span class="op">)</span>, include.lowest <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>          labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"50-80%"</span>, <span class="st">"80-95%"</span>, <span class="st">"95-100%"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;  50-80%  80-95% 95-100% </span></span>
-<span><span class="co">#&gt;    7454    9093   37069</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">fn</span>    <span class="op">&lt;-</span> <span class="va">census.names</span><span class="op">[</span> <span class="va">census.names</span><span class="op">$</span><span class="va">first_name_value</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="op">]</span></span>
+<span><span class="va">share</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span> <span class="va">fn</span><span class="op">$</span><span class="va">male_value</span>, <span class="va">fn</span><span class="op">$</span><span class="va">female_value</span> <span class="op">)</span> <span class="op">/</span> <span class="op">(</span> <span class="va">fn</span><span class="op">$</span><span class="va">male_value</span> <span class="op">+</span> <span class="va">fn</span><span class="op">$</span><span class="va">female_value</span> <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># first names grouped by the share held by the majority gender</span></span>
+<span><span class="va">bands</span> <span class="op">&lt;-</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/cut.html" class="external-link">cut</a></span><span class="op">(</span></span>
+<span>    <span class="va">share</span>,</span>
+<span>    breaks         <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">0.8</span>, <span class="fl">0.95</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>    labels         <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"50-80%"</span>, <span class="st">"80-95%"</span>, <span class="st">"95-100%"</span><span class="op">)</span>,</span>
+<span>    include.lowest <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span> <span class="va">bands</span> <span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span> col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Majority gender share"</span>, <span class="st">"First names"</span><span class="op">)</span> <span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Majority gender share</th>
+<th align="right">First names</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">50-80%</td>
+<td align="right">7454</td>
+</tr>
+<tr class="even">
+<td align="left">80-95%</td>
+<td align="right">9093</td>
+</tr>
+<tr class="odd">
+<td align="left">95-100%</td>
+<td align="right">37069</td>
+</tr>
+</tbody>
+</table>
 <div class="section level3">
 <h3 id="middle-names-count-too">Middle names count too<a class="anchor" aria-label="anchor" href="#middle-names-count-too"></a>
 </h3>
@@ -228,7 +258,7 @@ can move the score. Because the counts are pooled rather than averaged,
 a very common name outweighs a rare one, and two names of opposite
 gender give a weak score whatever their order:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SARAH MAY WILSON"</span>, <span class="st">"JOHN MARY SMITH"</span>, <span class="st">"MARY JOHN SMITH"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SARAH MAY WILSON"</span>, <span class="st">"JOHN MARY SMITH"</span>, <span class="st">"MARY JOHN SMITH"</span><span class="op">)</span> <span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="20%">
@@ -318,7 +348,7 @@ or no given name at all), the parser falls back:</p>
 <p>The suffix rule reflects that generational suffixes are almost always
 used by men. The 50.0 says that the call is a default, not evidence.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"J SMITH"</span>, <span class="st">"J SMITH JR"</span>, <span class="st">"A J SMITH"</span>, <span class="st">"TSHEPO CHO"</span>, <span class="st">"SMITH JR"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">show</span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"J SMITH"</span>, <span class="st">"J SMITH JR"</span>, <span class="st">"A J SMITH"</span>, <span class="st">"TSHEPO CHO"</span>, <span class="st">"SMITH JR"</span><span class="op">)</span> <span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="14%">
@@ -394,10 +424,15 @@ used by men. The 50.0 says that the call is a default, not evidence.</p>
 <code>MR PAT SMITH</code> is scored from <code>PAT</code> alone. If you
 need a salutation to override the census score, do it after parsing:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parse_names.html">parse_names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MR PAT SMITH"</span>, <span class="st">"MRS PAT SMITH"</span>, <span class="st">"DR PAT SMITH"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">d</span><span class="op">$</span><span class="va">gender_sal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">salutation</span> <span class="op">==</span> <span class="st">"MR"</span>, <span class="st">"M"</span>,</span>
-<span>                <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">salutation</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MRS"</span>, <span class="st">"MS"</span>, <span class="st">"MISS"</span><span class="op">)</span>, <span class="st">"F"</span>, <span class="va">d</span><span class="op">$</span><span class="va">gender</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">d</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"salutation"</span>, <span class="st">"gender"</span>, <span class="st">"gender_confidence"</span>, <span class="st">"gender_sal"</span><span class="op">)</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parse_names.html">parse_names</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MR PAT SMITH"</span>, <span class="st">"MRS PAT SMITH"</span>, <span class="st">"DR PAT SMITH"</span><span class="op">)</span> <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># MR is male, MRS / MS / MISS female; any other title keeps the census score</span></span>
+<span><span class="va">d</span><span class="op">$</span><span class="va">gender_sal</span> <span class="op">&lt;-</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span> <span class="va">d</span><span class="op">$</span><span class="va">salutation</span> <span class="op">==</span> <span class="st">"MR"</span>, <span class="st">"M"</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span> <span class="va">d</span><span class="op">$</span><span class="va">salutation</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"MRS"</span>, <span class="st">"MS"</span>, <span class="st">"MISS"</span><span class="op">)</span>, <span class="st">"F"</span>,</span>
+<span>          <span class="va">d</span><span class="op">$</span><span class="va">gender</span> <span class="op">)</span> <span class="op">)</span></span>
+<span></span>
+<span><span class="va">d</span><span class="op">[</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"salutation"</span>, <span class="st">"gender"</span>, <span class="st">"gender_confidence"</span>, <span class="st">"gender_sal"</span><span class="op">)</span> <span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">name</th>
@@ -441,10 +476,13 @@ score. See <code><a href="../articles/canonical-first-names.html">vignette("cano
 <p><code>gender_confidence</code> is returned as text. Convert it before
 comparing:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parse_names.html">parse_names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN SMITH"</span>, <span class="st">"PAT SMITH"</span>, <span class="st">"J SMITH"</span>, <span class="st">"CHRIS JONES"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">d</span><span class="op">$</span><span class="va">gender_confidence</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">gender_confidence</span><span class="op">)</span></span>
-<span><span class="va">d</span><span class="op">$</span><span class="va">gender_80</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">gender_confidence</span> <span class="op">&gt;=</span> <span class="fl">80</span>, <span class="va">d</span><span class="op">$</span><span class="va">gender</span>, <span class="st">"U"</span><span class="op">)</span></span>
-<span><span class="va">d</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"gender"</span>, <span class="st">"gender_confidence"</span>, <span class="st">"gender_80"</span><span class="op">)</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/parse_names.html">parse_names</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JOHN SMITH"</span>, <span class="st">"PAT SMITH"</span>, <span class="st">"J SMITH"</span>, <span class="st">"CHRIS JONES"</span><span class="op">)</span> <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># confidence is text: convert it, then call anything under 80 unknown</span></span>
+<span><span class="va">d</span><span class="op">$</span><span class="va">gender_confidence</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span> <span class="va">d</span><span class="op">$</span><span class="va">gender_confidence</span> <span class="op">)</span></span>
+<span><span class="va">d</span><span class="op">$</span><span class="va">gender_80</span>         <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span> <span class="va">d</span><span class="op">$</span><span class="va">gender_confidence</span> <span class="op">&gt;=</span> <span class="fl">80</span>, <span class="va">d</span><span class="op">$</span><span class="va">gender</span>, <span class="st">"U"</span> <span class="op">)</span></span>
+<span></span>
+<span><span class="va">d</span><span class="op">[</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"gender"</span>, <span class="st">"gender_confidence"</span>, <span class="st">"gender_80"</span><span class="op">)</span> <span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">name</th>
@@ -508,14 +546,35 @@ release, <em>Frequently Occurring First Names and Last Names from the
 2020 Census</em> (revised April 2026):</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cn</span> <span class="op">&lt;-</span> <span class="va">census.names</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>rows           <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">cn</span><span class="op">)</span>,</span>
-<span>  male_names     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">cn</span><span class="op">$</span><span class="va">male_value</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>,</span>
-<span>  female_names   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">cn</span><span class="op">$</span><span class="va">female_value</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>,</span>
-<span>  first_names    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">cn</span><span class="op">$</span><span class="va">first_name_value</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span>,</span>
-<span>  surnames       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">cn</span><span class="op">$</span><span class="va">last_name_value</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;         rows   male_names female_names  first_names     surnames </span></span>
-<span><span class="co">#&gt;       195311        47089        51475        53616       156622</span></span>
-<span><span class="va">cn</span><span class="op">[</span><span class="va">cn</span><span class="op">$</span><span class="va">name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SMITH"</span>, <span class="st">"ALL OTHER NAMES"</span><span class="op">)</span>, <span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span></span>
+<span><span class="co"># how many names have a count in each role</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  rows         <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span> <span class="va">cn</span> <span class="op">)</span>,</span>
+<span>  male_names   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span> <span class="va">cn</span><span class="op">$</span><span class="va">male_value</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">)</span>,</span>
+<span>  female_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span> <span class="va">cn</span><span class="op">$</span><span class="va">female_value</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">)</span>,</span>
+<span>  first_names  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span> <span class="va">cn</span><span class="op">$</span><span class="va">first_name_value</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">)</span>,</span>
+<span>  surnames     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span> <span class="va">cn</span><span class="op">$</span><span class="va">last_name_value</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span> format.args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>big.mark <span class="op">=</span> <span class="st">","</span><span class="op">)</span> <span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="right">rows</th>
+<th align="right">male_names</th>
+<th align="right">female_names</th>
+<th align="right">first_names</th>
+<th align="right">surnames</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td align="right">195,311</td>
+<td align="right">47,089</td>
+<td align="right">51,475</td>
+<td align="right">53,616</td>
+<td align="right">156,622</td>
+</tr></tbody>
+</table>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co"># a common surname, and the catch-all row</span></span>
+<span><span class="va">cn</span><span class="op">[</span> <span class="va">cn</span><span class="op">$</span><span class="va">name</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SMITH"</span>, <span class="st">"ALL OTHER NAMES"</span><span class="op">)</span>, <span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="21%">

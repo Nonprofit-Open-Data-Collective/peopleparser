@@ -432,7 +432,9 @@ deglue_tokens <- function( name_vec, split_initials = FALSE ) {
 
 drop_employer_tail <- function( name_vec, prefixes = prx, suffixes = sfx ) {
   n <- length( name_vec )
-  k <- which( name_vec %in% .employer_words & seq_len( n ) >= 3 )
+  # CO before more words is "care of" an employer (CHAD COTTER CO BURNS MCDONELL)
+  k <- which( ( name_vec %in% .employer_words | ( name_vec == "CO" & seq_len( n ) < n ) ) &
+              seq_len( n ) >= 3 )
   if ( !length( k ) ) return( name_vec )
   k <- k[1]
   head <- name_vec[ seq_len( k - 1 ) ]

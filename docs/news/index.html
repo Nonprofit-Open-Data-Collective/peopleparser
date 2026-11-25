@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">peopleparser</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,6 +47,18 @@
       <small>Source: <a href="https://github.com/Nonprofit-Open-Data-Collective/peopleparser/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.7" id="peopleparser-027">peopleparser 0.2.7<a class="anchor" aria-label="anchor" href="#peopleparser-027"></a></h2>
+<div class="section level3">
+<h3 id="an-organisation-followed-by-its-representative-keeps-the-person-0-2-7">An organisation followed by its representative keeps the person<a class="anchor" aria-label="anchor" href="#an-organisation-followed-by-its-representative-keeps-the-person-0-2-7"></a></h3>
+<ul><li>Entries that name an organisation and then the person who represents it now parse the person: <code>PRUDENTIAL INSURANCE - KYLE SMITH</code> gives <code>KYLE SMITH</code>, where before the dash cut the person and left <code>PRUDENTIAL INSURANCE</code>; <code>INDIANA INSURANCE CO JOSEPH YEAGER</code> gives <code>JOSEPH YEAGER</code>, where before it gave <code>INSURANCE-JOSEPH-YEAGER</code>. The organisation must end in a clear organisation word (<code>INSURANCE</code>, <code>INS</code>, <code>BANK</code>, <code>INC</code>, <code>LLC</code>, <code>CORPORATION</code>, <code>GROUP</code>, <code>SERVICES</code>, …), optionally followed by <code>CO</code>, <code>INC</code>, <code>NA</code> and the like, and the rest must look like a person: two to four words, the first a census given name or an initial. <code>CITIZENS BANK AND TRUST</code>, <code>BANK OF NY MELLON</code> and <code>COMERICA BANK - TRUST DIVISION</code> are left alone.</li>
+<li>
+<code><a href="../reference/classify_names.html">classify_names()</a></code> labels these entries <code>"person and organisation"</code>.</li>
+<li>
+<code>CO</code> before more words after a given name and surname is “care of” an employer: <code>CHAD COTTER CO BURNS MCDONELL</code> gives <code>COTTER</code>, where before it gave <code>COTTER-BURNS-MCDONELL</code>.</li>
+<li>In all national Part VII names, 110 distinct entries (309 rows) are an organisation followed by a person.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.6" id="peopleparser-026">peopleparser 0.2.6<a class="anchor" aria-label="anchor" href="#peopleparser-026"></a></h2>
 <div class="section level3">

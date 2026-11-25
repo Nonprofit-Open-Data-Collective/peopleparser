@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">peopleparser</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -100,15 +100,48 @@ used. A person listed as ROBERT, BOB and ROB gives three pairs. The
 synthid vignette <em>First-name variants - how the table was built</em>
 describes the build and the hand review.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">first_name_pairs</span><span class="op">$</span><span class="va">type</span>, <span class="va">first_name_pairs</span><span class="op">$</span><span class="va">lexicon</span><span class="op">)</span></span>
-<span><span class="co">#&gt;              </span></span>
-<span><span class="co">#&gt;               FALSE  TRUE</span></span>
-<span><span class="co">#&gt;   cognate         0    29</span></span>
-<span><span class="co">#&gt;   compound        0    20</span></span>
-<span><span class="co">#&gt;   misspelling 10217     0</span></span>
-<span><span class="co">#&gt;   nickname        0   397</span></span>
-<span><span class="co">#&gt;   sound_alike 13748     0</span></span>
-<span><span class="co">#&gt;   spelling        0   556</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># pairs by type, split by whether they were reviewed by hand (the lexicon)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span> <span class="va">first_name_pairs</span><span class="op">$</span><span class="va">type</span>, <span class="va">first_name_pairs</span><span class="op">$</span><span class="va">lexicon</span> <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span> col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"not reviewed"</span>, <span class="st">"lexicon"</span><span class="op">)</span> <span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left"></th>
+<th align="right">not reviewed</th>
+<th align="right">lexicon</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">cognate</td>
+<td align="right">0</td>
+<td align="right">29</td>
+</tr>
+<tr class="even">
+<td align="left">compound</td>
+<td align="right">0</td>
+<td align="right">20</td>
+</tr>
+<tr class="odd">
+<td align="left">misspelling</td>
+<td align="right">10217</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">nickname</td>
+<td align="right">0</td>
+<td align="right">397</td>
+</tr>
+<tr class="odd">
+<td align="left">sound_alike</td>
+<td align="right">13748</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">spelling</td>
+<td align="right">0</td>
+<td align="right">556</td>
+</tr>
+</tbody>
+</table>
 <ul>
 <li>The <strong>lexicon</strong> (<code>lexicon = TRUE</code>) is 1,002
 pairs seen in 25 or more people, reviewed by hand: nicknames
@@ -125,8 +158,11 @@ same (KRISTY/KRISTIE).</li>
 form’s records that are female (<code>f_short</code>,
 <code>f_long</code>).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">first_name_pairs</span>, <span class="va">name_short</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PAT"</span>, <span class="st">"KATE"</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">lexicon</span>,</span>
-<span>       <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">name_short</span>, <span class="va">name_long</span>, <span class="va">type</span>, <span class="va">n_emp_ids</span>, <span class="va">f_short</span>, <span class="va">f_long</span>, <span class="va">formal</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># the hand-reviewed pairs for PAT and KATE</span></span>
+<span><span class="va">keep</span> <span class="op">&lt;-</span> <span class="va">first_name_pairs</span><span class="op">$</span><span class="va">name_short</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PAT"</span>, <span class="st">"KATE"</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">first_name_pairs</span><span class="op">$</span><span class="va">lexicon</span></span>
+<span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"name_short"</span>, <span class="st">"name_long"</span>, <span class="st">"type"</span>, <span class="st">"n_emp_ids"</span>, <span class="st">"f_short"</span>, <span class="st">"f_long"</span>, <span class="st">"formal"</span> <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span> <span class="va">first_name_pairs</span>, <span class="va">keep</span>, <span class="va">vars</span> <span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">name_short</th>
@@ -267,31 +303,39 @@ its most common spelling partner, repeatedly, as long as that partner is
 more common. Each step goes to a more common name, so the path always
 ends. Its end is the <strong>spelling root</strong>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/nickname_lookup.html">nickname_lookup</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"KATHRYN"</span>, <span class="st">"KATHERINE"</span>, <span class="st">"STEVEN"</span>, <span class="st">"JEFFERY"</span>, <span class="st">"KATHRINE"</span><span class="op">)</span><span class="op">)</span><span class="op">[</span></span>
-<span>  , <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"first_name_canonical"</span>, <span class="st">"canonical_rule"</span><span class="op">)</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">x</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"KATHRYN"</span>, <span class="st">"KATHERINE"</span>, <span class="st">"STEVEN"</span>, <span class="st">"JEFFERY"</span>, <span class="st">"KATHRINE"</span> <span class="op">)</span></span>
+<span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"first_name_canonical"</span>, <span class="st">"canonical_rule"</span> <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span> name <span class="op">=</span> <span class="va">x</span>, <span class="fu"><a href="../reference/nickname_lookup.html">nickname_lookup</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">[</span> , <span class="va">vars</span> <span class="op">]</span> <span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
+<th align="left">name</th>
 <th align="left">first_name_canonical</th>
 <th align="left">canonical_rule</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
+<td align="left">KATHRYN</td>
 <td align="left">CATHERINE</td>
 <td align="left">spelling</td>
 </tr>
 <tr class="even">
+<td align="left">KATHERINE</td>
 <td align="left">CATHERINE</td>
 <td align="left">spelling</td>
 </tr>
 <tr class="odd">
+<td align="left">STEVEN</td>
 <td align="left">STEPHEN</td>
 <td align="left">spelling</td>
 </tr>
 <tr class="even">
+<td align="left">JEFFERY</td>
 <td align="left">JEFFREY</td>
 <td align="left">spelling</td>
 </tr>
 <tr class="odd">
+<td align="left">KATHRINE</td>
 <td align="left">CATHERINE</td>
 <td align="left">spelling</td>
 </tr>
@@ -318,7 +362,7 @@ MARK/MARCUS, out of 591,323 MARK records (0.008%), so MARK stays MARK.
 JIM passes easily: 13,435 people carry JIM/JAMES, 3.7% of the JIM
 records.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/canonical_first_name.html">canonical_first_name</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JIM"</span>, <span class="st">"MARK"</span>, <span class="st">"CHAD"</span>, <span class="st">"LISA"</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/canonical_first_name.html">canonical_first_name</a></span><span class="op">(</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"JIM"</span>, <span class="st">"MARK"</span>, <span class="st">"CHAD"</span>, <span class="st">"LISA"</span><span class="op">)</span> <span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "JAMES" "MARK"  "CHAD"  "LISA"</span></span></code></pre></div>
 <p>The formal candidates are the name’s <strong>direct</strong> formal
 partners. Partners that are themselves mostly nicknames are dropped when
@@ -334,9 +378,13 @@ KATHLEEN and the KATHERINE spellings. Applied to the KATHERINE
 chain:</p>
 <p><img src="figures/chain-katherine-canonical.png" class="r-plt" alt="" width="100%"></p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"KATE"</span>, <span class="st">"KATIE"</span>, <span class="st">"KITTY"</span>, <span class="st">"KATHY"</span>, <span class="st">"CATHY"</span>, <span class="st">"KATHLEEN"</span>, <span class="st">"CATHLEEN"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span>name <span class="op">=</span> <span class="va">x</span>, <span class="fu"><a href="../reference/nickname_lookup.html">nickname_lookup</a></span><span class="op">(</span><span class="va">x</span>, gender <span class="op">=</span> <span class="st">"F"</span>, gender_confidence <span class="op">=</span> <span class="fl">99</span><span class="op">)</span><span class="op">[</span></span>
-<span>  , <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"first_name_type"</span>, <span class="st">"first_name_canonical"</span>, <span class="st">"canonical_rule"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">x</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"KATE"</span>, <span class="st">"KATIE"</span>, <span class="st">"KITTY"</span>, <span class="st">"KATHY"</span>, <span class="st">"CATHY"</span>, <span class="st">"KATHLEEN"</span>, <span class="st">"CATHLEEN"</span> <span class="op">)</span></span>
+<span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"first_name_type"</span>, <span class="st">"first_name_canonical"</span>, <span class="st">"canonical_rule"</span> <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># all female with high confidence, so gender rules out the male formal names</span></span>
+<span><span class="va">nk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nickname_lookup.html">nickname_lookup</a></span><span class="op">(</span> <span class="va">x</span>, gender <span class="op">=</span> <span class="st">"F"</span>, gender_confidence <span class="op">=</span> <span class="fl">99</span> <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span> name <span class="op">=</span> <span class="va">x</span>, <span class="va">nk</span><span class="op">[</span> , <span class="va">vars</span> <span class="op">]</span> <span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">name</th>
@@ -442,27 +490,45 @@ A candidate’s gender is the majority of its national records
 applied to the candidates that remain:</p>
 <p><img src="figures/gender-pat.png" class="r-plt" alt="" width="100%"></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/nickname_lookup.html">nickname_lookup</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PAT"</span>, <span class="st">"PAT"</span>, <span class="st">"PAT"</span><span class="op">)</span>, gender <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"F"</span>, <span class="st">"M"</span>, <span class="st">"U"</span><span class="op">)</span>,</span>
-<span>                gender_confidence <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">95</span>, <span class="fl">95</span>, <span class="fl">50</span><span class="op">)</span><span class="op">)</span><span class="op">[</span></span>
-<span>  , <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"first_name_formal"</span>, <span class="st">"first_name_canonical"</span>, <span class="st">"canonical_rule"</span><span class="op">)</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># the same nickname for a woman, a man and a person of unknown gender</span></span>
+<span><span class="va">nk</span> <span class="op">&lt;-</span></span>
+<span>  <span class="fu"><a href="../reference/nickname_lookup.html">nickname_lookup</a></span><span class="op">(</span></span>
+<span>    first_name        <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PAT"</span>, <span class="st">"PAT"</span>, <span class="st">"PAT"</span><span class="op">)</span>,</span>
+<span>    gender            <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"F"</span>, <span class="st">"M"</span>, <span class="st">"U"</span><span class="op">)</span>,</span>
+<span>    gender_confidence <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">95</span>, <span class="fl">95</span>, <span class="fl">50</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"first_name_formal"</span>, <span class="st">"first_name_canonical"</span>, <span class="st">"canonical_rule"</span> <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span> gender <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"F"</span>, <span class="st">"M"</span>, <span class="st">"U"</span><span class="op">)</span>, <span class="va">nk</span><span class="op">[</span> , <span class="va">vars</span> <span class="op">]</span> <span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
+<colgroup>
+<col width="10%">
+<col width="38%">
+<col width="30%">
+<col width="21%">
+</colgroup>
 <thead><tr class="header">
+<th align="left">gender</th>
 <th align="left">first_name_formal</th>
 <th align="left">first_name_canonical</th>
 <th align="left">canonical_rule</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
+<td align="left">F</td>
 <td align="left">PATRICIA;; PATSY</td>
 <td align="left">PATRICIA</td>
 <td align="left">nickname</td>
 </tr>
 <tr class="even">
+<td align="left">M</td>
 <td align="left">PATRICK</td>
 <td align="left">PATRICK</td>
 <td align="left">nickname</td>
 </tr>
 <tr class="odd">
+<td align="left">U</td>
 <td align="left">PATRICIA;; PATRICK;; PATSY</td>
 <td align="left">PAT</td>
 <td align="left">ambiguous</td>
@@ -474,8 +540,8 @@ its own form (<code>self</code>). The table has no female formal name
 for CHRIS, so a female CHRIS stays CHRIS and is not sent to
 CHRISTOPHER:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/nickname_lookup.html">nickname_lookup</a></span><span class="op">(</span><span class="st">"CHRIS"</span>, gender <span class="op">=</span> <span class="st">"F"</span>, gender_confidence <span class="op">=</span> <span class="fl">95</span><span class="op">)</span><span class="op">[</span></span>
-<span>  , <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"first_name_formal"</span>, <span class="st">"first_name_canonical"</span>, <span class="st">"canonical_rule"</span><span class="op">)</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">nk</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nickname_lookup.html">nickname_lookup</a></span><span class="op">(</span> <span class="st">"CHRIS"</span>, gender <span class="op">=</span> <span class="st">"F"</span>, gender_confidence <span class="op">=</span> <span class="fl">95</span> <span class="op">)</span></span>
+<span><span class="va">nk</span><span class="op">[</span> , <span class="va">vars</span> <span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">first_name_formal</th>
@@ -498,8 +564,10 @@ salutation gives the gender. The <code>gender</code> column of the parse
 does not use the salutation (MR PAT still reads F there); the nickname
 step does:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/parse_names.html">parse_names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"PAT SMITH"</span>, <span class="st">"MR PAT SMITH"</span>, <span class="st">"MRS PAT SMITH"</span><span class="op">)</span>, add_nicknames <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[</span></span>
-<span>  , <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"gender"</span>, <span class="st">"gender_confidence"</span>, <span class="st">"first_name_canonical"</span>, <span class="st">"canonical_rule"</span><span class="op">)</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">x</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"PAT SMITH"</span>, <span class="st">"MR PAT SMITH"</span>, <span class="st">"MRS PAT SMITH"</span> <span class="op">)</span></span>
+<span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"name"</span>, <span class="st">"gender"</span>, <span class="st">"gender_confidence"</span>, <span class="st">"first_name_canonical"</span>, <span class="st">"canonical_rule"</span> <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/parse_names.html">parse_names</a></span><span class="op">(</span> <span class="va">x</span>, add_nicknames <span class="op">=</span> <span class="cn">TRUE</span> <span class="op">)</span><span class="op">[</span> , <span class="va">vars</span> <span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="18%">
@@ -554,7 +622,7 @@ merged:</p>
 <li>nicknames that are ambiguous between this name and another.</li>
 </ul>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/first_name_variants.html">first_name_variants</a></span><span class="op">(</span><span class="st">"kate"</span>, min_freq <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/first_name_variants.html">first_name_variants</a></span><span class="op">(</span> <span class="st">"kate"</span>, min_freq <span class="op">=</span> <span class="fl">1000</span> <span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="12%">
@@ -763,7 +831,7 @@ appear as ambiguous nicknames: they could belong to this family, but
 they are not merged into it.</p>
 <p>Without the related rows and the rare forms:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/first_name_variants.html">first_name_variants</a></span><span class="op">(</span><span class="st">"steve"</span>, related <span class="op">=</span> <span class="cn">FALSE</span>, min_freq <span class="op">=</span> <span class="fl">100</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/first_name_variants.html">first_name_variants</a></span><span class="op">(</span> <span class="st">"steve"</span>, related <span class="op">=</span> <span class="cn">FALSE</span>, min_freq <span class="op">=</span> <span class="fl">100</span> <span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="12%">
@@ -862,7 +930,8 @@ they are not merged into it.</p>
 PATRICIA. With no gender PAT is ambiguous, so its family is just
 PAT:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/first_name_variants.html">first_name_variants</a></span><span class="op">(</span><span class="st">"pat"</span>, gender <span class="op">=</span> <span class="st">"F"</span>, min_freq <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># a female PAT</span></span>
+<span><span class="fu"><a href="../reference/first_name_variants.html">first_name_variants</a></span><span class="op">(</span> <span class="st">"pat"</span>, gender <span class="op">=</span> <span class="st">"F"</span>, min_freq <span class="op">=</span> <span class="fl">1000</span> <span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table style="width:100%;" class="table">
 <colgroup>
 <col width="12%">
@@ -958,7 +1027,9 @@ PAT:</p>
 </tbody>
 </table>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/first_name_variants.html">first_name_variants</a></span><span class="op">(</span><span class="st">"pat"</span>, min_freq <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span></span>
+<span><span class="co"># PAT with no gender</span></span>
+<span><span class="fu"><a href="../reference/first_name_variants.html">first_name_variants</a></span><span class="op">(</span> <span class="st">"pat"</span>, min_freq <span class="op">=</span> <span class="fl">1000</span> <span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="10%">
@@ -1018,10 +1089,12 @@ PAT:</p>
 <code>first_name_nicknames</code>, <code>first_name_canonical</code> and
 <code>canonical_rule</code>:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Bob Jones"</span>, <span class="st">"MRS PAT LEE"</span>, <span class="st">"Kathy Ruiz"</span>, <span class="st">"STEVEN H PARK"</span>, <span class="st">"Mark Webb"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/parse_names.html">parse_names</a></span><span class="op">(</span><span class="va">x</span>, add_nicknames <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[</span></span>
-<span>  , <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"name"</span>, <span class="st">"first_name"</span>, <span class="st">"gender"</span>, <span class="st">"first_name_formal"</span>, <span class="st">"first_name_canonical"</span>,</span>
-<span>      <span class="st">"canonical_rule"</span><span class="op">)</span><span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"Bob Jones"</span>, <span class="st">"MRS PAT LEE"</span>, <span class="st">"Kathy Ruiz"</span>, <span class="st">"STEVEN H PARK"</span>, <span class="st">"Mark Webb"</span> <span class="op">)</span></span>
+<span></span>
+<span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"name"</span>, <span class="st">"first_name"</span>, <span class="st">"gender"</span>,</span>
+<span>           <span class="st">"first_name_formal"</span>, <span class="st">"first_name_canonical"</span>, <span class="st">"canonical_rule"</span> <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/parse_names.html">parse_names</a></span><span class="op">(</span> <span class="va">x</span>, add_nicknames <span class="op">=</span> <span class="cn">TRUE</span> <span class="op">)</span><span class="op">[</span> , <span class="va">vars</span> <span class="op">]</span> <span class="op">|&gt;</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="12%">

@@ -18,8 +18,10 @@ and show the name columns as a table:
 ``` r
 library(peopleparser)
 
-show <- function(x, cols = c("first_name", "middle_name", "last_name")) {
-  parse_names(x)[c("name", cols)] |> knitr::kable()
+# parse names and show the name columns
+show <- function( x ) {
+  vars <- c( "name", "first_name", "middle_name", "last_name" )
+  parse_names( x )[ vars ] |> knitr::kable()
 }
 ```
 
@@ -33,7 +35,8 @@ for where the table comes from).
 looks up each token:
 
 ``` r
-get_census_data(c("JOHN", "SMITH", "JORDAN", "TAYLOR", "LESLIE", "TSHEPO")) |> knitr::kable()
+x <- c( "JOHN", "SMITH", "JORDAN", "TAYLOR", "LESLIE", "TSHEPO" )
+get_census_data( x ) |> knitr::kable()
 ```
 
 | name   | ordinal | male_value | female_value | first_name_value | last_name_value |
@@ -56,11 +59,17 @@ than half of its count is in the surname position. A token found in
 neither list reads as a surname.
 
 ``` r
-x <- c("JOHN", "SMITH", "JORDAN", "TAYLOR", "LESLIE", "TSHEPO")
-setNames(check_if_surname(x), x)
-#>   JOHN  SMITH JORDAN TAYLOR LESLIE TSHEPO 
-#>  FALSE   TRUE  FALSE   TRUE  FALSE   TRUE
+data.frame( name = x, surname = check_if_surname(x) ) |> knitr::kable()
 ```
+
+| name   | surname |
+|:-------|:--------|
+| JOHN   | FALSE   |
+| SMITH  | TRUE    |
+| JORDAN | FALSE   |
+| TAYLOR | TRUE    |
+| LESLIE | FALSE   |
+| TSHEPO | TRUE    |
 
 [`determine_surname()`](https://nonprofit-open-data-collective.github.io/peopleparser/reference/determine_surname.md)
 picks the single most likely surname in a name. It uses each token’s
@@ -84,8 +93,10 @@ given-name uses in the 2020 lists, so its share is just under 1, while
 an unlisted token’s share is exactly 1.
 
 ``` r
-cd <- get_census_data(c("TAYLOR", "JORDAN"))
-determine_surname(cd)   # position of the surname: JORDAN is first, TAYLOR the surname
+cd <- get_census_data( c("TAYLOR", "JORDAN") )
+
+# position of the surname: JORDAN is first, TAYLOR the surname
+determine_surname( cd )
 #> [1] 1
 ```
 
@@ -96,7 +107,7 @@ determine_surname(cd)   # position of the surname: JORDAN is first, TAYLOR the s
 A lone token is treated as the surname.
 
 ``` r
-show(c("SMITH", "MADONNA"))
+show( c("SMITH", "MADONNA") )
 ```
 
 | name    | first_name | middle_name | last_name |
@@ -130,8 +141,11 @@ and the tokens are swapped when these odds exceed 30. An unlisted first
 token of one or two letters is initials (`HM CHERRY`, `DC ALLEN`).
 
 ``` r
-show(c("JOHN SMITH", "SMITH JOHN", "JORDAN TAYLOR", "TAYLOR JORDAN",
-       "LESLIE JAMES", "HARRIS MORRISON", "RICHARD RUVIN", "R BLINCOE"))
+x <- c( "JOHN SMITH",    "SMITH JOHN",
+        "JORDAN TAYLOR", "TAYLOR JORDAN",
+        "LESLIE JAMES",  "HARRIS MORRISON",
+        "RICHARD RUVIN", "R BLINCOE" )
+show( x )
 ```
 
 | name            | first_name | middle_name | last_name |
@@ -166,8 +180,10 @@ mostly a given name. `BISHOP JOHN` is left alone, because it may be
 `JOHN BISHOP` written surname first.
 
 ``` r
-show(c("HM CHERRY", "NICKHATH SHERIFF", "HOWARD SITRON", "SHERIFF MASRY",
-       "BISHOP JOHN"))
+x <- c( "HM CHERRY",     "NICKHATH SHERIFF",
+        "HOWARD SITRON", "SHERIFF MASRY",
+        "BISHOP JOHN" )
+show( x )
 ```
 
 | name             | first_name | middle_name | last_name |
@@ -196,7 +212,7 @@ rules assume two orders, `FIRST M LAST` and `LAST FIRST M`:
 - otherwise the order is kept.
 
 ``` r
-show(c("JOHN A SMITH", "SMITH JOHN A", "SMITH J ALAN", "J ALAN SMITH"))
+show( c("JOHN A SMITH", "SMITH JOHN A", "SMITH J ALAN", "J ALAN SMITH") )
 ```
 
 | name         | first_name | middle_name | last_name |
@@ -226,7 +242,9 @@ wrongly 1,210 times by that rule and 53 times by the written-order test
 (`data-raw/name_order_eval3.R`).
 
 ``` r
-show(c("JOHN ALAN SMITH", "SMITH JOHN ALAN", "DONG JOON YI", "TOKS MALIK ASHIRU"))
+x <- c( "JOHN ALAN SMITH", "SMITH JOHN ALAN",
+        "DONG JOON YI",    "TOKS MALIK ASHIRU" )
+show( x )
 ```
 
 | name              | first_name | middle_name | last_name |
@@ -247,7 +265,7 @@ initials. If the name opens with two surnames followed by a given name
 (`SMITH JONES MARY ANN`), the two surnames are joined into one.
 
 ``` r
-show(c("JOHN PAUL GEORGE RINGO", "SMITH JONES MARY ANN"))
+show( c("JOHN PAUL GEORGE RINGO", "SMITH JONES MARY ANN") )
 ```
 
 | name                   | first_name | middle_name | last_name   |
@@ -283,11 +301,23 @@ credential (Navy Medical Corps).
 Particles chain, so `DE LA ROSA` and `VAN DER BERG` become one token.
 
 ``` r
-fix_locative_surnames(c("Jane Van Dyke", "Carlos De La Rosa", "Dylan Van"))
-#> [1] "Jane Van-Dyke"     "Carlos De-La-Rosa" "Dylan Van"
-show(c("THOMAS H VON KAMECKE", "SEAN ST CLAIR", "JULIA DI BUSSOLO",
-       "JUAN CARLOS DE LA ROSA", "MARY VAN DER BERG", "PATRICIA SAN PEDRO",
-       "ESTELLA DE LOS RIOS"))
+x <- c( "Jane Van Dyke", "Carlos De La Rosa", "Dylan Van" )
+data.frame( raw = x, joined = fix_locative_surnames(x) ) |> knitr::kable()
+```
+
+| raw               | joined            |
+|:------------------|:------------------|
+| Jane Van Dyke     | Jane Van-Dyke     |
+| Carlos De La Rosa | Carlos De-La-Rosa |
+| Dylan Van         | Dylan Van         |
+
+``` r
+
+x <- c( "THOMAS H VON KAMECKE", "SEAN ST CLAIR",
+        "JULIA DI BUSSOLO",     "JUAN CARLOS DE LA ROSA",
+        "MARY VAN DER BERG",    "PATRICIA SAN PEDRO",
+        "ESTELLA DE LOS RIOS" )
+show( x )
 ```
 
 | name                   | first_name | middle_name | last_name    |
@@ -326,8 +356,11 @@ gives `SMITH-JONES`, even though `SMITH` was picked as the main surname.
 When they are not next to each other, the middle part goes first.
 
 ``` r
-show(c("MARIA GARCIA LOPEZ", "JOHN LEE SMITH", "ELIZABETH ANNE WALKER SMITH",
-       "JOHN Q PUBLIC SMITH", "MARY ANN SMITH JONES", "JEAN A DU PONT"))
+x <- c( "MARIA GARCIA LOPEZ",  "JOHN LEE SMITH",
+        "ELIZABETH ANNE WALKER SMITH",
+        "JOHN Q PUBLIC SMITH", "MARY ANN SMITH JONES",
+        "JEAN A DU PONT" )
+show( x )
 ```
 
 | name                        | first_name | middle_name | last_name    |
@@ -344,7 +377,7 @@ up at the front of a compound surname, it is moved back to the middle
 name.
 
 ``` r
-show(c("SARAH MAY WILSON", "MARY MAY"))
+show( c("SARAH MAY WILSON", "MARY MAY") )
 ```
 
 | name             | first_name | middle_name | last_name |

@@ -63,6 +63,9 @@ classify_names <- function( x, threshold = NULL ) {
   dash <- grepl( "[A-Za-z] ?- ?[A-Za-z]", ifelse( is.na( x ), "", x ) )
   eponym <- grepl( .org_eponym_end, core )
   type[ org & starts_person & f$ntok >= 3 & ( !eponym | dash ) ] <- "person and organisation"
+  # an organisation, then its representative (PRUDENTIAL INSURANCE - KYLE SMITH)
+  rep_after <- !is.na( person_after_org_split( toupper( gsub( ".", " ", ifelse( is.na( x ), "", x ), fixed = TRUE ) ) ) )
+  type[ rep_after ] <- "person and organisation"
   # couples: a given name on each side of AND / &
   several <- grepl( "(^| )(AND|&)( |$)", core ) &
     ( ( !org & f$ntok >= 3 ) | given_names_around_and( core ) )

@@ -55,6 +55,54 @@ fix_dangling_dash <- function( x ) {
   x
 }
 
+# An organisation, then the person who represents it (0.2.7):
+# "PRUDENTIAL INSURANCE - KYLE SMITH", "INDIANA INSURANCE CO JOSEPH YEAGER",
+# "PLEXUS GROUP-ROGER HISER". The organisation must end in one of these words
+# (CO alone is not enough: "CHAD COTTER CO BURNS MCDONELL" is a person, care
+# of an employer), and the rest must look like a person: two to four words,
+# the first a census given name or an initial, the last a word of two or more
+# letters, none an organisation word.
+.org_end_words <- c( "INSURANCE", "INS", "ASSURANCE", "COMPANY", "COMPANIES",
+  "AGENCY", "CORPORATION", "CORP", "INC", "LLC", "LLP", "BANK", "GROUP",
+  "SERVICES", "HMO", "ENTERPRISE", "ENTERPRISES", "CONSULTING" )
+.org_tail_words <- c( "CO", "INC", "LLC", "LLP", "NA", "CORP" )
+# words that show the rest is not a person: "BANK AND TRUST", "US BANK AS
+# TRUSTEE", "WAGES INC IN GA", "COMERICA BANK - TRUST DIVISION"
+.not_person_first <- c( "AND", "AS", "THE", "IN", "OF", "FOR", "AT", "BY", "TO", "N", "MED" )
+.not_person_words <- c( "TRUST", "TRUSTEE", "FOUNDATION", "RETIREMENT", "CLAIMS",
+                        "DIVISION", "DEPT", "DEPARTMENT", "COMMITTEE", "TAX" )
+
+person_after_org_split <- function( x ) {
+  out <- rep( NA_character_, length( x ) )
+  pat <- paste0( "\\b(", paste( .org_end_words, collapse = "|" ), ")\\b" )
+  hit <- which( !is.na( x ) & grepl( pat, x ) )
+  for ( i in hit ) {
+    s <- x[ i ]
+    m <- gregexpr( paste0( pat, "(( +(", paste( .org_tail_words, collapse = "|" ),
+                           ")\\b)*)[ ,]*-?[ ,]*" ), s )[[1]]
+    ends <- m + attr( m, "match.length" )
+    for ( e in rev( ends ) ) {
+      rest <- trimws( substr( s, e, nchar( s ) ) )
+      if ( !nzchar( rest ) || grepl( "[^A-Z' ]", rest ) ) next
+      w <- strsplit( rest, " +" )[[1]]
+      if ( length( w ) < 2 || length( w ) > 4 ) next
+      if ( any( w %in% c( .org_end_words, .org_tail_words, .not_person_words ) ) ||
+           w[1] %in% .not_person_first ) next
+      if ( nchar( w[ length( w ) ] ) < 2 ) next
+      cd <- get_census_data( w[1] )
+      given <- nchar( w[1] ) == 1 ||
+        ( cd$first_name_value[1] > 0 && cd$first_name_value[1] >= cd$last_name_value[1] )
+      if ( given ) { out[ i ] <- rest; break }
+    }
+  }
+  out
+}
+
+keep_person_after_org <- function( x ) {
+  p <- person_after_org_split( x )
+  ifelse( is.na( p ), x, p )
+}
+
 #' Remove Nuisance Text From a Name
 #'
 #' Strips common noise strings from raw name records — trailing titles, tenure
@@ -72,6 +120,7 @@ de_clutter <- function( x )
   # convert to de_clutter() function: 
   # remove common noise strings
   
+  x <- keep_person_after_org( x )   # PRUDENTIAL INSURANCE - KYLE SMITH (0.2.7)
   x <- fix_dangling_dash( x )       # JASON FRENN- MANAGING DIRECTOR (0.2.6)
   x <- gsub( "MR .* MRS", "", x )   # MR AND MRS PATRICK VETERS
   x <- gsub( "\\bSEE STMT\\b", "", x )

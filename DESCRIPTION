@@ -1,6 +1,6 @@
 Package: peopleparser
 Title: Parse Raw Person Names into Structured Components
-Version: 0.2.6
+Version: 0.2.7
 Authors@R: c(
     person("Jesse", "Lecy", , "jdlecy@gmail.com", role = c("aut", "cre")),
     person("Michael", "Flanigan", role = "aut",
