@@ -419,7 +419,16 @@ deglue_tokens <- function( name_vec, split_initials = FALSE ) {
   "CONTROLLER",
   # 0.2.6 (npmerger): CRAIG WILSON MANAGING DIR, ARASH DIBA MANAGING (DIR is
   # a census surname, so it is stripped only here)
-  "MANAGING", "DIR", "MGMT")
+  "MANAGING", "DIR", "MGMT",
+  # 0.2.8 (npmerger): MARINA TRIGONI CHIEF OPERATING, JESSICA FELDMARK INTERIM
+  # EXE. Neither is a census name.
+  "OPERATING", "INTERIM")
+
+# Role words that are also census surnames (DEPUTY 1,151 records, EXE 136):
+# stripped from the end of a name of three or more words only when the word
+# before is not mostly a given name, so WILLIAM DELISIO DEPUTY gives DELISIO
+# while MARY ANN DEPUTY keeps her surname (0.2.8, npmerger).
+.surname_role_words <- c( "DEPUTY", "EXE" )
 
 # Words that end a person's name and start an employer's (0.2.6, npmerger):
 # "JOHN HEISER INSURANCE", "LISA PIERCE ALLSTATE INSURANCE CO", "RANDY DENNIS
@@ -428,7 +437,9 @@ deglue_tokens <- function( name_vec, split_initials = FALSE ) {
 # them) and drops the rest. None is a census given name; COMPANY is a rare
 # surname, so it is never cut from the first two words.
 .employer_words <- c( "INSURANCE", "ASSURANCE", "COMPANY", "COMPANIES", "AGENCY",
-                      "CORPORATION", "CORP", "INC", "LLC" )
+                      "CORPORATION", "CORP", "INC", "LLC",
+                      # 0.2.8: CATHI COAN TECHWAY SERVICES
+                      "SERVICES" )
 
 drop_employer_tail <- function( name_vec, prefixes = prx, suffixes = sfx ) {
   n <- length( name_vec )
@@ -492,6 +503,13 @@ positional_tokens <- function( name_vec, prefixes, suffixes ) {
   }
   if ( n >= 3 && name_vec[1] %in% .leading_only_titles )
     out$titles <- unique( c( out$titles, name_vec[1] ) )
+  # a role word that is also a surname, at the end after a word that is not
+  # mostly a given name (0.2.8): WILLIAM DELISIO DEPUTY, MARIBETH ANDERSON EXE
+  if ( n >= 3 && name_vec[n] %in% .surname_role_words && nchar( name_vec[n - 1] ) > 1 ) {
+    cd <- get_census_data( name_vec[n - 1] )
+    if ( cd$first_name_value[1] <= cd$last_name_value[1] )
+      out$titles <- unique( c( out$titles, name_vec[n] ) )
+  }
   # a leading ambiguous credential that is not a census name, before a strong
   # given name and at least one more word (0.2.5): DC DAVID BEER, PT RISHI
   # MISIR (Pandit), RM THAD WARREN. MA, BA, AB and AUD are census names and

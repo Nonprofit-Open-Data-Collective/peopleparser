@@ -41,5 +41,5 @@ start_time <- Sys.time()
 pn <- parse_names( x )
 end_time <- Sys.time()
 end_time - start_time
-#> Time difference of 1.089232 secs
+#> Time difference of 0.788553 secs
 ```

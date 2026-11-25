@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">peopleparser</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.8</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,6 +47,21 @@
       <small>Source: <a href="https://github.com/Nonprofit-Open-Data-Collective/peopleparser/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.8" id="peopleparser-028">peopleparser 0.2.8<a class="anchor" aria-label="anchor" href="#peopleparser-028"></a></h2>
+<div class="section level3">
+<h3 id="more-role-words-joined-to-the-surname-are-dropped-0-2-8">More role words joined to the surname are dropped<a class="anchor" aria-label="anchor" href="#more-role-words-joined-to-the-surname-are-dropped-0-2-8"></a></h3>
+<p>npmerger’s rebuild on 0.2.7 found a few dozen names whose surname still carried a role word (<code>HAMMETT-MGMT</code>, <code>WHITE-EXE</code>, <code>FOLEY-DEPUTY</code>).</p>
+<ul><li>
+<code>DEPUTY</code> and <code>EXE</code> at the end of a name of three or more words are dropped when the word before is not mostly a given name: <code>WILLIAM DELISIO DEPUTY</code> gives <code>DELISIO</code>. Both are also census surnames, so <code>MARY ANN DEPUTY</code>, <code>SUSAN B DEPUTY</code> and <code>JOHN DEPUTY</code> keep them.</li>
+<li>
+<code>OPERATING</code> and <code>INTERIM</code> join the role words dropped from the end of a name, and <code>CHIEF</code> or <code>INTERIM</code> before a role word goes with it: <code>MARINA TRIGONI CHIEF OPERATING</code> gives <code>TRIGONI</code>, <code>JOE MASI CHIEF DEPUTY</code> gives <code>MASI</code>.</li>
+<li>A role word joined by a dash is split off (<code>KYLE SEARCH-DEPUTY</code>, <code>KEITH HAMMETT-MGMT</code>), and a double dash separates a note like a single dash with spaces (<code>ANEESA MCMILLAN--DEPUTY</code>, <code>JOE GOUDE VP--RETAIL SERVICES</code>).</li>
+<li>
+<code>SERVICES</code> is an employer word: <code>CATHI COAN TECHWAY SERVICES</code> gives <code>COAN</code>.</li>
+<li>On a sample of 200,000 Part VII names, 8 (0.004%) parse differently from 0.2.7, all fixes (<code>RONALD ABRAHAM--SEE SCHED O</code> gives <code>ABRAHAM</code>).</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.7" id="peopleparser-027">peopleparser 0.2.7<a class="anchor" aria-label="anchor" href="#peopleparser-027"></a></h2>
 <div class="section level3">

@@ -1,5 +1,30 @@
 # Changelog
 
+## peopleparser 0.2.8
+
+### More role words joined to the surname are dropped
+
+npmerger’s rebuild on 0.2.7 found a few dozen names whose surname still
+carried a role word (`HAMMETT-MGMT`, `WHITE-EXE`, `FOLEY-DEPUTY`).
+
+- `DEPUTY` and `EXE` at the end of a name of three or more words are
+  dropped when the word before is not mostly a given name:
+  `WILLIAM DELISIO DEPUTY` gives `DELISIO`. Both are also census
+  surnames, so `MARY ANN DEPUTY`, `SUSAN B DEPUTY` and `JOHN DEPUTY`
+  keep them.
+- `OPERATING` and `INTERIM` join the role words dropped from the end of
+  a name, and `CHIEF` or `INTERIM` before a role word goes with it:
+  `MARINA TRIGONI CHIEF OPERATING` gives `TRIGONI`,
+  `JOE MASI CHIEF DEPUTY` gives `MASI`.
+- A role word joined by a dash is split off (`KYLE SEARCH-DEPUTY`,
+  `KEITH HAMMETT-MGMT`), and a double dash separates a note like a
+  single dash with spaces (`ANEESA MCMILLAN--DEPUTY`,
+  `JOE GOUDE VP--RETAIL SERVICES`).
+- `SERVICES` is an employer word: `CATHI COAN TECHWAY SERVICES` gives
+  `COAN`.
+- On a sample of 200,000 Part VII names, 8 (0.004%) parse differently
+  from 0.2.7, all fixes (`RONALD ABRAHAM--SEE SCHED O` gives `ABRAHAM`).
+
 ## peopleparser 0.2.7
 
 ### An organisation followed by its representative keeps the person

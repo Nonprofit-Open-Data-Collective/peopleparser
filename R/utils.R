@@ -120,6 +120,13 @@ de_clutter <- function( x )
   # convert to de_clutter() function: 
   # remove common noise strings
   
+  # 0.2.8 (npmerger): a double dash separates a note (ANEESA MCMILLAN--DEPUTY,
+  # JOE GOUDE VP--RETAIL SERVICES); a role word joined by a dash is a word of
+  # its own (KYLE SEARCH-DEPUTY); CHIEF or INTERIM before a role word goes with it
+  # (only after two words: CHIH--HSING WU is a given name)
+  x <- gsub( "^([^ -]+ +[^-]+?) *-{2,} *([A-Z])", "\\1 - \\2", x, perl = TRUE )
+  x <- gsub( "-(DEPUTY|EXE|MGMT)$", " \\1", x )
+  x <- gsub( " (CHIEF|INTERIM) (OPERATING|DEPUTY|EXE)$", " \\2", x )
   x <- keep_person_after_org( x )   # PRUDENTIAL INSURANCE - KYLE SMITH (0.2.7)
   x <- fix_dangling_dash( x )       # JASON FRENN- MANAGING DIRECTOR (0.2.6)
   x <- gsub( "MR .* MRS", "", x )   # MR AND MRS PATRICK VETERS

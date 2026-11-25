@@ -120,6 +120,25 @@ test_that("an organisation followed by a person keeps the person", {
   expect_equal(pn("JOHN SMITH CO")$last_name, "SMITH")
 })
 
+test_that("role words joined to a surname are dropped (0.2.8)", {
+  expect_equal(pn("WILLIAM DELISIO DEPUTY")$last_name, "DELISIO")
+  expect_equal(pn("MARIBETH ANDERSON EXE")$last_name, "ANDERSON")
+  expect_equal(pn("ANEESA MCMILLAN--DEPUTY")$last_name, "MCMILLAN")
+  expect_equal(pn("KYLE SEARCH-DEPUTY")$last_name, "SEARCH")
+  expect_equal(pn("KEITH HAMMETT-MGMT")$last_name, "HAMMETT")
+  expect_equal(pn("JOE MASI CHIEF DEPUTY")$last_name, "MASI")
+  expect_equal(pn("MARINA TRIGONI CHIEF OPERATING")$last_name, "TRIGONI")
+  expect_equal(pn("JESSICA FELDMARK INTERIM EXE")$last_name, "FELDMARK")
+  expect_equal(pn("JOE GOUDE VP--RETAIL SERVICES")$last_name, "GOUDE")
+  expect_equal(pn("CATHI COAN TECHWAY SERVICES")$last_name, "COAN")
+  expect_equal(pn("PATRICIA ECKFORD-JACKSON DEPUTY")$last_name, "ECKFORD-JACKSON")
+  expect_equal(pn("CHIH--HSING WU MD")$last_name, "WU")   # a double dash in a given name
+  # DEPUTY and EXE are also surnames
+  expect_equal(pn("MARY ANN DEPUTY")$last_name, "DEPUTY")
+  expect_equal(pn("JOHN DEPUTY")$last_name, "DEPUTY")
+  expect_equal(pn("SUSAN B DEPUTY")$last_name, "DEPUTY")
+})
+
 test_that("a dash at the end of a word joins a double surname or cuts a note", {
   expect_equal(pn("DEADERIA MORRIS- BOWMAN")$last_name, "MORRIS-BOWMAN")
   expect_equal(pn("HANA BEN- SHABAT")$last_name, "BEN-SHABAT")
